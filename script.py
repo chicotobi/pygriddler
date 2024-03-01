@@ -1,5 +1,19 @@
+import urllib.request
 from functools import cache
-from input_files import *
+
+s1 = 'https://www.griddlers.net/nonogram/-/g/t1709243262226/i01?p_p_lifecycle=2&p_p_resource_id=griddlerPuzzle&p_p_cacheability=cacheLevelPage&_gpuzzles_WAR_puzzles_id='
+s2 = '&_gpuzzles_WAR_puzzles_lite=false&_gpuzzles_WAR_puzzles_name=touchScreen'
+id0 = 241934
+id0 = 252952
+link = s1 + str(id0) + s2
+s = str(urllib.request.urlopen(link).read()).split('\\n')
+
+inp_v = inp_h = 0
+exec('inp_v = [' + s[66].strip('\\t') + ']')
+exec('inp_h = [' + s[69].strip('  ').strip('\\t') + ']')
+
+inp_v = [[i[1] for i in j] for j in inp_v]
+inp_h = [[i[1] for i in j] for j in inp_h]
 
 x = len(inp_v)
 y = len(inp_h)
