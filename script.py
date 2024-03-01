@@ -1,54 +1,30 @@
 from functools import cache
-
-# inp_v = [
-#   [5],
-#   [2,2,2],
-#   [5,3,1],
-#   [1,1,1,1],
-#   [5,3,1],
-#   [2,2,2],
-#   [5]
-#   ]
-
-# inp_h =[
-#   [5],
-#   [2,2],
-#   [1,1],
-#   [1,1],
-#   [2,2],
-#   [2,2],
-#   [1,3,1],
-#   [1,1,1,1],
-#   [1,3,1],
-#   [2,2],
-#   [5],
-#   ]
-
 from input_files import *
 
 x = len(inp_v)
 y = len(inp_h)
 
 @cache
-def generate(n, blocks):
+def generate(n, blocks, start=False):
   if len(blocks) == 0:
     return [[0]*n]
   l = []
   nblocks = len(blocks)
   max_shift = n - sum(blocks) - nblocks + 1
-  for i in range(1,max_shift+1):
+  i0 = 1
+  for i in range(i0,max_shift+1):
     l += [[0]*i + [1]*blocks[0] + j for j in generate(n-i-blocks[0],blocks[1:])]
   return l
 
 pos = {'h':{},'v':{}}
 for i in range(x):
   print("x",i/x)
-  tmp = generate(y+1, tuple(inp_v[i]))
+  tmp = generate(y+1, tuple(inp_v[i]), True)
   tmp = [j[1:] for j in tmp]
   pos['v'][i] = tmp
 for i in range(y):
   print("y",i/y)
-  tmp = generate(x+1, tuple(inp_h[i]))
+  tmp = generate(x+1, tuple(inp_h[i]), True)
   tmp = [j[1:] for j in tmp]
   pos['h'][i] = tmp
 
