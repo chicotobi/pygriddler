@@ -5,6 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import matplotlib.colors
 
+WHITE = 0
+ALLOWED = 1
+NOT_ALLOWED = 0
+
+    
 def download_and_write_file(id0):
   s1 = 'https://www.griddlers.net/nonogram/-/g/t1709243262226/i01?p_p_lifecycle=2&p_p_resource_id=griddlerPuzzle&p_p_cacheability=cacheLevelPage&_gpuzzles_WAR_puzzles_id='
   s2 = '&_gpuzzles_WAR_puzzles_lite=false&_gpuzzles_WAR_puzzles_name=touchScreen'
@@ -70,19 +75,31 @@ def generate_count(n, block_lengths, block_colors, previous_color):
 @cache
 def generate_with_info(n, block_lengths, block_colors, previous_color, info):
   if len(block_lengths) == 0:
-    if all(info[:n,0]) == 1:
-      return [[0]*n]
-  l = []
+    if all(info[:n,WHITE]) == ALLOWED:
+      return [[WHITE]*n]
+    else:
+      return []
+  pos = []
   n_same_colored_neighbours = sum(np.diff(block_colors)==0)
-  max_zeroes_left_side = n - sum(block_lengths) - n_same_colored_neighbours
+  max_zeroes_left_side_from_input = n - sum(block_lengths) - n_same_colored_neighbours
+   
+  # Find the first index where no white is allowed
+  max_zeroes_left_side_from_info = np.nonzero(info[:,WHITE] == NOT_ALLOWED)[0][0]
+  
+  l = block_lengths[0]
+  c = block_colors[0]
+  
+  max_zeroes_left_side = min(max_zeroes_left_side_from_input, max_zeroes_left_side_from_info)
   if block_colors[0] == previous_color:
     i0 = 1
   else:
     i0 = 0
   for i in range(i0,max_zeroes_left_side+1):
-    tmp = generate(n - i - block_lengths[0], block_lengths[1:], block_colors[1:], block_colors[0])
-    l += [[0]*i + [block_colors[0]]*block_lengths[0] + j for j in tmp]
-  return l
+    # We checked that the white blocks are allowed, now check, if the colored block is allowed:
+    if all(info[(i+1):(i+1+l),c] == 1):
+      tmp = generate_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], info[i+1+l:,])
+      pos += [[WHITE]*i + [c]*l + j for j in tmp]
+  return pos
 
 def hex2rgb(hx):
   return tuple(int(hx[i:i+2], 16)/256 for i in (0, 2, 4))

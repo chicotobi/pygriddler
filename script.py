@@ -37,7 +37,6 @@ x = len(inp[0])
 y = len(inp[1])
 n_colors = len(colors)
 color_possible = np.ones((y,x,n_colors))
-  
 
 while np.any(np.sum(color_possible, axis=2)>1):
   #old = color_possible.copy()
