@@ -5,8 +5,10 @@ from myfuncs import get_input, generate, generate_count, plot, generate_with_inf
 #id0 = 252952
 #id0 = 47532
 #id0 = 202358
-id0 = 39756
+#id0 = 39756
 #id0 = 275510
+id0 = 236744
+id0 = 233499
 
 inp, colors = get_input(id0)
 
@@ -44,6 +46,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
   it += 1
   print("\nIteration",it)
   
+  
   old = color_possible.copy()
   for ori, pos0 in status.items():
     for idx, status0 in pos0.items():      
@@ -68,8 +71,9 @@ while np.any(np.sum(color_possible, axis=2)>1):
         for color in range(n_colors):
           if color not in allowed_colors0:
             color_possible[idx2,idx,color] = 0
-      plot(color_possible, colors, ori)
     color_possible = np.transpose(color_possible, axes=(1,0,2))
+  
+  plot(color_possible, colors, 0)
     
   # No updates?
   if np.all(old == color_possible):
