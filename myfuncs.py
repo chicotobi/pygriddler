@@ -72,10 +72,10 @@ def generate_count(n, block_lengths, block_colors, previous_color):
     l += tmp
   return l
 
-@cache
+#@cache
 def generate_with_info(n, block_lengths, block_colors, previous_color, info):
   if len(block_lengths) == 0:
-    if all(info[:n,WHITE]) == ALLOWED:
+    if all(info[:,WHITE]) == ALLOWED:
       return [[WHITE]*n]
     else:
       return []
@@ -84,7 +84,11 @@ def generate_with_info(n, block_lengths, block_colors, previous_color, info):
   max_zeroes_left_side_from_input = n - sum(block_lengths) - n_same_colored_neighbours
    
   # Find the first index where no white is allowed
-  max_zeroes_left_side_from_info = np.nonzero(info[:,WHITE] == NOT_ALLOWED)[0][0]
+  tmp = np.nonzero(info[:,WHITE] == NOT_ALLOWED)[0]
+  if len(tmp) > 0:
+    max_zeroes_left_side_from_info = tmp[0]
+  else:
+    max_zeroes_left_side_from_info = n
   
   l = block_lengths[0]
   c = block_colors[0]
@@ -96,10 +100,43 @@ def generate_with_info(n, block_lengths, block_colors, previous_color, info):
     i0 = 0
   for i in range(i0,max_zeroes_left_side+1):
     # We checked that the white blocks are allowed, now check, if the colored block is allowed:
-    if all(info[(i+1):(i+1+l),c] == 1):
-      tmp = generate_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], info[i+1+l:,])
+    if all(info[i:(i+l),c] == 1):
+      tmp = generate_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], info[i+l:,])
       pos += [[WHITE]*i + [c]*l + j for j in tmp]
   return pos
+
+#@cache
+def generate_count_with_info(n, block_lengths, block_colors, previous_color, info):
+  if len(block_lengths) == 0:
+    if all(info[:,WHITE]) == ALLOWED:
+      return 1
+    else:
+      return 0
+  count = 0
+  n_same_colored_neighbours = sum(np.diff(block_colors)==0)
+  max_zeroes_left_side_from_input = n - sum(block_lengths) - n_same_colored_neighbours
+   
+  # Find the first index where no white is allowed
+  tmp = np.nonzero(info[:,WHITE] == NOT_ALLOWED)[0]
+  if len(tmp) > 0:
+    max_zeroes_left_side_from_info = tmp[0]
+  else:
+    max_zeroes_left_side_from_info = n
+  
+  l = block_lengths[0]
+  c = block_colors[0]
+  
+  max_zeroes_left_side = min(max_zeroes_left_side_from_input, max_zeroes_left_side_from_info)
+  if block_colors[0] == previous_color:
+    i0 = 1
+  else:
+    i0 = 0
+  for i in range(i0,max_zeroes_left_side+1):
+    # We checked that the white blocks are allowed, now check, if the colored block is allowed:
+    if all(info[i:(i+l),c] == 1):
+      tmp = generate_count_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], info[i+l:,])
+      count += tmp
+  return count
 
 def hex2rgb(hx):
   return tuple(int(hx[i:i+2], 16)/256 for i in (0, 2, 4))
