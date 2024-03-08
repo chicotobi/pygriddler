@@ -1,14 +1,29 @@
 import numpy as np
-from myfuncs import get_input, generate, generate_count, plot, generate_with_info, generate_count_with_info
+from myfuncs import get_input, get_title
+from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
 
-#id0 = 241934
-#id0 = 252952
-#id0 = 47532
-#id0 = 202358
-#id0 = 39756
-#id0 = 275510
-id0 = 236744
-id0 = 233499
+example = 10
+
+if   example == 1: # Owl           30 x 35 x 2
+  id0 = 241934     
+elif example == 2: # Dog           40 x 45 x 2
+  id0 = 252952    
+elif example == 3: # NOT SOLVED?
+  id0 = 32310
+elif example == 4: # Maple leaf    30 x 30 x 2
+  id0 = 202358     
+elif example == 5: # Beautiful eye 35 x 25 x 7
+  id0 = 39756     
+elif example == 6: # Flamingo      13 x 20 x 4
+  id0 = 275510
+elif example == 7: # Rosebud       27 x 45 x 8
+  id0 = 236744
+elif example == 8: # Santorini     40 x 50 x 8
+  id0 = 233499    
+elif example == 9: # Family in the Summer Heat 50 x 50 x 6 - NOT SOLVED
+  id0 = 118315
+elif example == 10:
+  id0 = 271571
 
 inp, colors = get_input(id0)
 
@@ -39,6 +54,8 @@ x = len(inp[0])
 y = len(inp[1])
 n_colors = len(colors)
 color_possible = np.ones((y,x,n_colors))
+
+title = "{ttl} {x} x {y} x {n_colors}\n{id0}".format(ttl=get_title(id0),x=x,y=y,n_colors=n_colors,id0=id0)
 
 it = 0
 while np.any(np.sum(color_possible, axis=2)>1):
@@ -73,7 +90,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
             color_possible[idx2,idx,color] = 0
     color_possible = np.transpose(color_possible, axes=(1,0,2))
   
-  plot(color_possible, colors, 0)
+  plot(title, color_possible, colors, 0)
     
   # No updates?
   if np.all(old == color_possible):
@@ -89,8 +106,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
         block_lengths = tuple([j[1] for j in inp[ori][line]])
         
         info = color_possible[:, line, :]
-        #if ori == 1 and line == 0:
-        #  raise
+        #info = tuple(tuple(i) for i in info)
         n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, info)
         
         if n_pos < limit_generate:

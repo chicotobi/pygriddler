@@ -9,12 +9,25 @@ WHITE = 0
 ALLOWED = 1
 NOT_ALLOWED = 0
 
+def get_title(id0):
+  link = 'https://www.griddlers.net/nonogram/-/g/' + str(id0)
+  s = str(urllib.request.urlopen(link).read())
+  s2 = "Griddlers puzzle " + str(id0) + " - "
+  idx = s.find(s2)
+  idx1 = idx + len(s2)
+  idx2 = idx + len(s2) + 50
+  s3 = s[idx1:idx2]
+  idx3 = s3.find('"')
+  title = s3[:idx3]
+  return title
     
 def download_and_write_file(id0):
   s1 = 'https://www.griddlers.net/nonogram/-/g/t1709243262226/i01?p_p_lifecycle=2&p_p_resource_id=griddlerPuzzle&p_p_cacheability=cacheLevelPage&_gpuzzles_WAR_puzzles_id='
   s2 = '&_gpuzzles_WAR_puzzles_lite=false&_gpuzzles_WAR_puzzles_name=touchScreen'
   link = s1 + str(id0) + s2
   s = str(urllib.request.urlopen(link).read())
+  
+    
  
   f = open(str(id0),'w')
   f.write(s)
@@ -141,7 +154,7 @@ def generate_count_with_info(n, block_lengths, block_colors, previous_color, inf
 def hex2rgb(hx):
   return tuple(int(hx[i:i+2], 16)/256 for i in (0, 2, 4))
 
-def plot(color_possible, colors, ori):
+def plot(title, color_possible, colors, ori):
   
   plt.clf()
   if ori == 1:    
@@ -163,4 +176,5 @@ def plot(color_possible, colors, ori):
   plt.imshow(data, interpolation='nearest', cmap = cmap,  vmin=-1, vmax=len(colors))
   plt.gca().get_xaxis().set_visible(False)
   plt.gca().get_yaxis().set_visible(False)
+  plt.title(title)
   plt.show()
