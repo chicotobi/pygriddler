@@ -3,7 +3,7 @@ from myfuncs import get_input, get_title
 from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
 from myfuncs import generate_color_possible, totuple
 
-example = 6
+example = 8
 
 if   example == 1: # Owl                       30 x 35 x 2
   id0 = 241934     
@@ -80,14 +80,16 @@ while np.any(np.sum(color_possible, axis=2)>1):
       for color in range(n_colors):
         for idx2, val in enumerate(color_possible[:,idx,color]):
           if val == 0:
-            possible_lines0 = [i for i in possible_lines0 if i[idx2] != color]
+            keep = possible_lines0[:,idx2] != color
+            possible_lines0 = possible_lines0[keep,:]
       status0["count"] = len(possible_lines0)
       status0["possible_lines"] = possible_lines0
       
       print("O", ori, "L", idx,": Possible solutions:",status0["count"])
       
       # Update color_possible
-      allowed_colors = list(map(set, zip(*possible_lines0)))
+      _, n2 = possible_lines0.shape
+      allowed_colors = [set(possible_lines0[:,i]) for i in range(n2)]
       for idx2, allowed_colors0 in enumerate(allowed_colors):
         for color in range(n_colors):
           if color not in allowed_colors0:
