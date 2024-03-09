@@ -152,6 +152,15 @@ def generate_count_with_info(n, block_lengths, block_colors, previous_color, inf
   return count
 
 def generate_color_possible(n, block_lengths, block_colors, n_colors):
+  color_possible = np.zeros((n,n_colors))
+  
+  # Zero is always possible, because it's really difficult to find out, where whites are possible
+  color_possible[:,0] = 1
+  
+  # Stupid edge case - if no blocks, only white is possible
+  if len(block_lengths) == 0:
+    return color_possible
+  
   # Compressed representation
   line = [block_colors[0]] * block_lengths[0]
   for i in range(1,len(block_lengths)):
@@ -159,14 +168,13 @@ def generate_color_possible(n, block_lengths, block_colors, n_colors):
       line += [0]
     line += [block_colors[i]] * block_lengths[i]
     
-  color_possible = np.zeros((n,n_colors))
   
   for i in range(n-len(line)+1):
-    color_possible[0:i,0] = 1
     for j in range(len(line)):
       c = line[j]
       color_possible[i+j,c] = 1
-    color_possible[(i+len(line)):n,0] = 1
+  
+  
   return color_possible
   
 

@@ -3,7 +3,7 @@ from myfuncs import get_input, get_title
 from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
 from myfuncs import generate_color_possible
 
-example = 5
+example = 8
 
 if   example == 1: # Owl           30 x 35 x 2
   id0 = 241934     
@@ -56,14 +56,14 @@ for ori, tmp in status.items():
 # Initialize color_possible from sweeping the input from left to right, top to bottom
 # It creates simple restrictions even from lines that were only counted
 color_possible = np.ones((y,x,n_colors))
-# for ori, tmp in inp.items():
-#   n_lines = len(inp[ori])
-#   len_line = len(inp[1-ori])
-#   for line, inp0 in tmp.items():    
-#     block_colors  = tuple([j[0] for j in inp[ori][line]])
-#     block_lengths = tuple([j[1] for j in inp[ori][line]])
-#     ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
-#     color_possible[line,:,:] = np.logical_and(color_possible[line,:,:], ans)
+for ori, tmp in status.items():
+  len_line = len(status[1-ori])
+  for line, status0 in tmp.items():
+    block_colors  = tuple(status0["block_colors"])
+    block_lengths = tuple(status0["block_lengths"])
+    ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
+    color_possible[:,line,:] = np.logical_and(color_possible[:,line,:], ans)
+  color_possible = np.transpose(color_possible, axes=(1,0,2))
 
 
 title = "{ttl} {x} x {y} x {n_colors}\n{id0}".format(ttl=get_title(id0),x=x,y=y,n_colors=n_colors,id0=id0)
@@ -110,6 +110,8 @@ while np.any(np.sum(color_possible, axis=2)>1):
     for ori, pos0 in status.items():
       len_line = len(status[1-ori])
       for line, status0 in pos0.items():
+        if status[ori][line]["generated"]:
+          continue
         block_colors  = tuple(status0["block_colors"])
         block_lengths = tuple(status0["block_lengths"])
         
