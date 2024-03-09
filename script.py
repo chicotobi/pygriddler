@@ -86,6 +86,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
           if val == 0:
             possible_lines0 = [i for i in possible_lines0 if i[idx2] != color]
       status0["count"] = len(possible_lines0)
+      status0["possible_lines"] = possible_lines0
       
       print("O", ori, "L", idx,": Possible solutions:",status0["count"])
       
