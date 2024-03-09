@@ -3,28 +3,26 @@ from myfuncs import get_input, get_title
 from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
 from myfuncs import generate_color_possible, totuple
 
-example = 10
+example = 7
 
-if   example == 1: # Owl           30 x 35 x 2
+if   example == 1: # Owl                       30 x 35 x 2
   id0 = 241934     
-elif example == 2: # Dog           40 x 45 x 2
+elif example == 2: # Dog                       40 x 45 x 2
   id0 = 252952    
-elif example == 3: # NOT SOLVED?
-  id0 = 32310
-elif example == 4: # Maple leaf    30 x 30 x 2
+elif example == 3: # Maple leaf                30 x 30 x 2
   id0 = 202358     
-elif example == 5: # Beautiful eye 35 x 25 x 7
+elif example == 4: # Beautiful eye             35 x 25 x 7
   id0 = 39756     
-elif example == 6: # Flamingo      13 x 20 x 4
+elif example == 5: # Flamingo                  13 x 20 x 4
   id0 = 275510
-elif example == 7: # Rosebud       27 x 45 x 8
+elif example == 6: # Rosebud                   27 x 45 x 8
   id0 = 236744
-elif example == 8: # Santorini     40 x 50 x 8
+elif example == 7: # Santorini                 40 x 50 x 8
   id0 = 233499    
+elif example == 8: # Lion                      45 x 45 x 2
+  id0 = 88712
 elif example == 9: # Family in the Summer Heat 50 x 50 x 6 - NOT SOLVED
   id0 = 118315
-elif example == 10:
-  id0 = 88712
 
 status, colors = get_input(id0)
 x = len(status[0])
