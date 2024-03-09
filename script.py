@@ -3,7 +3,7 @@ from myfuncs import get_input, get_title
 from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
 from myfuncs import generate_color_possible, totuple
 
-example = 7
+example = 10
 
 if   example == 1: # Owl           30 x 35 x 2
   id0 = 241934     
@@ -25,8 +25,6 @@ elif example == 9: # Family in the Summer Heat 50 x 50 x 6 - NOT SOLVED
   id0 = 118315
 elif example == 10:
   id0 = 88712
-elif example == 11:
-  id0 = 42015
 
 status, colors = get_input(id0)
 x = len(status[0])
@@ -104,6 +102,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
   if np.all(old == color_possible):
     print("\nNo update to color_possible: Generate new solutions")
     
+    generated = False
     for ori, pos0 in status.items():
       len_line = len(status[1-ori])
       for line, status0 in pos0.items():
@@ -120,6 +119,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
           status[ori][line]["generated"     ] = True
           status[ori][line]["count"         ] = n_pos
           print("O",ori,"L",line,": Generated",n_pos,"possibilities.")
+          generated = True
         else:
           status[ori][line]["possible_lines"] = None
           status[ori][line]["generated"     ] = False
@@ -127,4 +127,30 @@ while np.any(np.sum(color_possible, axis=2)>1):
           print("O",ori,"L",line,": Counted",n_pos,"possibilities.")
       color_possible = np.transpose(color_possible, axes=(1,0,2))
           
+    # If no generation was successful - we have to generate the smallest one
+    if not generated:
+      ori0 = -1
+      line0 = -1
+      count0 = 1e10
+      for ori, pos0 in status.items():
+        for line, status0 in pos0.items():
+          if not status0["generated"] and status0["count"] < count0:
+            ori0 = ori
+            line0 = line
+            count0 = status0["count"]
+      if ori0 == 1:
+        color_possible = np.transpose(color_possible, axes=(1,0,2))
+      print("No line was below the generate limit",limit_generate)
+      len_line = len(status[1-ori0])
+      block_colors  = tuple(status[ori0][line0]["block_colors"])
+      block_lengths = tuple(status[ori0][line0]["block_lengths"])
+      info = color_possible[:, line0, :]
+      status[ori0][line0]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+      status[ori0][line0]["generated"     ] = True
+      print("O",ori0,"L",line0,": Generated",count0,"possibilities.")
+      if ori0 == 1:
+        color_possible = np.transpose(color_possible, axes=(1,0,2))
+      
+        
+      
   
