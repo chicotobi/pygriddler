@@ -3,7 +3,7 @@ from myfuncs import get_input, get_title
 from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
 from myfuncs import generate_color_possible, totuple
 
-example = 7
+example = 6
 
 if   example == 1: # Owl                       30 x 35 x 2
   id0 = 241934     
@@ -94,7 +94,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
             color_possible[idx2,idx,color] = 0
     color_possible = np.transpose(color_possible, axes=(1,0,2))
   
-  plot(title, color_possible, colors, 0)
+  plot(title, it, color_possible, colors, 0)
     
   # No updates?
   if np.all(old == color_possible):

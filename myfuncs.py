@@ -190,7 +190,7 @@ def generate_color_possible(n, block_lengths, block_colors, n_colors):
 def hex2rgb(hx):
   return tuple(int(hx[i:i+2], 16)/256 for i in (0, 2, 4))
 
-def plot(title, color_possible, colors, ori):
+def plot(title, iteration, color_possible, colors, ori):
   
   plt.clf()
   if ori == 1:    
@@ -212,5 +212,5 @@ def plot(title, color_possible, colors, ori):
   plt.imshow(data, interpolation='nearest', cmap = cmap,  vmin=-1, vmax=len(colors))
   plt.gca().get_xaxis().set_visible(False)
   plt.gca().get_yaxis().set_visible(False)
-  plt.title(title)
+  plt.title(title+" - "+str(iteration))
   plt.show()
