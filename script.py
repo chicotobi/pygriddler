@@ -1,8 +1,9 @@
 import numpy as np
 from myfuncs import get_input, get_title
 from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
+from myfuncs import generate_color_possible
 
-example = 10
+example = 5
 
 if   example == 1: # Owl           30 x 35 x 2
   id0 = 241934     
@@ -23,37 +24,47 @@ elif example == 8: # Santorini     40 x 50 x 8
 elif example == 9: # Family in the Summer Heat 50 x 50 x 6 - NOT SOLVED
   id0 = 118315
 elif example == 10:
-  id0 = 271571
+  id0 = 88712
+elif example == 11:
+  id0 = 42015
 
-inp, colors = get_input(id0)
+status, colors = get_input(id0)
+x = len(status[0])
+y = len(status[1])
+n_colors = len(colors)
 
 limit_generate = 1_000_000
 
-status = {}
-for ori in range(2):
-  status[ori] = {}
-  n_lines = len(inp[ori])
-  len_line = len(inp[1-ori])
-  for line in range(n_lines):
-    status[ori][line] = {}
-    block_colors  = tuple([j[0] for j in inp[ori][line]])
-    block_lengths = tuple([j[1] for j in inp[ori][line]])
+for ori, tmp in status.items():
+  len_line = len(status[1-ori])
+  for line, status0 in tmp.items():
+    block_colors  = tuple(status0["block_colors"])
+    block_lengths = tuple(status0["block_lengths"])
     n_pos = generate_count(len_line, block_lengths, block_colors, -1)
     if n_pos < limit_generate:
-      status[ori][line]["possible_lines"] = generate(len_line, block_lengths, block_colors, -1)
-      status[ori][line]["generated"     ] = True
-      status[ori][line]["count"         ] = n_pos
+      status0["possible_lines"] = generate(len_line, block_lengths, block_colors, -1)
+      status0["generated"     ] = True
+      status0["count"         ] = n_pos
       print("O",ori,"L",line,": Generated",n_pos,"possibilities.")
     else:
-      status[ori][line]["possible_lines"] = None
-      status[ori][line]["generated"     ] = False
-      status[ori][line]["count"         ] = n_pos
+      status0["possible_lines"] = None
+      status0["generated"     ] = False
+      status0["count"         ] = n_pos
       print("O",ori,"L",line,": Counted",n_pos,"possibilities.")
 
-x = len(inp[0])
-y = len(inp[1])
-n_colors = len(colors)
+
+# Initialize color_possible from sweeping the input from left to right, top to bottom
+# It creates simple restrictions even from lines that were only counted
 color_possible = np.ones((y,x,n_colors))
+# for ori, tmp in inp.items():
+#   n_lines = len(inp[ori])
+#   len_line = len(inp[1-ori])
+#   for line, inp0 in tmp.items():    
+#     block_colors  = tuple([j[0] for j in inp[ori][line]])
+#     block_lengths = tuple([j[1] for j in inp[ori][line]])
+#     ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
+#     color_possible[line,:,:] = np.logical_and(color_possible[line,:,:], ans)
+
 
 title = "{ttl} {x} x {y} x {n_colors}\n{id0}".format(ttl=get_title(id0),x=x,y=y,n_colors=n_colors,id0=id0)
 
@@ -97,13 +108,10 @@ while np.any(np.sum(color_possible, axis=2)>1):
     print("\nNo update to color_possible: Generate new solutions")
     
     for ori, pos0 in status.items():
-      len_line = len(inp[1-ori])
+      len_line = len(status[1-ori])
       for line, status0 in pos0.items():
-        if status[ori][line]["generated"]:
-          continue
-        status[ori][line] = {}
-        block_colors  = tuple([j[0] for j in inp[ori][line]])
-        block_lengths = tuple([j[1] for j in inp[ori][line]])
+        block_colors  = tuple(status0["block_colors"])
+        block_lengths = tuple(status0["block_lengths"])
         
         info = color_possible[:, line, :]
         #info = tuple(tuple(i) for i in info)

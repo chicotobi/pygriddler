@@ -45,13 +45,13 @@ def get_input(id0):
   used_colors = eval('[' + s[63].strip('  ').strip('\\t') + ']')
   colors = eval('[' + s[57].strip('  ').strip('\\t') + ']')
   
-  inp = {}
-  inp[0] = [[[i[0]-1, i[1]] for i in j] for j in inp_v]
-  inp[1] = [[[i[0]-1, i[1]] for i in j] for j in inp_h]
+  status = {}
+  status[0] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_v)}
+  status[1] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_h)}
     
   colors = [colors[i] for i in used_colors]
   
-  return inp, colors
+  return status, colors
 
 @cache
 def generate(n, block_lengths, block_colors, previous_color):
@@ -150,6 +150,25 @@ def generate_count_with_info(n, block_lengths, block_colors, previous_color, inf
       tmp = generate_count_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], info[i+l:,])
       count += tmp
   return count
+
+def generate_color_possible(n, block_lengths, block_colors, n_colors):
+  # Compressed representation
+  line = [block_colors[0]] * block_lengths[0]
+  for i in range(1,len(block_lengths)):
+    if block_colors[i-1] == block_colors[i]:
+      line += [0]
+    line += [block_colors[i]] * block_lengths[i]
+    
+  color_possible = np.zeros((n,n_colors))
+  
+  for i in range(n-len(line)+1):
+    color_possible[0:i,0] = 1
+    for j in range(len(line)):
+      c = line[j]
+      color_possible[i+j,c] = 1
+    color_possible[(i+len(line)):n,0] = 1
+  return color_possible
+  
 
 def hex2rgb(hx):
   return tuple(int(hx[i:i+2], 16)/256 for i in (0, 2, 4))
