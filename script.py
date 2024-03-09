@@ -1,9 +1,9 @@
 import numpy as np
 from myfuncs import get_input, get_title
 from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
-from myfuncs import generate_color_possible
+from myfuncs import generate_color_possible, totuple
 
-example = 8
+example = 7
 
 if   example == 1: # Owl           30 x 35 x 2
   id0 = 241934     
@@ -117,10 +117,10 @@ while np.any(np.sum(color_possible, axis=2)>1):
         
         info = color_possible[:, line, :]
         #info = tuple(tuple(i) for i in info)
-        n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, info)
+        n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
         
         if n_pos < limit_generate:
-          status[ori][line]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, info)
+          status[ori][line]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
           status[ori][line]["generated"     ] = True
           status[ori][line]["count"         ] = n_pos
           print("O",ori,"L",line,": Generated",n_pos,"possibilities.")

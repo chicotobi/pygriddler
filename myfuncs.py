@@ -85,8 +85,14 @@ def generate_count(n, block_lengths, block_colors, previous_color):
     l += tmp
   return l
 
-#@cache
+def totuple(x):
+  return tuple(tuple(i) for i in x)
+
+@cache
 def generate_with_info(n, block_lengths, block_colors, previous_color, info):
+  if len(info) == 0:
+    return generate(n, block_lengths, block_colors, previous_color)
+  info = np.asarray(info)
   if len(block_lengths) == 0:
     if all(info[:,WHITE]) == ALLOWED:
       return [[WHITE]*n]
@@ -114,12 +120,15 @@ def generate_with_info(n, block_lengths, block_colors, previous_color, info):
   for i in range(i0,max_zeroes_left_side+1):
     # We checked that the white blocks are allowed, now check, if the colored block is allowed:
     if all(info[i:(i+l),c] == 1):
-      tmp = generate_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], info[i+l:,])
+      tmp = generate_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], totuple(info[i+l:,]))
       pos += [[WHITE]*i + [c]*l + j for j in tmp]
   return pos
 
-#@cache
+@cache
 def generate_count_with_info(n, block_lengths, block_colors, previous_color, info):
+  if len(info) == 0:
+    return generate_count(n, block_lengths, block_colors, previous_color)
+  info = np.asarray(info)
   if len(block_lengths) == 0:
     if all(info[:,WHITE]) == ALLOWED:
       return 1
@@ -147,7 +156,7 @@ def generate_count_with_info(n, block_lengths, block_colors, previous_color, inf
   for i in range(i0,max_zeroes_left_side+1):
     # We checked that the white blocks are allowed, now check, if the colored block is allowed:
     if all(info[i:(i+l),c] == 1):
-      tmp = generate_count_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], info[i+l:,])
+      tmp = generate_count_with_info(n - i - l, block_lengths[1:], block_colors[1:], block_colors[0], totuple(info[i+l:,]))
       count += tmp
   return count
 
