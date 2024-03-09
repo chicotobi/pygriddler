@@ -65,7 +65,6 @@ for ori, tmp in status.items():
     color_possible[:,line,:] = np.logical_and(color_possible[:,line,:], ans)
   color_possible = np.transpose(color_possible, axes=(1,0,2))
 
-
 title = "{ttl} {x} x {y} x {n_colors}\n{id0}".format(ttl=get_title(id0),x=x,y=y,n_colors=n_colors,id0=id0)
 
 it = 0
@@ -74,12 +73,9 @@ while np.any(np.sum(color_possible, axis=2)>1):
   it += 1
   print("\nIteration",it)
   
-  
   old = color_possible.copy()
   for ori, pos0 in status.items():
     for idx, status0 in pos0.items():      
-      #assert(color_possible.shape[0] == len(possible_lines0[0]))      
-      #assert(color_possible.shape[1] == len(pos0))
       if not status0["generated"]:
         continue
       
@@ -116,7 +112,6 @@ while np.any(np.sum(color_possible, axis=2)>1):
         block_lengths = tuple(status0["block_lengths"])
         
         info = color_possible[:, line, :]
-        #info = tuple(tuple(i) for i in info)
         n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
         
         if n_pos < limit_generate:
