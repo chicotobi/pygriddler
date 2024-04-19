@@ -1,12 +1,11 @@
-from download import get_id, get_input
+from download import get_input
 from solution import initialize, solve
 
-id0 = get_id(7)
-
-inp = get_input(id0)
-
+inp = {}
 inp["limit_generate"] = 5_000_000
+inp["plot"] = True
+inp["example"] = 8
 
+get_input(inp)
 initialize(inp)
-
 solve(inp)  

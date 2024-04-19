@@ -1,7 +1,8 @@
 import urllib.request
 import os.path
 
-def get_id(example):    
+def get_id(inp):  
+  example = inp["example"]
   if   example == 1: # Owl                       30 x 35 x 2
     id0 = 241934     
   elif example == 2: # Dog                       40 x 45 x 2
@@ -46,7 +47,8 @@ def download_and_write_file(id0):
   f.write(s)
   f.close()
   
-def get_input(id0):
+def get_input(inp):
+  id0 = get_id(inp)
   fname = str(id0)
   if ~os.path.isfile(fname):
     download_and_write_file(id0)
@@ -67,7 +69,6 @@ def get_input(id0):
   y = len(inp_h)
   n_colors= len(colors)
   
-  inp = {}
   inp["id0"] = id0
   inp["desc"] = get_desc(id0, x, y, n_colors)
   inp["status"] = status
