@@ -17,7 +17,7 @@ def msg(ori,line,n,status):
     s3 = 'Counted   '
   if n == 1:
     s3 = 'Finished  '
-  line = ' '*(3-len(str(line))) + str(line)
+  line = '0'*(3-len(str(line))) + str(line)
   x = 6
   s = ' '*(x*3-len(str(n))) + str(n)
   s2 = '.'.join([s[3*i:3*i+3] for i in range(x)])
