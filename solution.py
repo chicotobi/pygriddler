@@ -76,7 +76,7 @@ def solve(inp):
         
         # Update color_possible
         _, n2 = possible_lines0.shape
-        allowed_colors = [set(possible_lines0[:,i]) for i in range(n2)]
+        allowed_colors = [np.unique(possible_lines0[:,i]) for i in range(n2)]
         for idx2, allowed_colors0 in enumerate(allowed_colors):
           for color in range(n_colors):
             if color not in allowed_colors0:
@@ -87,7 +87,8 @@ def solve(inp):
       
       color_possible = np.transpose(color_possible, axes=(1,0,2))
     
-    plot(inp["desc"], it, color_possible, inp["colors"], 0)
+    if inp["plot"]:
+      plot(inp["desc"], it, color_possible, inp["colors"], 0)
     
     generated = False
       
