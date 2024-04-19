@@ -1,9 +1,9 @@
 import numpy as np
 
-from myfuncs import plot, msg
-from myfuncs import generate, generate_count
-from myfuncs import generate_with_info, generate_count_with_info
-from myfuncs import generate_color_possible, totuple
+from utils import plot, msg, totuple
+from generators import generate, generate_count
+from generators import generate_with_info, generate_count_with_info
+from generators import generate_color_possible
 
 def initialize(inp):
   status = inp["status"]
