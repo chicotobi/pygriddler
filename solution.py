@@ -1,18 +1,13 @@
 import numpy as np
 
-from myfuncs import get_input, get_title, plot, msg
+from myfuncs import plot, msg
 from myfuncs import generate, generate_count
 from myfuncs import generate_with_info, generate_count_with_info
 from myfuncs import generate_color_possible, totuple
 
-def solve(id0):
-  status, colors = get_input(id0)
-  x = len(status[0])
-  y = len(status[1])
-  n_colors = len(colors)
-  
-  limit_generate = 5_000_000
-  
+def initialize(inp):
+  status = inp["status"]
+  limit_generate = inp["limit_generate"]
   for ori, tmp in status.items():
     len_line = len(status[1-ori])
     for line, status0 in tmp.items():
@@ -28,7 +23,13 @@ def solve(id0):
         status0["generated"     ] = False
         status0["count"         ] = n_pos
       msg(ori,line,n_pos,status0["generated"])
-  
+
+def solve(inp):
+  x = inp["x"]
+  y = inp["y"]
+  n_colors = inp["n_colors"]
+  status = inp["status"]
+  limit_generate = inp["limit_generate"]
   
   # Initialize color_possible from sweeping the input from left to right, top to bottom
   # It creates simple restrictions even from lines that were only counted
@@ -41,8 +42,6 @@ def solve(id0):
       ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
       color_possible[:,line,:] = np.logical_and(color_possible[:,line,:], ans)
     color_possible = np.transpose(color_possible, axes=(1,0,2))
-  
-  title = "{ttl} {x} x {y} x {n_colors}\n{id0}".format(ttl=get_title(id0),x=x,y=y,n_colors=n_colors,id0=id0)
   
   it = 0
   generated = True
@@ -88,7 +87,7 @@ def solve(id0):
       
       color_possible = np.transpose(color_possible, axes=(1,0,2))
     
-    plot(title, it, color_possible, colors, 0)
+    plot(inp["desc"], it, color_possible, inp["colors"], 0)
     
     generated = False
       

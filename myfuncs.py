@@ -1,6 +1,5 @@
-import urllib.request
 from functools import cache
-import os.path
+
 import numpy as np
 import matplotlib.pyplot as plt 
 import matplotlib.colors
@@ -8,27 +7,6 @@ import matplotlib.colors
 WHITE = 0
 ALLOWED = 1
 NOT_ALLOWED = 0
-
-def get_title(id0):
-  link = 'https://www.griddlers.net/nonogram/-/g/' + str(id0)
-  s = str(urllib.request.urlopen(link).read())
-  s2 = "Griddlers puzzle " + str(id0) + " - "
-  idx = s.find(s2)
-  idx1 = idx + len(s2)
-  idx2 = idx + len(s2) + 50
-  s3 = s[idx1:idx2]
-  idx3 = s3.find('"')
-  title = s3[:idx3]
-  return title
-    
-def download_and_write_file(id0):
-  s1 = 'https://www.griddlers.net/nonogram/-/g/t1709243262226/i01?p_p_lifecycle=2&p_p_resource_id=griddlerPuzzle&p_p_cacheability=cacheLevelPage&_gpuzzles_WAR_puzzles_id='
-  s2 = '&_gpuzzles_WAR_puzzles_lite=false&_gpuzzles_WAR_puzzles_name=touchScreen'
-  link = s1 + str(id0) + s2
-  s = str(urllib.request.urlopen(link).read())
-  f = open(str(id0),'w')
-  f.write(s)
-  f.close()
   
 def msg(ori,line,n,status):
   if type(status) is str:
@@ -46,25 +24,6 @@ def msg(ori,line,n,status):
 
   print("O"+str(ori)+"L"+str(line),s3,s2)
 
-def get_input(id0):
-  fname = str(id0)
-  if ~os.path.isfile(fname):
-    download_and_write_file(id0)
-  
-  s = open(fname, 'r').read().split('\\n')
-    
-  inp_v = eval('[' + s[66].strip('\\t') + ']')
-  inp_h = eval('[' + s[69].strip('  ').strip('\\t') + ']')
-  used_colors = eval('[' + s[63].strip('  ').strip('\\t') + ']')
-  colors = eval('[' + s[57].strip('  ').strip('\\t') + ']')
-  
-  status = {}
-  status[0] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_v)}
-  status[1] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_h)}
-    
-  colors = [colors[i] for i in used_colors]
-  
-  return status, colors
 
 @cache
 def generate(n, block_lengths, block_colors, previous_color):
