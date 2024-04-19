@@ -1,9 +1,10 @@
 import numpy as np
-from myfuncs import get_input, get_title
-from myfuncs import generate, generate_count, plot, generate_with_info, generate_count_with_info
+from myfuncs import get_input, get_title, plot, msg
+from myfuncs import generate, generate_count
+from myfuncs import generate_with_info, generate_count_with_info
 from myfuncs import generate_color_possible, totuple
 
-example = 8
+example = 7
 
 if   example == 1: # Owl                       30 x 35 x 2
   id0 = 241934     
@@ -41,12 +42,11 @@ for ori, tmp in status.items():
       status0["possible_lines"] = generate(len_line, block_lengths, block_colors, -1)
       status0["generated"     ] = True
       status0["count"         ] = n_pos
-      print("O",ori,"L",line,": Generated",n_pos,"possibilities.")
     else:
       status0["possible_lines"] = None
       status0["generated"     ] = False
       status0["count"         ] = n_pos
-      print("O",ori,"L",line,": Counted",n_pos,"possibilities.")
+    msg(ori,line,n_pos,status0["generated"])
 
 
 # Initialize color_possible from sweeping the input from left to right, top to bottom
@@ -79,7 +79,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
         continue
             
       if not generated and not worth_checking[idx]:
-        print("O", ori, "L", idx,": Skip, because no changes, solutions remain:",status0["count"])
+        msg(ori, idx, status0["count"], "Same at   ")
         continue
       
       # Remove lines in pos, depending on solution
@@ -92,7 +92,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
       status0["count"] = len(possible_lines0)
       status0["possible_lines"] = possible_lines0
       
-      print("O", ori, "L", idx,": Possible solutions:",status0["count"])
+      msg(ori,idx,status0["count"],"Reduced to")
       
       # Update color_possible
       _, n2 = possible_lines0.shape
@@ -130,13 +130,12 @@ while np.any(np.sum(color_possible, axis=2)>1):
           status[ori][line]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
           status[ori][line]["generated"     ] = True
           status[ori][line]["count"         ] = n_pos
-          print("O",ori,"L",line,": Generated",n_pos,"possibilities.")
           generated = True
         else:
           status[ori][line]["possible_lines"] = None
           status[ori][line]["generated"     ] = False
           status[ori][line]["count"         ] = n_pos
-          print("O",ori,"L",line,": Counted",n_pos,"possibilities.")
+        msg(ori,line,n_pos, status[ori][line]["generated"])
       color_possible = np.transpose(color_possible, axes=(1,0,2))
           
     # If no generation was successful - we have to generate the smallest one
@@ -159,7 +158,7 @@ while np.any(np.sum(color_possible, axis=2)>1):
       info = color_possible[:, line0, :]
       status[ori0][line0]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
       status[ori0][line0]["generated"     ] = True
-      print("O",ori0,"L",line0,": Generated",count0,"possibilities.")
+      msg(ori0,line0,count0,True)
       generated = True
       if ori0 == 1:
         color_possible = np.transpose(color_possible, axes=(1,0,2))    

@@ -26,12 +26,25 @@ def download_and_write_file(id0):
   s2 = '&_gpuzzles_WAR_puzzles_lite=false&_gpuzzles_WAR_puzzles_name=touchScreen'
   link = s1 + str(id0) + s2
   s = str(urllib.request.urlopen(link).read())
-  
-    
- 
   f = open(str(id0),'w')
   f.write(s)
   f.close()
+  
+def msg(ori,line,n,status):
+  if type(status) is str:
+    s3 = status
+  elif status:
+    s3 = 'Generated '
+  else:
+    s3 = 'Counted   '
+  if n == 1:
+    s3 = 'Finished  '
+  line = ' '*(3-len(str(line))) + str(line)
+  x = 6
+  s = ' '*(x*3-len(str(n))) + str(n)
+  s2 = '.'.join([s[3*i:3*i+3] for i in range(x)])
+
+  print("O"+str(ori)+"L"+str(line),s3,s2)
 
 def get_input(id0):
   fname = str(id0)
