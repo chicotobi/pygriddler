@@ -8,7 +8,13 @@ def totuple(x):
 def hex2rgb(hx):
   return tuple(int(hx[i:i+2], 16)/256 for i in (0, 2, 4))
 
-def msg(ori,line,n,status):
+def nice_number(n):
+  x = 6
+  s = ' '*(x*3-len(str(n))) + str(n)
+  s2 = '.'.join([s[3*i:3*i+3] for i in range(x)])
+  return s2
+
+def msg(ori, line, n, status, nold = None):
   if type(status) is str:
     s3 = status
   elif status:
@@ -18,9 +24,13 @@ def msg(ori,line,n,status):
   if n == 1:
     s3 = 'Finished  '
   line = '0'*(3-len(str(line))) + str(line)
-  x = 6
-  s = ' '*(x*3-len(str(n))) + str(n)
-  s2 = '.'.join([s[3*i:3*i+3] for i in range(x)])
+  s2 = nice_number(n)
+  
+  if type(status) is str and status == 'Reduced to':
+    if n == nold:
+      s3 = 'Same at   '
+    else:
+      s2 += ' from ' + nice_number(nold)
 
   print("O"+str(ori)+"L"+str(line),s3,s2)
   
