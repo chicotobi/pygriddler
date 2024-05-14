@@ -25,14 +25,17 @@ def get_id(inp):
 
 def get_title(id0):
   link = 'https://www.griddlers.net/nonogram/-/g/' + str(id0)
-  s = str(urllib.request.urlopen(link).read())
-  s2 = "Griddlers puzzle " + str(id0) + " - "
-  idx = s.find(s2)
-  idx1 = idx + len(s2)
-  idx2 = idx + len(s2) + 50
-  s3 = s[idx1:idx2]
-  idx3 = s3.find('"')
-  title = s3[:idx3]
+  try:
+    s = str(urllib.request.urlopen(link).read())
+    s2 = "Griddlers puzzle " + str(id0) + " - "
+    idx = s.find(s2)
+    idx1 = idx + len(s2)
+    idx2 = idx + len(s2) + 50
+    s3 = s[idx1:idx2]
+    idx3 = s3.find('"')
+    title = s3[:idx3]
+  except:
+    title = ''
   return title
 
 def get_desc(id0, x, y, n_colors):
@@ -50,7 +53,7 @@ def download_and_write_file(id0):
 def get_input(inp):
   id0 = get_id(inp)
   fname = str(id0)
-  if ~os.path.isfile(fname):
+  if not os.path.isfile(fname):
     download_and_write_file(id0)
   
   s = open(fname, 'r').read().split('\\n')
