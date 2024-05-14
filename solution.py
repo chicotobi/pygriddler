@@ -59,11 +59,12 @@ def solve(inp):
           continue
               
         if not generated and not worth_checking[idx]:
-          msg(ori, idx, status0["count"], "Same at   ")
+          #msg(ori, idx, status0["count"], "No relevant changes, same at   ")
           continue
         
         # Remove lines in pos, depending on solution
         possible_lines0 = status0["possible_lines"]
+        old_count = status0["count"]
         for color in range(n_colors):
           for idx2, val in enumerate(color_possible[:,idx,color]):
             if val == 0:
@@ -72,7 +73,7 @@ def solve(inp):
         status0["count"] = len(possible_lines0)
         status0["possible_lines"] = possible_lines0
         
-        msg(ori,idx,status0["count"],"Reduced to")
+        msg(ori,idx,status0["count"],"Reduced to",old_count)
         
         # Update color_possible
         _, n2 = possible_lines0.shape
