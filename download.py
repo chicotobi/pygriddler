@@ -56,7 +56,8 @@ def get_input(inp):
   if not os.path.isfile(fname):
     download_and_write_file(id0)
   
-  s = open(fname, 'r').read().split('\\n')
+  with open(fname, 'r') as f:
+    s = f.read().split('\\n')
     
   inp_v = eval('[' + s[66].strip('\\t') + ']')
   inp_h = eval('[' + s[69].strip('  ').strip('\\t') + ']')

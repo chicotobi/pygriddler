@@ -14,7 +14,9 @@ def nice_number(n):
   s2 = '.'.join([s[3*i:3*i+3] for i in range(x)])
   return s2
 
-def msg(ori, line, n, status, nold = None):
+def msg(ori, line, n, status, nold = None, verbose=True):
+  if not verbose:
+    return
   if type(status) is str:
     s3 = status
   elif status:

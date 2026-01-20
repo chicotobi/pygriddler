@@ -5,7 +5,7 @@ from generators import generate, generate_count
 from generators import generate_with_info, generate_count_with_info
 from generators import generate_color_possible
 
-def initialize(inp):
+def initialize(inp, verbose=True):
   status = inp["status"]
   limit_generate = inp["limit_generate"]
   for ori, tmp in status.items():
@@ -22,9 +22,9 @@ def initialize(inp):
         status0["possible_lines"] = None
         status0["generated"     ] = False
         status0["count"         ] = n_pos
-      msg(ori,line,n_pos,status0["generated"])
+      msg(ori,line,n_pos,status0["generated"],verbose=verbose)
 
-def solve(inp):
+def solve(inp, verbose=True):
   x = inp["x"]
   y = inp["y"]
   n_colors = inp["n_colors"]
@@ -49,7 +49,8 @@ def solve(inp):
   while np.any(np.sum(color_possible, axis=2)>1):
     
     it += 1
-    print("\nIteration",it)
+    if verbose:
+      print("\nIteration",it)
     
     old = color_possible.copy()
     for ori, pos0 in status.items():
@@ -73,7 +74,7 @@ def solve(inp):
         status0["count"] = len(possible_lines0)
         status0["possible_lines"] = possible_lines0
         
-        msg(ori,idx,status0["count"],"Reduced to",old_count)
+        msg(ori,idx,status0["count"],"Reduced to",old_count,verbose=verbose)
         
         # Update color_possible
         _, n2 = possible_lines0.shape
@@ -95,7 +96,8 @@ def solve(inp):
       
     # No updates?
     if np.all(old == color_possible):
-      print("\nNo update to color_possible: Generate new solutions")
+      if verbose:
+        print("\nNo update to color_possible: Generate new solutions")
           
       for ori, pos0 in status.items():
         len_line = len(status[1-ori])
@@ -117,7 +119,7 @@ def solve(inp):
             status[ori][line]["possible_lines"] = None
             status[ori][line]["generated"     ] = False
             status[ori][line]["count"         ] = n_pos
-          msg(ori,line,n_pos, status[ori][line]["generated"])
+          msg(ori,line,n_pos, status[ori][line]["generated"],verbose=verbose)
         color_possible = np.transpose(color_possible, axes=(1,0,2))
             
       # If no generation was successful - we have to generate the smallest one
@@ -133,14 +135,15 @@ def solve(inp):
               count0 = status0["count"]
         if ori0 == 1:
           color_possible = np.transpose(color_possible, axes=(1,0,2))
-        print("No line was below the generate limit",limit_generate)
+        if verbose:
+          print("No line was below the generate limit",limit_generate)
         len_line = len(status[1-ori0])
         block_colors  = tuple(status[ori0][line0]["block_colors"])
         block_lengths = tuple(status[ori0][line0]["block_lengths"])
         info = color_possible[:, line0, :]
         status[ori0][line0]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
         status[ori0][line0]["generated"     ] = True
-        msg(ori0,line0,count0,True)
+        msg(ori0,line0,count0,True,verbose=verbose)
         generated = True
         if ori0 == 1:
           color_possible = np.transpose(color_possible, axes=(1,0,2))    

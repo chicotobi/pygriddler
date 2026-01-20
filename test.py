@@ -56,8 +56,8 @@ class TestSolverRegression(unittest.TestCase):
         }
         
         get_input(inp)
-        initialize(inp)
-        result = solve(inp)
+        initialize(inp, verbose=False)
+        result = solve(inp, verbose=False)
         
         # Compare with baseline
         baseline_result = baseline["result"]
@@ -134,8 +134,8 @@ class TestSolverProperties(unittest.TestCase):
         }
         
         get_input(inp)
-        initialize(inp)
-        result = solve(inp)
+        initialize(inp, verbose=False)
+        result = solve(inp, verbose=False)
         
         self.assertIsInstance(result, np.ndarray)
     
@@ -150,8 +150,8 @@ class TestSolverProperties(unittest.TestCase):
         get_input(inp)
         x, y = inp["x"], inp["y"]
         
-        initialize(inp)
-        result = solve(inp)
+        initialize(inp, verbose=False)
+        result = solve(inp, verbose=False)
         
         self.assertEqual(result.shape, (y, x),
                         f"Result shape {result.shape} should be ({y}, {x})")
@@ -167,8 +167,8 @@ class TestSolverProperties(unittest.TestCase):
         get_input(inp)
         n_colors = inp["n_colors"]
         
-        initialize(inp)
-        result = solve(inp)
+        initialize(inp, verbose=False)
+        result = solve(inp, verbose=False)
         
         # All values should be -1 (unsolved) or 0 to n_colors-1
         self.assertTrue(np.all((result >= -1) & (result < n_colors)),
@@ -183,8 +183,8 @@ class TestSolverProperties(unittest.TestCase):
         }
         
         get_input(inp1)
-        initialize(inp1)
-        result1 = solve(inp1)
+        initialize(inp1, verbose=False)
+        result1 = solve(inp1, verbose=False)
         
         # Run again
         inp2 = {
@@ -194,8 +194,8 @@ class TestSolverProperties(unittest.TestCase):
         }
         
         get_input(inp2)
-        initialize(inp2)
-        result2 = solve(inp2)
+        initialize(inp2, verbose=False)
+        result2 = solve(inp2, verbose=False)
         
         np.testing.assert_array_equal(result1, result2,
                                      "Solver should be deterministic")
