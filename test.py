@@ -11,6 +11,7 @@ import unittest
 import numpy as np
 import pickle
 import os
+import time
 from download import get_input
 from solution import initialize, solve
 
@@ -199,6 +200,40 @@ class TestSolverProperties(unittest.TestCase):
         
         np.testing.assert_array_equal(result1, result2,
                                      "Solver should be deterministic")
+
+
+class TestSolverBenchmark(unittest.TestCase):
+    """Benchmark tests for solver performance"""
+    
+    def test_benchmark_example_7_santorini(self):
+        """Benchmark Example 7: Santorini (40x50x8) - run 3 times, report median"""
+        times = []
+        
+        for run in range(3):
+            inp = {
+                "limit_generate": 5_000_000,
+                "plot": False,
+                "example": 7
+            }
+            
+            get_input(inp)
+            initialize(inp, verbose=False)
+            
+            start_time = time.perf_counter()
+            result = solve(inp, verbose=False)
+            end_time = time.perf_counter()
+            
+            elapsed = end_time - start_time
+            times.append(elapsed)
+            print(f"  Run {run + 1}: {elapsed:.3f}s")
+        
+        median_time = sorted(times)[1]  # Median of 3 values
+        print(f"\n  Median time: {median_time:.3f}s")
+        print(f"  All times: {[f'{t:.3f}s' for t in times]}")
+        
+        # Verify the result is correct
+        self.assertEqual(result.shape, (50, 40))
+        self.assertTrue(np.all(result >= -1))
 
 
 if __name__ == '__main__':
