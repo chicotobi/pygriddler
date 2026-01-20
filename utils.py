@@ -50,11 +50,12 @@ def plot(title, iteration, color_possible, colors, ori):
     for j in range(y):
       if sum(color_possible[i,j,:]) == 1:
         #print(np.where(color_possible[i,j,:]))
-        data[i,j] = np.where(color_possible[i,j,:])[0] + 1
+        data[i,j] = np.where(color_possible[i,j,:])[0][0] + 1
       else:
         data[i,j] = -1
   plt.imshow(data, interpolation='nearest', cmap = cmap,  vmin=-1, vmax=len(colors))
   plt.gca().get_xaxis().set_visible(False)
   plt.gca().get_yaxis().set_visible(False)
   plt.title(title+" - "+str(iteration))
-  plt.show()
+  plt.draw()
+  plt.pause(0.001)  # Brief pause to update the display
