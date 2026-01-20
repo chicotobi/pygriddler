@@ -21,6 +21,8 @@ def get_id(inp):
     id0 = 88712
   elif example == 9: # Family in the Summer Heat 50 x 50 x 6 - NOT SOLVED
     id0 = 118315
+  else:
+    id0 = example # Assume that the user provided a direct id
   return id0
 
 def get_title(id0):

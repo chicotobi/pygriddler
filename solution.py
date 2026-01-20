@@ -59,7 +59,7 @@ def solve(inp, verbose=True):
         if not status0["generated"]:
           continue
               
-        if not generated and not worth_checking[idx]:
+        if not generated and worth_checking is not None and not worth_checking[idx]:
           #msg(ori, idx, status0["count"], "No relevant changes, same at   ")
           continue
         
