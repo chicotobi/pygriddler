@@ -11,7 +11,7 @@ inp["example"] = 7
 
 get_input(inp)
 initialize(inp)
-solve(inp)
+solution = solve(inp)
 
 plt.ioff()  # Turn off interactive mode
 plt.show()  # Show the final plot and wait  

@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils import plot, msg, totuple
+from utils import create_data_from_color_possible, plot, msg, totuple
 from generators import generate, generate_count
 from generators import generate_with_info, generate_count_with_info
 from generators import generate_color_possible
@@ -144,4 +144,6 @@ def solve(inp):
         generated = True
         if ori0 == 1:
           color_possible = np.transpose(color_possible, axes=(1,0,2))    
+
+  return create_data_from_color_possible(color_possible)
     

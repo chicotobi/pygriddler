@@ -33,27 +33,32 @@ def msg(ori, line, n, status, nold = None):
       s2 += ' from ' + nice_number(nold)
 
   print("O"+str(ori)+"L"+str(line),s3,s2)
-  
-def plot(title, iteration, color_possible, colors, ori):
-  
-  plt.clf()
-  if ori == 1:    
-    color_possible = np.transpose(color_possible, axes=(1,0,2))
-      
-  colors = ['808080'] + colors
-  cmap = [hex2rgb(i) for i in colors]
-  cmap = matplotlib.colors.ListedColormap(cmap)
-  
-  x, y, ncolors = color_possible.shape
-  data = -1 * np.ones((x, y))
+
+def create_data_from_color_possible(color_possible):
+  x, y, _ = color_possible.shape
+  data = -1 * np.ones((x, y), dtype=int)
   for i in range(x):
     for j in range(y):
       if sum(color_possible[i,j,:]) == 1:
-        #print(np.where(color_possible[i,j,:]))
-        data[i,j] = np.where(color_possible[i,j,:])[0][0] + 1
+        data[i,j] = np.where(color_possible[i,j,:])[0][0]
       else:
         data[i,j] = -1
-  plt.imshow(data, interpolation='nearest', cmap = cmap,  vmin=-1, vmax=len(colors))
+  return data
+  
+def plot(title, iteration, color_possible, colors, ori):
+  
+  plt.clf()      
+  
+  data = create_data_from_color_possible(color_possible)
+  
+  if ori == 1:    
+    data = np.transpose(data, axes=(1,0,2))
+    
+  colors = ['808080'] + colors
+  cmap = [hex2rgb(i) for i in colors]
+  cmap = matplotlib.colors.ListedColormap(cmap)
+
+  plt.imshow(data, interpolation='nearest', cmap = cmap,  vmin=-1, vmax=len(colors)-1)
   plt.gca().get_xaxis().set_visible(False)
   plt.gca().get_yaxis().set_visible(False)
   plt.title(title+" - "+str(iteration))
