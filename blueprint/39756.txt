@@ -1,0 +1,486 @@
+O0L000 Generated     .   .   .   .134.596
+O0L001 Generated     .   .   .   .116.280
+O0L002 Generated     .   .   .   .167.960
+O0L003 Generated     .   .   .   .184.756
+O0L004 Generated     .   .   .   . 43.758
+O0L005 Generated     .   .   .   .125.970
+O0L006 Generated     .   .   .   .  8.568
+O0L007 Generated     .   .   .   .125.970
+O0L008 Generated     .   .   .  1.144.066
+O0L009 Generated     .   .   .   . 27.132
+O0L010 Generated     .   .   .   . 12.870
+O0L011 Generated     .   .   .   .  8.008
+O0L012 Generated     .   .   .   . 12.376
+O0L013 Generated     .   .   .   .   .286
+O0L014 Generated     .   .   .   .   .286
+O0L015 Generated     .   .   .   .   . 12
+O0L016 Generated     .   .   .   .   .286
+O0L017 Finished      .   .   .   .   .  1
+O0L018 Generated     .   .   .   .   . 66
+O0L019 Finished      .   .   .   .   .  1
+O0L020 Generated     .   .   .   .   . 45
+O0L021 Generated     .   .   .   .  2.002
+O0L022 Generated     .   .   .   .   .120
+O0L023 Generated     .   .   .   .   .455
+O0L024 Generated     .   .   .   .   . 78
+O0L025 Generated     .   .   .   .   .495
+O0L026 Generated     .   .   .   .  1.287
+O0L027 Generated     .   .   .   .  3.432
+O0L028 Generated     .   .   .   . 43.758
+O0L029 Generated     .   .   .   . 18.564
+O0L030 Generated     .   .   .   . 75.582
+O0L031 Generated     .   .   .   . 24.310
+O0L032 Generated     .   .   .   . 12.870
+O0L033 Generated     .   .   .   . 24.310
+O0L034 Generated     .   .   .   . 24.310
+O1L000 Generated     .   .   .  2.042.975
+O1L001 Counted       .   .   . 51.895.935
+O1L002 Generated     .   .   .  1.352.078
+O1L003 Generated     .   .   .  3.124.550
+O1L004 Generated     .   .   .   . 24.310
+O1L005 Generated     .   .   .   .  8.008
+O1L006 Generated     .   .   .   .   .126
+O1L007 Generated     .   .   .   .   .165
+O1L008 Generated     .   .   .   .   .136
+O1L009 Generated     .   .   .   .  8.568
+O1L010 Generated     .   .   .   .170.544
+O1L011 Generated     .   .   .   . 26.334
+O1L012 Generated     .   .   .   .  7.315
+O1L013 Generated     .   .   .   . 38.760
+O1L014 Generated     .   .   .   .  8.855
+O1L015 Generated     .   .   .   .100.947
+O1L016 Generated     .   .   .   . 54.264
+O1L017 Generated     .   .   .   .125.970
+O1L018 Generated     .   .   .  2.496.144
+O1L019 Generated     .   .   .  1.081.575
+O1L020 Counted       .   .   . 20.030.010
+O1L021 Generated     .   .   .  1.307.504
+O1L022 Counted       .   .   .141.120.525
+O1L023 Counted       .   .   .  5.852.925
+O1L024 Generated     .   .   .  2.220.075
+
+Iteration 1
+O0L000 Reduced to    .   .   .   .   .880 from    .   .   .   .134.596
+O0L001 Reduced to    .   .   .   . 20.746 from    .   .   .   .116.280
+O0L002 Reduced to    .   .   .   .  9.000 from    .   .   .   .167.960
+O0L003 Reduced to    .   .   .   .  6.640 from    .   .   .   .184.756
+O0L004 Reduced to    .   .   .   . 14.951 from    .   .   .   . 43.758
+O0L005 Reduced to    .   .   .   .  7.667 from    .   .   .   .125.970
+O0L006 Reduced to    .   .   .   .   .714 from    .   .   .   .  8.568
+O0L007 Reduced to    .   .   .   . 49.126 from    .   .   .   .125.970
+O0L008 Reduced to    .   .   .   .193.761 from    .   .   .  1.144.066
+O0L009 Reduced to    .   .   .   .  1.558 from    .   .   .   . 27.132
+O0L010 Reduced to    .   .   .   .  2.721 from    .   .   .   . 12.870
+O0L011 Reduced to    .   .   .   .  1.568 from    .   .   .   .  8.008
+O0L012 Reduced to    .   .   .   .  3.050 from    .   .   .   . 12.376
+O0L013 Reduced to    .   .   .   .   .178 from    .   .   .   .   .286
+O0L014 Reduced to    .   .   .   .   .282 from    .   .   .   .   .286
+O0L015 Same at       .   .   .   .   . 12
+O0L016 Reduced to    .   .   .   .   . 15 from    .   .   .   .   .286
+O0L017 Same at       .   .   .   .   .  1
+O0L018 Reduced to    .   .   .   .   . 15 from    .   .   .   .   . 66
+O0L019 Same at       .   .   .   .   .  1
+O0L020 Reduced to    .   .   .   .   . 39 from    .   .   .   .   . 45
+O0L021 Reduced to    .   .   .   .   .440 from    .   .   .   .  2.002
+O0L022 Reduced to    .   .   .   .   . 86 from    .   .   .   .   .120
+O0L023 Reduced to    .   .   .   .   .225 from    .   .   .   .   .455
+O0L024 Reduced to    .   .   .   .   . 45 from    .   .   .   .   . 78
+O0L025 Reduced to    .   .   .   .   .139 from    .   .   .   .   .495
+O0L026 Reduced to    .   .   .   .   . 46 from    .   .   .   .  1.287
+O0L027 Reduced to    .   .   .   .   .540 from    .   .   .   .  3.432
+O0L028 Reduced to    .   .   .   .  4.117 from    .   .   .   . 43.758
+O0L029 Reduced to    .   .   .   .   .384 from    .   .   .   . 18.564
+O0L030 Reduced to    .   .   .   .  2.368 from    .   .   .   . 75.582
+O0L031 Reduced to    .   .   .   .   .391 from    .   .   .   . 24.310
+O0L032 Reduced to    .   .   .   .   .245 from    .   .   .   . 12.870
+O0L033 Reduced to    .   .   .   .   . 30 from    .   .   .   . 24.310
+O0L034 Reduced to    .   .   .   .   . 12 from    .   .   .   . 24.310
+O1L000 Finished      .   .   .   .   .  1 from    .   .   .  2.042.975
+O1L002 Reduced to    .   .   .   .   . 50 from    .   .   .  1.352.078
+O1L003 Reduced to    .   .   .   .   . 86 from    .   .   .  3.124.550
+O1L004 Reduced to    .   .   .   .   .386 from    .   .   .   . 24.310
+O1L005 Reduced to    .   .   .   .   .546 from    .   .   .   .  8.008
+O1L006 Reduced to    .   .   .   .   . 37 from    .   .   .   .   .126
+O1L007 Reduced to    .   .   .   .   . 56 from    .   .   .   .   .165
+O1L008 Reduced to    .   .   .   .   . 27 from    .   .   .   .   .136
+O1L009 Reduced to    .   .   .   .   . 72 from    .   .   .   .  8.568
+O1L010 Reduced to    .   .   .   .   .  8 from    .   .   .   .170.544
+O1L011 Reduced to    .   .   .   .   . 21 from    .   .   .   . 26.334
+O1L012 Reduced to    .   .   .   .   . 15 from    .   .   .   .  7.315
+O1L013 Reduced to    .   .   .   .   . 45 from    .   .   .   . 38.760
+O1L014 Reduced to    .   .   .   .   . 44 from    .   .   .   .  8.855
+O1L015 Reduced to    .   .   .   .  5.250 from    .   .   .   .100.947
+O1L016 Reduced to    .   .   .   .  1.020 from    .   .   .   . 54.264
+O1L017 Reduced to    .   .   .   .  8.024 from    .   .   .   .125.970
+O1L018 Reduced to    .   .   .   .  3.892 from    .   .   .  2.496.144
+O1L019 Reduced to    .   .   .   . 23.018 from    .   .   .  1.081.575
+O1L021 Reduced to    .   .   .   .  4.126 from    .   .   .  1.307.504
+O1L024 Reduced to    .   .   .   .   .612 from    .   .   .  2.220.075
+
+Iteration 2
+O0L000 Reduced to    .   .   .   .   .  8 from    .   .   .   .   .880
+O0L001 Reduced to    .   .   .   .   .198 from    .   .   .   . 20.746
+O0L002 Reduced to    .   .   .   .   .272 from    .   .   .   .  9.000
+O0L003 Reduced to    .   .   .   .   .650 from    .   .   .   .  6.640
+O0L004 Reduced to    .   .   .   .   .494 from    .   .   .   . 14.951
+O0L005 Reduced to    .   .   .   .   . 40 from    .   .   .   .  7.667
+O0L006 Reduced to    .   .   .   .   . 18 from    .   .   .   .   .714
+O0L007 Reduced to    .   .   .   .   . 90 from    .   .   .   . 49.126
+O0L008 Reduced to    .   .   .   .   .250 from    .   .   .   .193.761
+O0L009 Reduced to    .   .   .   .   .  4 from    .   .   .   .  1.558
+O0L010 Reduced to    .   .   .   .   .112 from    .   .   .   .  2.721
+O0L011 Reduced to    .   .   .   .   .176 from    .   .   .   .  1.568
+O0L012 Reduced to    .   .   .   .   . 60 from    .   .   .   .  3.050
+O0L013 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .178
+O0L014 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .282
+O0L015 Finished      .   .   .   .   .  1 from    .   .   .   .   . 12
+O0L016 Finished      .   .   .   .   .  1 from    .   .   .   .   . 15
+O0L018 Reduced to    .   .   .   .   .  3 from    .   .   .   .   . 15
+O0L020 Reduced to    .   .   .   .   .  4 from    .   .   .   .   . 39
+O0L021 Reduced to    .   .   .   .   . 35 from    .   .   .   .   .440
+O0L022 Reduced to    .   .   .   .   .  5 from    .   .   .   .   . 86
+O0L023 Reduced to    .   .   .   .   . 17 from    .   .   .   .   .225
+O0L024 Reduced to    .   .   .   .   . 21 from    .   .   .   .   . 45
+O0L025 Reduced to    .   .   .   .   . 90 from    .   .   .   .   .139
+O0L026 Reduced to    .   .   .   .   . 21 from    .   .   .   .   . 46
+O0L027 Reduced to    .   .   .   .   . 80 from    .   .   .   .   .540
+O0L028 Reduced to    .   .   .   .   .280 from    .   .   .   .  4.117
+O0L029 Reduced to    .   .   .   .   .218 from    .   .   .   .   .384
+O0L030 Reduced to    .   .   .   .   .112 from    .   .   .   .  2.368
+O0L031 Reduced to    .   .   .   .   . 74 from    .   .   .   .   .391
+O0L032 Reduced to    .   .   .   .   . 84 from    .   .   .   .   .245
+O0L033 Reduced to    .   .   .   .   . 18 from    .   .   .   .   . 30
+O1L002 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 50
+O1L003 Reduced to    .   .   .   .   . 34 from    .   .   .   .   . 86
+O1L004 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .386
+O1L005 Reduced to    .   .   .   .   . 10 from    .   .   .   .   .546
+O1L006 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 37
+O1L007 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 56
+O1L008 Reduced to    .   .   .   .   .  3 from    .   .   .   .   . 27
+O1L009 Finished      .   .   .   .   .  1 from    .   .   .   .   . 72
+O1L010 Finished      .   .   .   .   .  1 from    .   .   .   .   .  8
+O1L011 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 21
+O1L012 Reduced to    .   .   .   .   .  5 from    .   .   .   .   . 15
+O1L013 Reduced to    .   .   .   .   . 11 from    .   .   .   .   . 45
+O1L014 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 44
+O1L015 Reduced to    .   .   .   .   . 30 from    .   .   .   .  5.250
+O1L016 Reduced to    .   .   .   .   . 84 from    .   .   .   .  1.020
+O1L017 Reduced to    .   .   .   .   .342 from    .   .   .   .  8.024
+O1L018 Reduced to    .   .   .   .  1.615 from    .   .   .   .  3.892
+O1L019 Reduced to    .   .   .   .  5.549 from    .   .   .   . 23.018
+O1L021 Reduced to    .   .   .   .   .507 from    .   .   .   .  4.126
+O1L024 Reduced to    .   .   .   .   .162 from    .   .   .   .   .612
+
+Iteration 3
+O0L001 Reduced to    .   .   .   .   . 11 from    .   .   .   .   .198
+O0L002 Reduced to    .   .   .   .   . 64 from    .   .   .   .   .272
+O0L003 Reduced to    .   .   .   .   .252 from    .   .   .   .   .650
+O0L004 Reduced to    .   .   .   .   .165 from    .   .   .   .   .494
+O0L006 Reduced to    .   .   .   .   .  9 from    .   .   .   .   . 18
+O0L007 Reduced to    .   .   .   .   . 36 from    .   .   .   .   . 90
+O0L008 Reduced to    .   .   .   .   . 30 from    .   .   .   .   .250
+O0L009 Finished      .   .   .   .   .  1 from    .   .   .   .   .  4
+O0L010 Reduced to    .   .   .   .   . 56 from    .   .   .   .   .112
+O0L011 Reduced to    .   .   .   .   . 20 from    .   .   .   .   .176
+O0L012 Reduced to    .   .   .   .   . 20 from    .   .   .   .   . 60
+O0L013 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
+O0L014 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L018 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L021 Reduced to    .   .   .   .   .  9 from    .   .   .   .   . 35
+O0L022 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  5
+O0L023 Reduced to    .   .   .   .   . 11 from    .   .   .   .   . 17
+O0L024 Reduced to    .   .   .   .   . 18 from    .   .   .   .   . 21
+O0L025 Reduced to    .   .   .   .   . 49 from    .   .   .   .   . 90
+O0L028 Reduced to    .   .   .   .   .146 from    .   .   .   .   .280
+O0L029 Reduced to    .   .   .   .   . 86 from    .   .   .   .   .218
+O0L030 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .112
+O0L031 Reduced to    .   .   .   .   . 20 from    .   .   .   .   . 74
+O0L032 Reduced to    .   .   .   .   . 18 from    .   .   .   .   . 84
+O0L033 Reduced to    .   .   .   .   .  2 from    .   .   .   .   . 18
+O0L034 Finished      .   .   .   .   .  1 from    .   .   .   .   . 12
+O1L002 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .  6
+O1L003 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 34
+O1L004 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .  6
+O1L005 Reduced to    .   .   .   .   .  4 from    .   .   .   .   . 10
+O1L006 Reduced to    .   .   .   .   .  3 from    .   .   .   .   . 10
+O1L007 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
+O1L008 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L011 Finished      .   .   .   .   .  1 from    .   .   .   .   .  6
+O1L016 Reduced to    .   .   .   .   . 60 from    .   .   .   .   . 84
+O1L017 Reduced to    .   .   .   .   .110 from    .   .   .   .   .342
+O1L018 Reduced to    .   .   .   .   .228 from    .   .   .   .  1.615
+O1L019 Reduced to    .   .   .   .   .256 from    .   .   .   .  5.549
+O1L021 Reduced to    .   .   .   .   . 39 from    .   .   .   .   .507
+O1L024 Reduced to    .   .   .   .   .144 from    .   .   .   .   .162
+
+Iteration 4
+O0L001 Reduced to    .   .   .   .   .  5 from    .   .   .   .   . 11
+O0L002 Reduced to    .   .   .   .   .  8 from    .   .   .   .   . 64
+O0L003 Reduced to    .   .   .   .   . 98 from    .   .   .   .   .252
+O0L004 Reduced to    .   .   .   .   . 90 from    .   .   .   .   .165
+O0L012 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 20
+O0L020 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O0L021 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  9
+O0L024 Reduced to    .   .   .   .   . 15 from    .   .   .   .   . 18
+O0L025 Reduced to    .   .   .   .   . 18 from    .   .   .   .   . 49
+O0L026 Reduced to    .   .   .   .   . 18 from    .   .   .   .   . 21
+O0L027 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 80
+O0L028 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .146
+O0L029 Reduced to    .   .   .   .   . 30 from    .   .   .   .   . 86
+O0L030 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  5
+O0L031 Reduced to    .   .   .   .   .  3 from    .   .   .   .   . 20
+O0L032 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 18
+O0L033 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L002 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  5
+O1L003 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .  6
+O1L004 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  5
+O1L005 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O1L006 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O1L007 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L012 Finished      .   .   .   .   .  1 from    .   .   .   .   .  5
+O1L019 Reduced to    .   .   .   .   . 82 from    .   .   .   .   .256
+O1L024 Reduced to    .   .   .   .   .108 from    .   .   .   .   .144
+
+Iteration 5
+O0L003 Reduced to    .   .   .   .   . 14 from    .   .   .   .   . 98
+O0L029 Reduced to    .   .   .   .   . 25 from    .   .   .   .   . 30
+O0L030 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O0L031 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L032 Reduced to    .   .   .   .   .  3 from    .   .   .   .   . 10
+O1L002 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O1L003 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  5
+O1L004 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O1L005 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O1L006 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L013 Reduced to    .   .   .   .   .  4 from    .   .   .   .   . 11
+O1L014 Reduced to    .   .   .   .   .  4 from    .   .   .   .   . 10
+O1L015 Reduced to    .   .   .   .   . 21 from    .   .   .   .   . 30
+
+Iteration 6
+O0L004 Reduced to    .   .   .   .   . 15 from    .   .   .   .   . 90
+O0L030 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O0L031 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L002 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O1L003 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O1L004 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O1L005 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L013 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O1L015 Reduced to    .   .   .   .   . 12 from    .   .   .   .   . 21
+O1L016 Reduced to    .   .   .   .   . 20 from    .   .   .   .   . 60
+O1L017 Reduced to    .   .   .   .   . 44 from    .   .   .   .   .110
+
+Iteration 7
+O0L005 Reduced to    .   .   .   .   .  8 from    .   .   .   .   . 40
+O0L027 Reduced to    .   .   .   .   .  8 from    .   .   .   .   . 10
+O0L028 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  5
+O0L029 Reduced to    .   .   .   .   .  5 from    .   .   .   .   . 25
+O1L003 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O1L004 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L013 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L014 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
+O1L015 Reduced to    .   .   .   .   .  9 from    .   .   .   .   . 12
+
+Iteration 8
+O0L007 Reduced to    .   .   .   .   .  9 from    .   .   .   .   . 36
+O0L026 Reduced to    .   .   .   .   .  4 from    .   .   .   .   . 18
+O1L002 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L003 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L014 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L015 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  9
+O1L016 Reduced to    .   .   .   .   . 16 from    .   .   .   .   . 20
+O1L017 Reduced to    .   .   .   .   . 33 from    .   .   .   .   . 44
+
+Iteration 9
+O0L008 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 30
+O0L010 Reduced to    .   .   .   .   . 28 from    .   .   .   .   . 56
+O0L011 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 20
+O0L027 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  8
+
+Iteration 10
+
+No update to color_possible: Generate new solutions
+O1L001 Finished      .   .   .   .   .  1
+O1L020 Generated     .   .   .   .   . 84
+O1L022 Generated     .   .   .   .   . 16
+O1L023 Generated     .   .   .   .   . 10
+
+Iteration 11
+O0L000 Same at       .   .   .   .   .  8
+O0L001 Same at       .   .   .   .   .  5
+O0L002 Same at       .   .   .   .   .  8
+O0L003 Same at       .   .   .   .   . 14
+O0L004 Same at       .   .   .   .   . 15
+O0L005 Same at       .   .   .   .   .  8
+O0L006 Same at       .   .   .   .   .  9
+O0L007 Same at       .   .   .   .   .  9
+O0L008 Same at       .   .   .   .   . 10
+O0L009 Same at       .   .   .   .   .  1
+O0L010 Same at       .   .   .   .   . 28
+O0L011 Same at       .   .   .   .   . 10
+O0L012 Same at       .   .   .   .   . 10
+O0L013 Same at       .   .   .   .   .  3
+O0L014 Same at       .   .   .   .   .  1
+O0L015 Same at       .   .   .   .   .  1
+O0L016 Same at       .   .   .   .   .  1
+O0L017 Same at       .   .   .   .   .  1
+O0L018 Same at       .   .   .   .   .  2
+O0L019 Same at       .   .   .   .   .  1
+O0L020 Same at       .   .   .   .   .  3
+O0L021 Same at       .   .   .   .   .  6
+O0L022 Same at       .   .   .   .   .  2
+O0L023 Same at       .   .   .   .   . 11
+O0L024 Same at       .   .   .   .   . 15
+O0L025 Same at       .   .   .   .   . 18
+O0L026 Same at       .   .   .   .   .  4
+O0L027 Same at       .   .   .   .   .  6
+O0L028 Same at       .   .   .   .   .  2
+O0L029 Same at       .   .   .   .   .  5
+O0L030 Same at       .   .   .   .   .  1
+O0L031 Same at       .   .   .   .   .  1
+O0L032 Same at       .   .   .   .   .  3
+O0L033 Same at       .   .   .   .   .  1
+O0L034 Same at       .   .   .   .   .  1
+O1L000 Same at       .   .   .   .   .  1
+O1L001 Same at       .   .   .   .   .  1
+O1L002 Same at       .   .   .   .   .  1
+O1L003 Same at       .   .   .   .   .  1
+O1L004 Same at       .   .   .   .   .  1
+O1L005 Same at       .   .   .   .   .  1
+O1L006 Same at       .   .   .   .   .  1
+O1L007 Same at       .   .   .   .   .  1
+O1L008 Same at       .   .   .   .   .  1
+O1L009 Same at       .   .   .   .   .  1
+O1L010 Same at       .   .   .   .   .  1
+O1L011 Same at       .   .   .   .   .  1
+O1L012 Same at       .   .   .   .   .  1
+O1L013 Same at       .   .   .   .   .  1
+O1L014 Same at       .   .   .   .   .  1
+O1L015 Same at       .   .   .   .   .  6
+O1L016 Same at       .   .   .   .   . 16
+O1L017 Same at       .   .   .   .   . 33
+O1L018 Same at       .   .   .   .   .228
+O1L019 Same at       .   .   .   .   . 82
+O1L020 Same at       .   .   .   .   . 84
+O1L021 Same at       .   .   .   .   . 39
+O1L022 Same at       .   .   .   .   . 16
+O1L023 Same at       .   .   .   .   . 10
+O1L024 Same at       .   .   .   .   .108
+
+Iteration 12
+O0L000 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  8
+O0L001 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  5
+O0L002 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  8
+O0L003 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 14
+O0L004 Reduced to    .   .   .   .   . 11 from    .   .   .   .   . 15
+O0L005 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  8
+O0L006 Reduced to    .   .   .   .   .  7 from    .   .   .   .   .  9
+O0L007 Reduced to    .   .   .   .   .  8 from    .   .   .   .   .  9
+O0L008 Reduced to    .   .   .   .   .  9 from    .   .   .   .   . 10
+O0L010 Reduced to    .   .   .   .   . 22 from    .   .   .   .   . 28
+O0L011 Reduced to    .   .   .   .   .  7 from    .   .   .   .   . 10
+O0L012 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 10
+O0L020 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L021 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  6
+O0L023 Reduced to    .   .   .   .   .  5 from    .   .   .   .   . 11
+O0L024 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 15
+O0L025 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 18
+O0L026 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O0L027 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
+O0L029 Finished      .   .   .   .   .  1 from    .   .   .   .   .  5
+O0L032 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L018 Reduced to    .   .   .   .   . 76 from    .   .   .   .   .228
+O1L019 Reduced to    .   .   .   .   . 68 from    .   .   .   .   . 82
+O1L020 Reduced to    .   .   .   .   . 48 from    .   .   .   .   . 84
+O1L021 Reduced to    .   .   .   .   .  7 from    .   .   .   .   . 39
+O1L022 Finished      .   .   .   .   .  1 from    .   .   .   .   . 16
+O1L023 Finished      .   .   .   .   .  1 from    .   .   .   .   . 10
+O1L024 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .108
+
+Iteration 13
+O0L000 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  6
+O0L001 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
+O0L002 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O0L003 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  6
+O0L004 Reduced to    .   .   .   .   .  7 from    .   .   .   .   . 11
+O0L005 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .  6
+O0L006 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  7
+O0L007 Reduced to    .   .   .   .   .  7 from    .   .   .   .   .  8
+O0L008 Reduced to    .   .   .   .   .  8 from    .   .   .   .   .  9
+O0L010 Reduced to    .   .   .   .   .  6 from    .   .   .   .   . 22
+O0L011 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  7
+O0L012 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  6
+O0L021 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L022 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L023 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  5
+O0L024 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
+O0L025 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
+O0L026 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L018 Reduced to    .   .   .   .   . 38 from    .   .   .   .   . 76
+O1L019 Finished      .   .   .   .   .  1 from    .   .   .   .   . 68
+O1L020 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 48
+O1L021 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .  7
+
+Iteration 14
+O0L000 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
+O0L001 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L004 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  7
+O0L005 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  5
+O0L006 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  6
+O0L007 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  7
+O0L008 Reduced to    .   .   .   .   .  7 from    .   .   .   .   .  8
+O0L010 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
+O0L011 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O0L012 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
+O0L013 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L018 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L020 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L023 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L024 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L027 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O0L028 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L015 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
+O1L016 Reduced to    .   .   .   .   .  8 from    .   .   .   .   . 16
+O1L018 Reduced to    .   .   .   .   . 19 from    .   .   .   .   . 38
+O1L020 Reduced to    .   .   .   .   .  8 from    .   .   .   .   . 10
+O1L024 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+
+Iteration 15
+O0L000 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L023 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L025 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L016 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  8
+O1L017 Reduced to    .   .   .   .   . 11 from    .   .   .   .   . 33
+O1L021 Finished      .   .   .   .   .  1 from    .   .   .   .   .  5
+
+Iteration 16
+O0L003 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L004 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
+O0L005 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L006 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
+O0L007 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .  6
+O0L008 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  7
+O0L024 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L017 Reduced to    .   .   .   .   .  4 from    .   .   .   .   . 11
+O1L018 Reduced to    .   .   .   .   .  5 from    .   .   .   .   . 19
+O1L020 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  8
+O1L024 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+
+Iteration 17
+O0L004 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L005 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L006 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O0L007 Finished      .   .   .   .   .  1 from    .   .   .   .   .  5
+O0L008 Finished      .   .   .   .   .  1 from    .   .   .   .   .  6
+O1L015 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L016 Finished      .   .   .   .   .  1 from    .   .   .   .   .  4
+O1L017 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
+O1L018 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  5
+O1L020 Finished      .   .   .   .   .  1 from    .   .   .   .   .  6
+
+Iteration 18
+O0L010 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O0L011 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
+O0L012 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O0L013 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L017 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
+O1L018 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
