@@ -24,12 +24,130 @@ def initialize(inp):
         status0["count"         ] = n_pos
       msg(ori,line,n_pos,status0["generated"])
 
+def refine_solutions(inp, color_possible, generated, worth_checking):
+  """Refine existing solutions by filtering possible lines based on color_possible."""
+  status = inp["status"]
+  n_colors = inp["n_colors"]
+  
+  old = color_possible.copy()
+  for ori, pos0 in status.items():
+    changed = color_possible.copy()
+    for idx, status0 in pos0.items():      
+      if not status0["generated"]:
+        continue
+            
+      if not generated and not worth_checking[idx]:
+        continue
+      
+      # Remove lines in pos, depending on solution
+      possible_lines0 = status0["possible_lines"]
+      old_count = status0["count"]
+      for color in range(n_colors):
+        for idx2, val in enumerate(color_possible[:,idx,color]):
+          if val == 0:
+            keep = possible_lines0[:,idx2] != color
+            possible_lines0 = possible_lines0[keep,:]
+      status0["count"] = len(possible_lines0)
+      status0["possible_lines"] = possible_lines0
+      
+      msg(ori,idx,status0["count"],"Reduced to",old_count)
+      
+      # Update color_possible
+      _, n2 = possible_lines0.shape
+      allowed_colors = [np.unique(possible_lines0[:,i]) for i in range(n2)]
+      for idx2, allowed_colors0 in enumerate(allowed_colors):
+        for color in range(n_colors):
+          if color not in allowed_colors0:
+            color_possible[idx2,idx,color] = 0
+    changed2 = color_possible.copy()
+    
+    worth_checking = np.any(changed != changed2, axis = (1,2))
+    
+    color_possible = np.transpose(color_possible, axes=(1,0,2))
+  
+  return color_possible, old, worth_checking
+
+def generate_new_solutions(inp, color_possible):
+  """Generate new solutions for lines that haven't been generated yet."""
+  status = inp["status"]
+  limit_generate = inp["limit_generate"]
+  generated = False
+  
+  print("\nNo update to color_possible: Generate new solutions")
+      
+  for ori, pos0 in status.items():
+    len_line = len(status[1-ori])
+    for line, status0 in pos0.items():
+      if status[ori][line]["generated"]:
+        continue
+      block_colors  = tuple(status0["block_colors"])
+      block_lengths = tuple(status0["block_lengths"])
+      
+      info = color_possible[:, line, :]
+      n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+      
+      if n_pos < limit_generate:
+        status[ori][line]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+        status[ori][line]["generated"     ] = True
+        status[ori][line]["count"         ] = n_pos
+        generated = True
+      else:
+        status[ori][line]["possible_lines"] = None
+        status[ori][line]["generated"     ] = False
+        status[ori][line]["count"         ] = n_pos
+      msg(ori,line,n_pos, status[ori][line]["generated"])
+    color_possible = np.transpose(color_possible, axes=(1,0,2))
+        
+  # If no generation was successful - we have to generate the smallest one
+  if not generated:
+    ori0 = -1
+    line0 = -1
+    count0 = 1e10
+    for ori, pos0 in status.items():
+      for line, status0 in pos0.items():
+        if not status0["generated"] and status0["count"] < count0:
+          ori0 = ori
+          line0 = line
+          count0 = status0["count"]
+    if ori0 == 1:
+      color_possible = np.transpose(color_possible, axes=(1,0,2))
+    print("No line was below the generate limit",limit_generate)
+    len_line = len(status[1-ori0])
+    block_colors  = tuple(status[ori0][line0]["block_colors"])
+    block_lengths = tuple(status[ori0][line0]["block_lengths"])
+    info = color_possible[:, line0, :]
+    status[ori0][line0]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+    status[ori0][line0]["generated"     ] = True
+    msg(ori0,line0,count0,True)
+    generated = True
+    if ori0 == 1:
+      color_possible = np.transpose(color_possible, axes=(1,0,2))
+  
+  return color_possible, generated
+
+def solve_iteration(inp, color_possible, it, generated, worth_checking):
+  """Perform one iteration of the solving algorithm."""
+  print("\nIteration",it)
+  
+  # Refine existing solutions
+  color_possible, old, worth_checking = refine_solutions(inp, color_possible, generated, worth_checking)
+  
+  if inp["plot"]:
+    plot(inp["desc"], it, color_possible, inp["colors"], 0)
+  
+  generated = False
+    
+  # No updates? Generate new solutions
+  if np.all(old == color_possible):
+    color_possible, generated = generate_new_solutions(inp, color_possible)
+  
+  return color_possible, generated, worth_checking
 def solve(inp):
+  """Main solving loop - coordinates iteration, refinement, and generation."""
   x = inp["x"]
   y = inp["y"]
   n_colors = inp["n_colors"]
   status = inp["status"]
-  limit_generate = inp["limit_generate"]
   
   # Initialize color_possible from sweeping the input from left to right, top to bottom
   # It creates simple restrictions even from lines that were only counted
@@ -45,103 +163,9 @@ def solve(inp):
   
   it = 0
   generated = True
-  worth_checking = None # Warning as not defined
+  worth_checking = None
+  
   while np.any(np.sum(color_possible, axis=2)>1):
-    
     it += 1
-    print("\nIteration",it)
-    
-    old = color_possible.copy()
-    for ori, pos0 in status.items():
-      changed = color_possible.copy()
-      for idx, status0 in pos0.items():      
-        if not status0["generated"]:
-          continue
-              
-        if not generated and not worth_checking[idx]:
-          #msg(ori, idx, status0["count"], "No relevant changes, same at   ")
-          continue
-        
-        # Remove lines in pos, depending on solution
-        possible_lines0 = status0["possible_lines"]
-        old_count = status0["count"]
-        for color in range(n_colors):
-          for idx2, val in enumerate(color_possible[:,idx,color]):
-            if val == 0:
-              keep = possible_lines0[:,idx2] != color
-              possible_lines0 = possible_lines0[keep,:]
-        status0["count"] = len(possible_lines0)
-        status0["possible_lines"] = possible_lines0
-        
-        msg(ori,idx,status0["count"],"Reduced to",old_count)
-        
-        # Update color_possible
-        _, n2 = possible_lines0.shape
-        allowed_colors = [np.unique(possible_lines0[:,i]) for i in range(n2)]
-        for idx2, allowed_colors0 in enumerate(allowed_colors):
-          for color in range(n_colors):
-            if color not in allowed_colors0:
-              color_possible[idx2,idx,color] = 0
-      changed2 = color_possible.copy()
-      
-      worth_checking = np.any(changed != changed2, axis = (1,2))
-      
-      color_possible = np.transpose(color_possible, axes=(1,0,2))
-    
-    if inp["plot"]:
-      plot(inp["desc"], it, color_possible, inp["colors"], 0)
-    
-    generated = False
-      
-    # No updates?
-    if np.all(old == color_possible):
-      print("\nNo update to color_possible: Generate new solutions")
-          
-      for ori, pos0 in status.items():
-        len_line = len(status[1-ori])
-        for line, status0 in pos0.items():
-          if status[ori][line]["generated"]:
-            continue
-          block_colors  = tuple(status0["block_colors"])
-          block_lengths = tuple(status0["block_lengths"])
-          
-          info = color_possible[:, line, :]
-          n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
-          
-          if n_pos < limit_generate:
-            status[ori][line]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
-            status[ori][line]["generated"     ] = True
-            status[ori][line]["count"         ] = n_pos
-            generated = True
-          else:
-            status[ori][line]["possible_lines"] = None
-            status[ori][line]["generated"     ] = False
-            status[ori][line]["count"         ] = n_pos
-          msg(ori,line,n_pos, status[ori][line]["generated"])
-        color_possible = np.transpose(color_possible, axes=(1,0,2))
-            
-      # If no generation was successful - we have to generate the smallest one
-      if not generated:
-        ori0 = -1
-        line0 = -1
-        count0 = 1e10
-        for ori, pos0 in status.items():
-          for line, status0 in pos0.items():
-            if not status0["generated"] and status0["count"] < count0:
-              ori0 = ori
-              line0 = line
-              count0 = status0["count"]
-        if ori0 == 1:
-          color_possible = np.transpose(color_possible, axes=(1,0,2))
-        print("No line was below the generate limit",limit_generate)
-        len_line = len(status[1-ori0])
-        block_colors  = tuple(status[ori0][line0]["block_colors"])
-        block_lengths = tuple(status[ori0][line0]["block_lengths"])
-        info = color_possible[:, line0, :]
-        status[ori0][line0]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
-        status[ori0][line0]["generated"     ] = True
-        msg(ori0,line0,count0,True)
-        generated = True
-        if ori0 == 1:
-          color_possible = np.transpose(color_possible, axes=(1,0,2))    
+    color_possible, generated, worth_checking = solve_iteration(inp, color_possible, it, generated, worth_checking)    
     
