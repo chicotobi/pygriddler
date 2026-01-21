@@ -64,8 +64,8 @@ def translate_raw_to_json(id0):
   colors = [colors[i] for i in used_colors]
   
   status = {}
-  status[0] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_v)}
-  status[1] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_h)}
+  status["vertical"] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_v)}
+  status["horizontal"] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_h)}
   
   x = len(inp_v)
   y = len(inp_h)
@@ -104,11 +104,11 @@ def get_input(inp):
     # Translate to json
     puzzle_data = translate_raw_to_json(id0)
   
-  # Convert status keys from strings to integers (JSON converts int keys to strings)
-  if isinstance(list(puzzle_data["status"].keys())[0], str):
-    puzzle_data["status"] = {int(k): v for k, v in puzzle_data["status"].items()}
-    for k in puzzle_data["status"]:
-      puzzle_data["status"][k] = {int(idx): data for idx, data in puzzle_data["status"][k].items()}
+  # Convert line index keys from strings to integers (JSON converts int keys to strings)
+  for ori_key in ["vertical", "horizontal"]:
+    if ori_key in puzzle_data["status"]:
+      if isinstance(list(puzzle_data["status"][ori_key].keys())[0], str):
+        puzzle_data["status"][ori_key] = {int(idx): data for idx, data in puzzle_data["status"][ori_key].items()}
   
   inp.update(puzzle_data)
   return inp

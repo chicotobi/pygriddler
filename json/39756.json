@@ -2,7 +2,7 @@
   "id0": 39756,
   "desc": "Beautiful Eye 35 x 25 x 7\n39756",
   "status": {
-    "0": {
+    "vertical": {
       "0": {
         "block_colors": [
           1,
@@ -840,7 +840,7 @@
         ]
       }
     },
-    "1": {
+    "horizontal": {
       "0": {
         "block_colors": [
           1,

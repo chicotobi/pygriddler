@@ -15,6 +15,8 @@ def nice_number(n):
   return s2
 
 def msg(ori, line, n, status, nold = None):
+  ori = {"vertical": 0, "horizontal": 1}[ori]
+  
   if type(status) is str:
     s3 = status
   elif status:
@@ -37,7 +39,7 @@ def msg(ori, line, n, status, nold = None):
 def plot(title, iteration, color_possible, colors, ori):
   
   plt.clf()
-  if ori == 1:    
+  if ori == "horizontal":    
     color_possible = np.transpose(color_possible, axes=(1,0,2))
       
   colors = ['808080'] + colors

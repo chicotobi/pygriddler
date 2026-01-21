@@ -8,8 +8,9 @@ from generators import generate_color_possible
 def initialize(inp):
   status = inp["status"]
   limit_generate = inp["limit_generate"]
+  other_ori = {"vertical": "horizontal", "horizontal": "vertical"}
   for ori, tmp in status.items():
-    len_line = len(status[1-ori])
+    len_line = len(status[other_ori[ori]])
     for line, status0 in tmp.items():
       block_colors  = tuple(status0["block_colors"])
       block_lengths = tuple(status0["block_lengths"])
@@ -72,11 +73,12 @@ def generate_new_solutions(inp, color_possible):
   status = inp["status"]
   limit_generate = inp["limit_generate"]
   generated = False
+  other_ori = {"vertical": "horizontal", "horizontal": "vertical"}
   
   print("\nNo update to color_possible: Generate new solutions")
       
   for ori, pos0 in status.items():
-    len_line = len(status[1-ori])
+    len_line = len(status[other_ori[ori]])
     for line, status0 in pos0.items():
       if status[ori][line]["generated"]:
         continue
@@ -109,10 +111,10 @@ def generate_new_solutions(inp, color_possible):
           ori0 = ori
           line0 = line
           count0 = status0["count"]
-    if ori0 == 1:
+    if ori0 == "horizontal":
       color_possible = np.transpose(color_possible, axes=(1,0,2))
     print("No line was below the generate limit",limit_generate)
-    len_line = len(status[1-ori0])
+    len_line = len(status[other_ori[ori0]])
     block_colors  = tuple(status[ori0][line0]["block_colors"])
     block_lengths = tuple(status[ori0][line0]["block_lengths"])
     info = color_possible[:, line0, :]
@@ -120,7 +122,7 @@ def generate_new_solutions(inp, color_possible):
     status[ori0][line0]["generated"     ] = True
     msg(ori0,line0,count0,True)
     generated = True
-    if ori0 == 1:
+    if ori0 == "horizontal":
       color_possible = np.transpose(color_possible, axes=(1,0,2))
   
   return color_possible, generated
@@ -148,12 +150,13 @@ def solve(inp):
   y = inp["y"]
   n_colors = inp["n_colors"]
   status = inp["status"]
+  other_ori = {"vertical": "horizontal", "horizontal": "vertical"}
   
   # Initialize color_possible from sweeping the input from left to right, top to bottom
   # It creates simple restrictions even from lines that were only counted
   color_possible = np.ones((y,x,n_colors))
   for ori, tmp in status.items():
-    len_line = len(status[1-ori])
+    len_line = len(status[other_ori[ori]])
     for line, status0 in tmp.items():
       block_colors  = tuple(status0["block_colors"])
       block_lengths = tuple(status0["block_lengths"])
