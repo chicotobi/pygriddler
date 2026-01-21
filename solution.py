@@ -1,4 +1,6 @@
 import numpy as np
+import os.path
+import json
 
 from utils import plot, msg, totuple
 from generators import generate, generate_count
@@ -170,5 +172,26 @@ def solve(inp):
   
   while np.any(np.sum(color_possible, axis=2)>1):
     it += 1
-    color_possible, generated, worth_checking = solve_iteration(inp, color_possible, it, generated, worth_checking)    
+    color_possible, generated, worth_checking = solve_iteration(inp, color_possible, it, generated, worth_checking)
+  
+  # Save solution
+  solution_file = os.path.join('solutions', 'python', str(inp["id0"]) + '.npy')
+  np.save(solution_file, color_possible)
+  
+  # Also save as JSON with the solution grid
+  solution = np.argmax(color_possible, axis=2)
+  solution_json = os.path.join('solutions', 'python', str(inp["id0"]) + '.json')
+  with open(solution_json, 'w') as f:
+    json.dump({
+      "id0": inp["id0"],
+      "desc": inp["desc"],
+      "solution": solution.tolist(),
+      "colors": inp["colors"]
+    }, f, indent=2)
+  
+  # Save PNG of final solution
+  plot(inp["desc"], "FINAL", color_possible, inp["colors"], 0)
+  png_file = os.path.join('solutions', 'python','png', str(inp["id0"]) + '.png')
+  import matplotlib.pyplot as plt
+  plt.savefig(png_file, bbox_inches='tight', dpi=150)    
     
