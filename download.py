@@ -46,13 +46,13 @@ def download_and_write_file(id0):
   s2 = '&_gpuzzles_WAR_puzzles_lite=false&_gpuzzles_WAR_puzzles_name=touchScreen'
   link = s1 + str(id0) + s2
   s = str(urllib.request.urlopen(link).read())
-  f = open(str(id0),'w')
+  f = open(os.path.join('raw', str(id0)),'w')
   f.write(s)
   f.close()
   
 def get_input(inp):
   id0 = get_id(inp)
-  fname = str(id0)
+  fname = os.path.join('raw', str(id0))
   if not os.path.isfile(fname):
     download_and_write_file(id0)
   
