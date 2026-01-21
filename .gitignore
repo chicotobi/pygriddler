@@ -1,9 +1,6 @@
 __pycache__
 restats
 
-# Downloaded puzzle files (numeric names)
-[0-9]*
-
 # C++ build artifacts
 cpp/build/
 cpp/pybind11/
@@ -12,13 +9,8 @@ cpp/pybind11/
 *.pyd
 *.so
 
-# Test files
-test_simple_py.py
-test_real_example.py
-
 # Python virtual environment
 .venv/
-venv/
 
 # Python package build artifacts
 *.egg-info/

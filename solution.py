@@ -6,91 +6,151 @@ from generators import generate_with_info, generate_count_with_info
 from generators import generate_color_possible
 
 def initialize(inp, verbose=True):
-  status = inp["status"]
+  h_constraints = inp["h_constraints"]
+  v_constraints = inp["v_constraints"]
   limit_generate = inp["limit_generate"]
-  for ori, tmp in status.items():
-    len_line = len(status[1-ori])
-    for line, status0 in tmp.items():
-      block_colors  = tuple(status0["block_colors"])
-      block_lengths = tuple(status0["block_lengths"])
-      n_pos = generate_count(len_line, block_lengths, block_colors, -1)
-      if n_pos < limit_generate:
-        status0["possible_lines"] = generate(len_line, block_lengths, block_colors, -1)
-        status0["generated"     ] = True
-        status0["count"         ] = n_pos
-      else:
-        status0["possible_lines"] = None
-        status0["generated"     ] = False
-        status0["count"         ] = n_pos
-      msg(ori,line,n_pos,status0["generated"],verbose=verbose)
+  
+  # Process horizontal constraints (rows)
+  for line, constraint in enumerate(h_constraints):
+    len_line = inp["width"]
+    block_colors  = tuple(constraint["block_colors"])
+    block_lengths = tuple(constraint["block_lengths"])
+    n_pos = generate_count(len_line, block_lengths, block_colors, -1)
+    if n_pos < limit_generate:
+      constraint["possible_lines"] = generate(len_line, block_lengths, block_colors, -1)
+      constraint["generated"     ] = True
+      constraint["count"         ] = n_pos
+    else:
+      constraint["possible_lines"] = None
+      constraint["generated"     ] = False
+      constraint["count"         ] = n_pos
+    msg(1, line, n_pos, constraint["generated"], verbose=verbose)
+  
+  # Process vertical constraints (columns)
+  for line, constraint in enumerate(v_constraints):
+    len_line = inp["height"]
+    block_colors  = tuple(constraint["block_colors"])
+    block_lengths = tuple(constraint["block_lengths"])
+    n_pos = generate_count(len_line, block_lengths, block_colors, -1)
+    if n_pos < limit_generate:
+      constraint["possible_lines"] = generate(len_line, block_lengths, block_colors, -1)
+      constraint["generated"     ] = True
+      constraint["count"         ] = n_pos
+    else:
+      constraint["possible_lines"] = None
+      constraint["generated"     ] = False
+      constraint["count"         ] = n_pos
+    msg(0, line, n_pos, constraint["generated"], verbose=verbose)
 
 def solve(inp, verbose=True):
-  x = inp["x"]
-  y = inp["y"]
+  width = inp["width"]
+  height = inp["height"]
   n_colors = inp["n_colors"]
-  status = inp["status"]
+  h_constraints = inp["h_constraints"]
+  v_constraints = inp["v_constraints"]
   limit_generate = inp["limit_generate"]
   
   # Initialize color_possible from sweeping the input from left to right, top to bottom
   # It creates simple restrictions even from lines that were only counted
-  color_possible = np.ones((y,x,n_colors))
-  for ori, tmp in status.items():
-    len_line = len(status[1-ori])
-    for line, status0 in tmp.items():
-      block_colors  = tuple(status0["block_colors"])
-      block_lengths = tuple(status0["block_lengths"])
-      ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
-      color_possible[:,line,:] = np.logical_and(color_possible[:,line,:], ans)
-    color_possible = np.transpose(color_possible, axes=(1,0,2))
+  color_possible = np.ones((height, width, n_colors))
+  
+  # Process horizontal constraints (rows)
+  for line, constraint in enumerate(h_constraints):
+    len_line = width
+    block_colors  = tuple(constraint["block_colors"])
+    block_lengths = tuple(constraint["block_lengths"])
+    ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
+    color_possible[line, :, :] = np.logical_and(color_possible[line, :, :], ans)
+  
+  # Process vertical constraints (columns)
+  for line, constraint in enumerate(v_constraints):
+    len_line = height
+    block_colors  = tuple(constraint["block_colors"])
+    block_lengths = tuple(constraint["block_lengths"])
+    ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
+    color_possible[:, line, :] = np.logical_and(color_possible[:, line, :], ans)
   
   it = 0
   generated = True
-  worth_checking = None # Warning as not defined
-  while np.any(np.sum(color_possible, axis=2)>1):
+  worth_checking_h = None
+  worth_checking_v = None
+  
+  while np.any(np.sum(color_possible, axis=2) > 1):
     
     it += 1
     if verbose:
-      print("\nIteration",it)
+      print("\nIteration", it)
     
     old = color_possible.copy()
-    for ori, pos0 in status.items():
-      changed = color_possible.copy()
-      for idx, status0 in pos0.items():      
-        if not status0["generated"]:
-          continue
-              
-        if not generated and worth_checking is not None and not worth_checking[idx]:
-          #msg(ori, idx, status0["count"], "No relevant changes, same at   ")
-          continue
-        
-        # Remove lines in pos, depending on solution
-        possible_lines0 = status0["possible_lines"]
-        old_count = status0["count"]
-        for color in range(n_colors):
-          for idx2, val in enumerate(color_possible[:,idx,color]):
-            if val == 0:
-              keep = possible_lines0[:,idx2] != color
-              possible_lines0 = possible_lines0[keep,:]
-        status0["count"] = len(possible_lines0)
-        status0["possible_lines"] = possible_lines0
-        
-        msg(ori,idx,status0["count"],"Reduced to",old_count,verbose=verbose)
-        
-        # Update color_possible
-        _, n2 = possible_lines0.shape
-        allowed_colors = [np.unique(possible_lines0[:,i]) for i in range(n2)]
-        for idx2, allowed_colors0 in enumerate(allowed_colors):
-          for color in range(n_colors):
-            if color not in allowed_colors0:
-              color_possible[idx2,idx,color] = 0
-      changed2 = color_possible.copy()
-      
-      worth_checking = np.any(changed != changed2, axis = (1,2))
-      
-      color_possible = np.transpose(color_possible, axes=(1,0,2))
     
-    if inp["plot"]:
-      plot(inp["desc"], it, color_possible, inp["colors"], 0)
+    # Process horizontal constraints (rows)
+    changed = color_possible.copy()
+    for idx, constraint in enumerate(h_constraints):
+      if not constraint["generated"]:
+        continue
+            
+      if not generated and not worth_checking_h[idx]:
+        continue
+      
+      # Remove lines in pos, depending on solution
+      possible_lines0 = constraint["possible_lines"]
+      old_count = constraint["count"]
+      for color in range(n_colors):
+        for idx2, val in enumerate(color_possible[idx, :, color]):
+          if val == 0:
+            keep = possible_lines0[:, idx2] != color
+            possible_lines0 = possible_lines0[keep, :]
+      constraint["count"] = len(possible_lines0)
+      constraint["possible_lines"] = possible_lines0
+      
+      msg(1, idx, constraint["count"], "Reduced to", old_count, verbose=verbose)
+      
+      # Update color_possible
+      _, n2 = possible_lines0.shape
+      allowed_colors = [np.unique(possible_lines0[:, i]) for i in range(n2)]
+      for idx2, allowed_colors0 in enumerate(allowed_colors):
+        for color in range(n_colors):
+          if color not in allowed_colors0:
+            color_possible[idx, idx2, color] = 0
+    
+    changed2 = color_possible.copy()
+    worth_checking_h = np.any(changed != changed2, axis=(1, 2))
+    
+    # Process vertical constraints (columns)
+    changed = color_possible.copy()
+    for idx, constraint in enumerate(v_constraints):
+      if not constraint["generated"]:
+        continue
+            
+      if not generated and worth_checking_v is not None and not worth_checking_v[idx]:
+        continue
+      
+      # Remove lines in pos, depending on solution
+      possible_lines0 = constraint["possible_lines"]
+      old_count = constraint["count"]
+      for color in range(n_colors):
+        for idx2, val in enumerate(color_possible[:, idx, color]):
+          if val == 0:
+            keep = possible_lines0[:, idx2] != color
+            possible_lines0 = possible_lines0[keep, :]
+      constraint["count"] = len(possible_lines0)
+      constraint["possible_lines"] = possible_lines0
+      
+      msg(0, idx, constraint["count"], "Reduced to", old_count, verbose=verbose)
+      
+      # Update color_possible
+      _, n2 = possible_lines0.shape
+      allowed_colors = [np.unique(possible_lines0[:, i]) for i in range(n2)]
+      for idx2, allowed_colors0 in enumerate(allowed_colors):
+        for color in range(n_colors):
+          if color not in allowed_colors0:
+            color_possible[idx2, idx, color] = 0
+    
+    changed2 = color_possible.copy()
+    worth_checking_v = np.any(changed != changed2, axis=(0, 2))
+    
+    if inp.get("plot", False):
+      plot(f"Puzzle {inp['id']}", it, color_possible, inp["colors"], 0)
     
     generated = False
       
@@ -99,54 +159,88 @@ def solve(inp, verbose=True):
       if verbose:
         print("\nNo update to color_possible: Generate new solutions")
           
-      for ori, pos0 in status.items():
-        len_line = len(status[1-ori])
-        for line, status0 in pos0.items():
-          if status[ori][line]["generated"]:
-            continue
-          block_colors  = tuple(status0["block_colors"])
-          block_lengths = tuple(status0["block_lengths"])
-          
-          info = color_possible[:, line, :]
-          n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
-          
-          if n_pos < limit_generate:
-            status[ori][line]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
-            status[ori][line]["generated"     ] = True
-            status[ori][line]["count"         ] = n_pos
-            generated = True
-          else:
-            status[ori][line]["possible_lines"] = None
-            status[ori][line]["generated"     ] = False
-            status[ori][line]["count"         ] = n_pos
-          msg(ori,line,n_pos, status[ori][line]["generated"],verbose=verbose)
-        color_possible = np.transpose(color_possible, axes=(1,0,2))
+      # Try to generate horizontal constraints
+      for line, constraint in enumerate(h_constraints):
+        if constraint["generated"]:
+          continue
+        block_colors  = tuple(constraint["block_colors"])
+        block_lengths = tuple(constraint["block_lengths"])
+        
+        info = color_possible[line, :, :]
+        n_pos = generate_count_with_info(width, block_lengths, block_colors, -1, totuple(info))
+        
+        if n_pos < limit_generate:
+          constraint["possible_lines"] = generate_with_info(width, block_lengths, block_colors, -1, totuple(info))
+          constraint["generated"] = True
+          constraint["count"] = n_pos
+          generated = True
+        else:
+          constraint["possible_lines"] = None
+          constraint["generated"] = False
+          constraint["count"] = n_pos
+        msg(1, line, n_pos, constraint["generated"], verbose=verbose)
+      
+      # Try to generate vertical constraints
+      for line, constraint in enumerate(v_constraints):
+        if constraint["generated"]:
+          continue
+        block_colors  = tuple(constraint["block_colors"])
+        block_lengths = tuple(constraint["block_lengths"])
+        
+        info = color_possible[:, line, :]
+        n_pos = generate_count_with_info(height, block_lengths, block_colors, -1, totuple(info))
+        
+        if n_pos < limit_generate:
+          constraint["possible_lines"] = generate_with_info(height, block_lengths, block_colors, -1, totuple(info))
+          constraint["generated"] = True
+          constraint["count"] = n_pos
+          generated = True
+        else:
+          constraint["possible_lines"] = None
+          constraint["generated"] = False
+          constraint["count"] = n_pos
+        msg(0, line, n_pos, constraint["generated"], verbose=verbose)
             
       # If no generation was successful - we have to generate the smallest one
       if not generated:
-        ori0 = -1
-        line0 = -1
-        count0 = 1e10
-        for ori, pos0 in status.items():
-          for line, status0 in pos0.items():
-            if not status0["generated"] and status0["count"] < count0:
-              ori0 = ori
-              line0 = line
-              count0 = status0["count"]
-        if ori0 == 1:
-          color_possible = np.transpose(color_possible, axes=(1,0,2))
         if verbose:
-          print("No line was below the generate limit",limit_generate)
-        len_line = len(status[1-ori0])
-        block_colors  = tuple(status[ori0][line0]["block_colors"])
-        block_lengths = tuple(status[ori0][line0]["block_lengths"])
-        info = color_possible[:, line0, :]
-        status[ori0][line0]["possible_lines"] = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
-        status[ori0][line0]["generated"     ] = True
-        msg(ori0,line0,count0,True,verbose=verbose)
-        generated = True
-        if ori0 == 1:
-          color_possible = np.transpose(color_possible, axes=(1,0,2))    
+          print("No line was below the generate limit", limit_generate)
+        
+        # Find the smallest count
+        min_count = 1e10
+        min_is_h = True
+        min_line = -1
+        
+        for line, constraint in enumerate(h_constraints):
+          if not constraint["generated"] and constraint["count"] < min_count:
+            min_is_h = True
+            min_line = line
+            min_count = constraint["count"]
+        
+        for line, constraint in enumerate(v_constraints):
+          if not constraint["generated"] and constraint["count"] < min_count:
+            min_is_h = False
+            min_line = line
+            min_count = constraint["count"]
+        
+        if min_is_h:
+          constraint = h_constraints[min_line]
+          block_colors  = tuple(constraint["block_colors"])
+          block_lengths = tuple(constraint["block_lengths"])
+          info = color_possible[min_line, :, :]
+          constraint["possible_lines"] = generate_with_info(width, block_lengths, block_colors, -1, totuple(info))
+          constraint["generated"] = True
+          msg(1, min_line, min_count, True, verbose=verbose)
+        else:
+          constraint = v_constraints[min_line]
+          block_colors  = tuple(constraint["block_colors"])
+          block_lengths = tuple(constraint["block_lengths"])
+          info = color_possible[:, min_line, :]
+          constraint["possible_lines"] = generate_with_info(height, block_lengths, block_colors, -1, totuple(info))
+          constraint["generated"] = True
+          msg(0, min_line, min_count, True, verbose=verbose)
+        
+        generated = True    
 
   return create_data_from_color_possible(color_possible)
     

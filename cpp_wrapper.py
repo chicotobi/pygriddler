@@ -2,7 +2,6 @@
 Python wrapper for C++ nonogram solver.
 Provides compatibility with existing Python code.
 """
-import numpy as np
 
 # Try to import C++ module, fall back to Python if not available
 try:
@@ -27,11 +26,11 @@ def create_cpp_solver(inp):
     """
     if not HAS_CPP:
         return None
-    
+
     x = inp["x"]
     y = inp["y"]
     n_colors = inp["n_colors"]
-    
+
     # Extract constraints for horizontal (orientation 0) and vertical (orientation 1)
     h_constraints = []
     v_constraints = []

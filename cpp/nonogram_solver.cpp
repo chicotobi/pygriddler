@@ -126,11 +126,17 @@ namespace nonogram
                                                              h_constraints_[y].block_colors);
                 h_states_[y].generated = true;
                 h_states_[y].count = count;
+                
+                if (verbose_)
+                    printf("O0L%03d Generated  %9d\n", y, count);
             }
             else
             {
                 h_states_[y].generated = false;
                 h_states_[y].count = count;
+                
+                if (verbose_)
+                    printf("O0L%03d Counted    %9d\n", y, count);
             }
         }
 
@@ -146,11 +152,17 @@ namespace nonogram
                                                              v_constraints_[x].block_colors);
                 v_states_[x].generated = true;
                 v_states_[x].count = count;
+                
+                if (verbose_)
+                    printf("O1L%03d Generated  %9d\n", x, count);
             }
             else
             {
                 v_states_[x].generated = false;
                 v_states_[x].count = count;
+                
+                if (verbose_)
+                    printf("O1L%03d Counted    %9d\n", x, count);
             }
         }
     }
@@ -190,18 +202,9 @@ namespace nonogram
                     std::vector<std::vector<float>> info(width_);
                     for (int x = 0; x < width_; ++x)
                     {
-                        info[x] = color_possible_[y][x];
-                    }
-
-                    int count = h_states_[y].count;
-                    if (count < limit_generate_)
-                    {
-                        h_states_[y].possible_lines = generate_lines_with_info(
-                            width_, h_constraints_[y].block_lengths,
-                            h_constraints_[y].block_colors, info);
-                        h_states_[y].generated = true;
-                        h_states_[y].count = h_states_[y].possible_lines.size();
-                        generated_any = true;
+                        
+                        if (verbose_)
+                            printf("O0L%03d Generated  %9d\n", y, h_states_[y].count);
                     }
                 }
 
@@ -225,6 +228,9 @@ namespace nonogram
                         v_states_[x].generated = true;
                         v_states_[x].count = v_states_[x].possible_lines.size();
                         generated_any = true;
+                        
+                        if (verbose_)
+                            printf("O1L%03d Generated  %9d\n", x, v_states_[x].count);
                     }
                 }
 
@@ -308,10 +314,30 @@ namespace nonogram
             if (!h_states_[y].generated)
                 continue;
 
+            int old_count = h_states_[y].count;
+            
             // Filter lines based on current constraints
             PossibleLines filtered = filter_lines(0, y, h_states_[y].possible_lines);
             h_states_[y].possible_lines = filtered;
             h_states_[y].count = filtered.size();
+
+            // Output status like Python solver
+            if (verbose_)
+            {
+                std::string status;
+                if (h_states_[y].count == 1)
+                    status = "Finished  ";
+                else if (h_states_[y].count == old_count)
+                    status = "Same at   ";
+                else
+                    status = "Reduced to";
+                
+                printf("O0L%03d %s %9d", y, status.c_str(), h_states_[y].count);
+                if (h_states_[y].count != old_count && h_states_[y].count > 1)
+                    printf(" from %9d", old_count);
+                printf("\n");
+                fflush(stdout);
+            }
 
             // Update color_possible based on remaining lines
             update_color_possible(0, y, filtered);
@@ -323,10 +349,30 @@ namespace nonogram
             if (!v_states_[x].generated)
                 continue;
 
+            int old_count = v_states_[x].count;
+            
             // Filter lines based on current constraints
             PossibleLines filtered = filter_lines(1, x, v_states_[x].possible_lines);
             v_states_[x].possible_lines = filtered;
             v_states_[x].count = filtered.size();
+
+            // Output status like Python solver
+            if (verbose_)
+            {
+                std::string status;
+                if (v_states_[x].count == 1)
+                    status = "Finished  ";
+                else if (v_states_[x].count == old_count)
+                    status = "Same at   ";
+                else
+                    status = "Reduced to";
+                
+                printf("O1L%03d %s %9d", x, status.c_str(), v_states_[x].count);
+                if (v_states_[x].count != old_count && v_states_[x].count > 1)
+                    printf(" from %9d", old_count);
+                printf("\n");
+                fflush(stdout);
+            }
 
             // Update color_possible based on remaining lines
             update_color_possible(1, x, filtered);

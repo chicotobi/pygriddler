@@ -48,15 +48,14 @@ def download_and_write_file(id0):
   s2 = '&_gpuzzles_WAR_puzzles_lite=false&_gpuzzles_WAR_puzzles_name=touchScreen'
   link = s1 + str(id0) + s2
   s = str(urllib.request.urlopen(link).read())
-  f = open(str(id0),'w')
+  fname = os.path.join('raw_format', str(id0))
+  f = open(fname,'w')
   f.write(s)
   f.close()
-  
-def get_input(inp):
-  id0 = get_id(inp)
-  fname = str(id0)
-  if not os.path.isfile(fname):
-    download_and_write_file(id0)
+
+def parse_raw_file(id0):
+  """Parse raw puzzle file and return components"""
+  fname = os.path.join('raw_format', str(id0))
   
   with open(fname, 'r') as f:
     s = f.read().split('\\n')
@@ -67,20 +66,6 @@ def get_input(inp):
   colors = eval('[' + s[57].strip('  ').strip('\\t') + ']')
   colors = [colors[i] for i in used_colors]
   
-  status = {}
-  status[0] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_v)}
-  status[1] = { idx: {"block_colors":[i[0]-1 for i in j], "block_lengths":[i[1] for i in j]} for idx, j in enumerate(inp_h)}
-  
-  x = len(inp_v)
-  y = len(inp_h)
-  n_colors= len(colors)
-  
-  inp["id0"] = id0
-  inp["desc"] = get_desc(id0, x, y, n_colors)
-  inp["status"] = status
-  inp["colors"] = colors
-  inp["n_colors"] = len(colors)
-  inp["x"] = x
-  inp["y"] = y
+  return inp_v, inp_h, colors
   
   return inp
