@@ -45,9 +45,19 @@ namespace nonogram
         // Get current solution state (for visualization)
         std::vector<int> get_current_state() const;
 
+        // Getters for dimensions
+        int get_width() const { return width_; }
+        int get_height() const { return height_; }
+
     private:
         // Core solver iteration
         bool solve_iteration();
+
+        // Generate initial color_possible constraints for a line
+        std::vector<std::vector<float>> generate_initial_color_possible(
+            int length,
+            const std::vector<int> &block_lengths,
+            const std::vector<int> &block_colors);
 
         // Generate possible lines for a constraint (recursive implementation)
         void generate_lines_recursive(int length,

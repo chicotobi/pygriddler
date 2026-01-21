@@ -7,7 +7,7 @@ plt.ion()
 inp = {}
 inp["limit_generate"] = 5_000_000
 inp["plot"] = True
-inp["example"] = 293941
+inp["example"] = 5
 
 get_input(inp)
 initialize(inp)

@@ -30,9 +30,88 @@ namespace nonogram
         v_states_.resize(width_);
     }
 
+    std::vector<std::vector<float>> NonogramSolver::generate_initial_color_possible(
+        int length,
+        const std::vector<int> &block_lengths,
+        const std::vector<int> &block_colors)
+    {
+        std::vector<std::vector<float>> color_possible(length, std::vector<float>(n_colors_, 0.0f));
+        
+        // Zero (white) is always possible
+        for (int i = 0; i < length; ++i)
+        {
+            color_possible[i][0] = 1.0f;
+        }
+        
+        // Edge case: if no blocks, only white is possible
+        if (block_lengths.empty())
+        {
+            return color_possible;
+        }
+        
+        // Create compressed representation of the line
+        std::vector<int> line;
+        for (size_t i = 0; i < block_lengths.size(); ++i)
+        {
+            if (i > 0 && block_colors[i] == block_colors[i-1])
+            {
+                line.push_back(0); // Mandatory white space between same-colored blocks
+            }
+            for (int j = 0; j < block_lengths[i]; ++j)
+            {
+                line.push_back(block_colors[i]);
+            }
+        }
+        
+        // For each possible starting position
+        for (int i = 0; i <= length - (int)line.size(); ++i)
+        {
+            for (size_t j = 0; j < line.size(); ++j)
+            {
+                int c = line[j];
+                color_possible[i + j][c] = 1.0f;
+            }
+        }
+        
+        return color_possible;
+    }
+
     void NonogramSolver::initialize(int limit_generate)
     {
         limit_generate_ = limit_generate;
+
+        // Initial color_possible sweep (like Python's generate_color_possible)
+        // This creates simple constraints even for lines that are only counted
+        for (int y = 0; y < height_; ++y)
+        {
+            std::vector<std::vector<float>> line_color_possible = 
+                generate_initial_color_possible(width_, h_constraints_[y].block_lengths,
+                                                h_constraints_[y].block_colors);
+            // AND with existing color_possible
+            for (int x = 0; x < width_; ++x)
+            {
+                for (int c = 0; c < n_colors_; ++c)
+                {
+                    color_possible_[y][x][c] = color_possible_[y][x][c] * line_color_possible[x][c];
+                }
+            }
+        }
+
+        // Transpose and process vertical
+        for (int x = 0; x < width_; ++x)
+        {
+            std::vector<std::vector<float>> line_color_possible = 
+                generate_initial_color_possible(height_, v_constraints_[x].block_lengths,
+                                                v_constraints_[x].block_colors);
+            // AND with existing color_possible
+            for (int y = 0; y < height_; ++y)
+            {
+                for (int c = 0; c < n_colors_; ++c)
+                {
+                    color_possible_[y][x][c] = color_possible_[y][x][c] * line_color_possible[y][c];
+                }
+            }
+        }
 
         // Generate or count possible lines for each constraint
         for (int y = 0; y < height_; ++y)
@@ -81,7 +160,9 @@ namespace nonogram
         verbose_ = verbose;
 
         int iteration = 0;
-        while (!is_solved())
+        const int max_iterations = 1000;
+        
+        while (!is_solved() && iteration < max_iterations)
         {
             iteration++;
             if (verbose_)
@@ -207,6 +288,11 @@ namespace nonogram
                     }
                 }
             }
+        }
+
+        if (iteration >= max_iterations && !is_solved())
+        {
+            std::cout << "\nWarning: Reached maximum iterations (" << max_iterations << ") without solving puzzle" << std::endl;
         }
 
         return extract_solution();
@@ -339,16 +425,18 @@ namespace nonogram
             }
         }
     }
+
+    PossibleLines NonogramSolver::generate_lines(int length,
                                                  const std::vector<int> &block_lengths,
                                                  const std::vector<int> &block_colors,
                                                  int max_count)
-                                                 {
-                                                     PossibleLines lines;
-                                                     generate_lines_recursive(length, block_lengths, block_colors, -1, 0, LineArray(length, 0), lines);
-                                                     return lines;
-                                                 }
+    {
+        PossibleLines lines;
+        generate_lines_recursive(length, block_lengths, block_colors, -1, 0, LineArray(length, 0), lines);
+        return lines;
+    }
 
-                                                 void NonogramSolver::generate_lines_recursive(int length,
+    void NonogramSolver::generate_lines_recursive(int length,
                                                                                                const std::vector<int> &block_lengths,
                                                                                                const std::vector<int> &block_colors,
                                                                                                int previous_color,
@@ -559,101 +647,61 @@ namespace nonogram
                                                                                             block_colors[0], block_end, next, result, info);
                                                      }
                                                  }
-                                               const PossibleLines &possible_lines)
-                                               {
-                                                   // TODO: Update color_possible based on possible lines
-                                               }
 
-                                               PossibleLines NonogramSolver::filter_lines(int orientation, int line_idx,
-                                                                                          const PossibleLines &lines)
-                                               {
-                                                   // TODO: Filter lines based on color_possible constraints
-                                                   PossibleLines filtered;
-                                                   return filtered;
-                                               }
+    std::vector<int> NonogramSolver::extract_solution() const
+    {
+        std::vector<int> solution(width_ * height_);
 
-                                               std::vector<int> NonogramSolver::extract_solution() const
-                                               {
-                                                   std::vector<int> solution(width_ * height_);
+        for (int y = 0; y < height_; ++y)
+        {
+            for (int x = 0; x < width_; ++x)
+            {
+                int solved_color = -1;
+                int count_possible = 0;
 
-                                                   for (int y = 0; y < height_; ++y)
-                                                   {
-                                                       for (int x = 0; x < width_; ++x)
-                                                       {
-                                                           int solved_color = -1;
-                                                           int count_possible = 0;
+                for (int c = 0; c < n_colors_; ++c)
+                {
+                    if (color_possible_[y][x][c] > 0.5f)
+                    {
+                        solved_color = c;
+                        count_possible++;
+                    }
+                }
 
-                                                           for (int c = 0; c < n_colors_; ++c)
-                                                           {
-                                                               if (color_possible_[y][x][c] > 0.5f)
-                                                               {
-                                                                   solved_color = c;
-                                                                   count_possible++;
-                                                               }
-                                                           }
+                solution[y * width_ + x] = (count_possible == 1) ? solved_color : -1;
+            }
+        }
 
-                                                           solution[y * width_ + x] = (count_possible == 1) ? solved_color : -1;
-                                                       }
-                                                   }
+        return solution;
+    }
 
-                                                   return solution;
-                                               }
+    std::vector<int> NonogramSolver::get_current_state() const
+    {
+        return extract_solution();
+    }
 
-                                               std::vector<int> NonogramSolver::get_current_state() const
-                                               {
-                                                   return extract_solution();
-                                               }
-
-                                               bool NonogramSolver::is_solved() const
-                                               {
-                                                   // Check if all cells have exactly one possible color
-                                                   for (int y = 0; y < height_; ++y)
-                                                   {
-                                                       for (int x = 0; x < width_; ++x)
-                                                       {
-                                                           int count = 0;
-                                                           for (int c = 0; c < n_colors_; ++c)
-                                                           {
-                                                               if (color_possible_[y][x][c] > 0.5f)
-                                                               {
-                                                                   count++;
-                                                               }
-                                                           }
-                                                           if (count > 1)
-                                                           {
-                                                               return false;
-                                                           }
-                                                       }
-                                                   }
-                                                   return true;
-                                               }
-
-                                               bool NonogramSolver::is_solved() const
-                                               {
-                                                   for (int y = 0; y < height_; ++y)
-                                                   {
-                                                       for (int x = 0; x < width_; ++x)
-                                                       {
-                                                           if (color_possible_[y][x].size() != 1)
-                                                           {
-                                                               return false;
-                                                           }
-                                                       }
-                                                   }
-                                                   return true;
-                                               }
-
-                                               std::vector<int> NonogramSolver::extract_solution() const
-                                               {
-                                                   std::vector<int> solution(height_ * width_);
-                                                   for (int y = 0; y < height_; ++y)
-                                                   {
-                                                       for (int x = 0; x < width_; ++x)
-                                                       {
-                                                           solution[y * width_ + x] = static_cast<int>(color_possible_[y][x][0]);
-                                                       }
-                                                   }
-                                                   return solution;
-                                               }
+    bool NonogramSolver::is_solved() const
+    {
+        // Check if all cells have exactly one possible color
+        for (int y = 0; y < height_; ++y)
+        {
+            for (int x = 0; x < width_; ++x)
+            {
+                int count = 0;
+                for (int c = 0; c < n_colors_; ++c)
+                {
+                    if (color_possible_[y][x][c] > 0.5f)
+                    {
+                        count++;
+                    }
+                }
+                if (count != 1)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 } // namespace nonogram

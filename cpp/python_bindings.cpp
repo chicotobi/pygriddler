@@ -48,7 +48,8 @@ public:
         auto result = solver_->solve(verbose);
 
         // Convert to numpy array
-        auto arr = py::array_t<int>({solver_->get_height(), solver_->get_width()});
+        std::vector<size_t> shape = {static_cast<size_t>(solver_->get_height()), static_cast<size_t>(solver_->get_width())};
+        auto arr = py::array_t<int>(shape);
         auto buf = arr.request();
         int *ptr = static_cast<int *>(buf.ptr);
 
@@ -60,7 +61,8 @@ public:
     {
         auto result = solver_->get_current_state();
 
-        auto arr = py::array_t<int>({solver_->get_height(), solver_->get_width()});
+        std::vector<size_t> shape = {static_cast<size_t>(solver_->get_height()), static_cast<size_t>(solver_->get_width())};
+        auto arr = py::array_t<int>(shape);
         auto buf = arr.request();
         int *ptr = static_cast<int *>(buf.ptr);
 
