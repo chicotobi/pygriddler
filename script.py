@@ -21,7 +21,7 @@ plt.ion()
 inp = {}
 inp["limit_generate"] = 5_000_000
 inp["plot"] = True
-inp["example"] = 4
+inp["example"] = 8
 
 # Redirect stdout to file
 sys.stdout = open('output.txt', 'w')
