@@ -9,7 +9,7 @@ inp["limit_generate"] = 5_000_000
 inp["plot"] = True
 inp["example"] = 7
 
-get_input(inp)
+inp = get_input(inp)
 initialize(inp)
 solve(inp)
 

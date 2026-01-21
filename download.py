@@ -1,5 +1,6 @@
 import urllib.request
 import os.path
+import json
 
 def get_id(inp):  
   example = inp["example"]
@@ -49,14 +50,12 @@ def download_and_write_file(id0):
   f = open(os.path.join('raw', str(id0)),'w')
   f.write(s)
   f.close()
+
+def translate_raw_to_json(id0):
+  fname_raw = os.path.join('raw', str(id0))
+  fname_json = os.path.join('json', str(id0) + '.json')
   
-def get_input(inp):
-  id0 = get_id(inp)
-  fname = os.path.join('raw', str(id0))
-  if not os.path.isfile(fname):
-    download_and_write_file(id0)
-  
-  s = open(fname, 'r').read().split('\\n')
+  s = open(fname_raw, 'r').read().split('\\n')
     
   inp_v = eval('[' + s[66].strip('\\t') + ']')
   inp_h = eval('[' + s[69].strip('  ').strip('\\t') + ']')
@@ -70,14 +69,46 @@ def get_input(inp):
   
   x = len(inp_v)
   y = len(inp_h)
-  n_colors= len(colors)
+  n_colors = len(colors)
   
-  inp["id0"] = id0
-  inp["desc"] = get_desc(id0, x, y, n_colors)
-  inp["status"] = status
-  inp["colors"] = colors
-  inp["n_colors"] = len(colors)
-  inp["x"] = x
-  inp["y"] = y
+  puzzle_data = {
+    "id0": id0,
+    "desc": get_desc(id0, x, y, n_colors),
+    "status": status,
+    "colors": colors,
+    "n_colors": n_colors,
+    "x": x,
+    "y": y
+  }
   
+  with open(fname_json, 'w') as f:
+    json.dump(puzzle_data, f, indent=2)
+  
+  return puzzle_data
+  
+def get_input(inp):
+  id0 = get_id(inp)
+  fname_json = os.path.join('json', str(id0) + '.json')
+  fname_raw = os.path.join('raw', str(id0))
+  
+  # Check if puzzle is already translated in json
+  if os.path.isfile(fname_json):
+    with open(fname_json, 'r') as f:
+      puzzle_data = json.load(f)
+  else:
+    # Check if puzzle is already in raw
+    if not os.path.isfile(fname_raw):
+      # Download puzzle into raw
+      download_and_write_file(id0)
+    
+    # Translate to json
+    puzzle_data = translate_raw_to_json(id0)
+  
+  # Convert status keys from strings to integers (JSON converts int keys to strings)
+  if isinstance(list(puzzle_data["status"].keys())[0], str):
+    puzzle_data["status"] = {int(k): v for k, v in puzzle_data["status"].items()}
+    for k in puzzle_data["status"]:
+      puzzle_data["status"][k] = {int(idx): data for idx, data in puzzle_data["status"][k].items()}
+  
+  inp.update(puzzle_data)
   return inp
