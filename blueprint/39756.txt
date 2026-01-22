@@ -305,68 +305,6 @@ O1L022 Generated     .   .   .   .   . 16
 O1L023 Generated     .   .   .   .   . 10
 
 Iteration 11
-O0L000 Same at       .   .   .   .   .  8
-O0L001 Same at       .   .   .   .   .  5
-O0L002 Same at       .   .   .   .   .  8
-O0L003 Same at       .   .   .   .   . 14
-O0L004 Same at       .   .   .   .   . 15
-O0L005 Same at       .   .   .   .   .  8
-O0L006 Same at       .   .   .   .   .  9
-O0L007 Same at       .   .   .   .   .  9
-O0L008 Same at       .   .   .   .   . 10
-O0L009 Same at       .   .   .   .   .  1
-O0L010 Same at       .   .   .   .   . 28
-O0L011 Same at       .   .   .   .   . 10
-O0L012 Same at       .   .   .   .   . 10
-O0L013 Same at       .   .   .   .   .  3
-O0L014 Same at       .   .   .   .   .  1
-O0L015 Same at       .   .   .   .   .  1
-O0L016 Same at       .   .   .   .   .  1
-O0L017 Same at       .   .   .   .   .  1
-O0L018 Same at       .   .   .   .   .  2
-O0L019 Same at       .   .   .   .   .  1
-O0L020 Same at       .   .   .   .   .  3
-O0L021 Same at       .   .   .   .   .  6
-O0L022 Same at       .   .   .   .   .  2
-O0L023 Same at       .   .   .   .   . 11
-O0L024 Same at       .   .   .   .   . 15
-O0L025 Same at       .   .   .   .   . 18
-O0L026 Same at       .   .   .   .   .  4
-O0L027 Same at       .   .   .   .   .  6
-O0L028 Same at       .   .   .   .   .  2
-O0L029 Same at       .   .   .   .   .  5
-O0L030 Same at       .   .   .   .   .  1
-O0L031 Same at       .   .   .   .   .  1
-O0L032 Same at       .   .   .   .   .  3
-O0L033 Same at       .   .   .   .   .  1
-O0L034 Same at       .   .   .   .   .  1
-O1L000 Same at       .   .   .   .   .  1
-O1L001 Same at       .   .   .   .   .  1
-O1L002 Same at       .   .   .   .   .  1
-O1L003 Same at       .   .   .   .   .  1
-O1L004 Same at       .   .   .   .   .  1
-O1L005 Same at       .   .   .   .   .  1
-O1L006 Same at       .   .   .   .   .  1
-O1L007 Same at       .   .   .   .   .  1
-O1L008 Same at       .   .   .   .   .  1
-O1L009 Same at       .   .   .   .   .  1
-O1L010 Same at       .   .   .   .   .  1
-O1L011 Same at       .   .   .   .   .  1
-O1L012 Same at       .   .   .   .   .  1
-O1L013 Same at       .   .   .   .   .  1
-O1L014 Same at       .   .   .   .   .  1
-O1L015 Same at       .   .   .   .   .  6
-O1L016 Same at       .   .   .   .   . 16
-O1L017 Same at       .   .   .   .   . 33
-O1L018 Same at       .   .   .   .   .228
-O1L019 Same at       .   .   .   .   . 82
-O1L020 Same at       .   .   .   .   . 84
-O1L021 Same at       .   .   .   .   . 39
-O1L022 Same at       .   .   .   .   . 16
-O1L023 Same at       .   .   .   .   . 10
-O1L024 Same at       .   .   .   .   .108
-
-Iteration 12
 O0L000 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  8
 O0L001 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  5
 O0L002 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  8
@@ -388,6 +326,7 @@ O0L026 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  4
 O0L027 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  6
 O0L029 Finished      .   .   .   .   .  1 from    .   .   .   .   .  5
 O0L032 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
+O1L001 Same at       .   .   .   .   .  1
 O1L018 Reduced to    .   .   .   .   . 76 from    .   .   .   .   .228
 O1L019 Reduced to    .   .   .   .   . 68 from    .   .   .   .   . 82
 O1L020 Reduced to    .   .   .   .   . 48 from    .   .   .   .   . 84
@@ -396,7 +335,7 @@ O1L022 Finished      .   .   .   .   .  1 from    .   .   .   .   . 16
 O1L023 Finished      .   .   .   .   .  1 from    .   .   .   .   . 10
 O1L024 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .108
 
-Iteration 13
+Iteration 12
 O0L000 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  6
 O0L001 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
 O0L002 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
@@ -420,7 +359,7 @@ O1L019 Finished      .   .   .   .   .  1 from    .   .   .   .   . 68
 O1L020 Reduced to    .   .   .   .   . 10 from    .   .   .   .   . 48
 O1L021 Reduced to    .   .   .   .   .  5 from    .   .   .   .   .  7
 
-Iteration 14
+Iteration 13
 O0L000 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
 O0L001 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
 O0L004 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  7
@@ -444,7 +383,7 @@ O1L018 Reduced to    .   .   .   .   . 19 from    .   .   .   .   . 38
 O1L020 Reduced to    .   .   .   .   .  8 from    .   .   .   .   . 10
 O1L024 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
 
-Iteration 15
+Iteration 14
 O0L000 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
 O0L023 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
 O0L025 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
@@ -452,7 +391,7 @@ O1L016 Reduced to    .   .   .   .   .  4 from    .   .   .   .   .  8
 O1L017 Reduced to    .   .   .   .   . 11 from    .   .   .   .   . 33
 O1L021 Finished      .   .   .   .   .  1 from    .   .   .   .   .  5
 
-Iteration 16
+Iteration 15
 O0L003 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
 O0L004 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
 O0L005 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
@@ -465,7 +404,7 @@ O1L018 Reduced to    .   .   .   .   .  5 from    .   .   .   .   . 19
 O1L020 Reduced to    .   .   .   .   .  6 from    .   .   .   .   .  8
 O1L024 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
 
-Iteration 17
+Iteration 16
 O0L004 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
 O0L005 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2
 O0L006 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
@@ -477,7 +416,7 @@ O1L017 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  4
 O1L018 Reduced to    .   .   .   .   .  3 from    .   .   .   .   .  5
 O1L020 Finished      .   .   .   .   .  1 from    .   .   .   .   .  6
 
-Iteration 18
+Iteration 17
 O0L010 Finished      .   .   .   .   .  1 from    .   .   .   .   .  3
 O0L011 Reduced to    .   .   .   .   .  2 from    .   .   .   .   .  3
 O0L012 Finished      .   .   .   .   .  1 from    .   .   .   .   .  2

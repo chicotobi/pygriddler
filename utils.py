@@ -11,7 +11,7 @@ class LineStatus:
   possible_lines: Optional[np.ndarray]
   generated: bool
   count: int
-  worth_checking: bool = True
+  slice_of_color_possible: Optional[np.ndarray] = None
   
   # Keep other fields from original status dict
   block_colors: Optional[tuple] = None

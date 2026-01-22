@@ -37,6 +37,10 @@ def extract_row(color_possible, ori, idx, color):
   else:
     return color_possible[idx, :, color]
 
+def solved(color_possible):
+  """Check if the puzzle is solved (each cell has exactly one possible color)."""
+  return np.all(np.sum(color_possible, axis=2) == 1)
+
 def update_color_possible_from_line_status(ori, line, line_status, color_possible):
   """Update color_possible based on the possible lines of a specific line status."""
   n_colors = color_possible.shape[2]
@@ -69,7 +73,7 @@ def update_line_status_from_color_possible(ori, line, line_status, color_possibl
   return line_status
 
 
-def refine_solutions(inp, color_possible, check_all):
+def refine_solutions(inp, color_possible):
   """Refine existing solutions by filtering possible lines based on color_possible."""
   status = inp["status"]
   n_colors = inp["n_colors"]
@@ -83,21 +87,15 @@ def refine_solutions(inp, color_possible, check_all):
       if not status0.generated:
         continue
 
-      if not check_all and not status0.worth_checking:
+      # If the relevant slice of color_possible hasn't changed, skip
+      if np.all(status0.slice_of_color_possible == extract_row_2(color_possible, ori, idx)):
         continue
       
       status0 = update_line_status_from_color_possible(ori, idx, status0, color_possible)
 
       color_possible = update_color_possible_from_line_status(ori, idx, status0, color_possible)
-    
-    # Update worth_checking flags for each line based on changes
-    if not check_all:
-      if ori == "horizontal":
-        for idx, status1 in status["vertical"].items():
-          status1.worth_checking = np.any(color_possible_before[:,idx,:] != color_possible[:,idx,:])
-      else:
-        for idx, status1 in status["horizontal"].items():
-          status1.worth_checking = np.any(color_possible_before[idx,:,:] != color_possible[idx,:,:])
+
+      status0.slice_of_color_possible = extract_row_2(color_possible, ori, idx).copy()
     
   return color_possible, old
 
@@ -159,12 +157,12 @@ def generate_new_solutions(inp, color_possible):
   
   return color_possible
 
-def solve_iteration(inp, color_possible, it, check_all):
+def solve_iteration(inp, color_possible, it):
   """Perform one iteration of the solving algorithm."""
   print("\nIteration",it)
   
   # Refine existing solutions
-  color_possible, old = refine_solutions(inp, color_possible, check_all = check_all)
+  color_possible, old = refine_solutions(inp, color_possible)
   
   if inp["plot"]:
     plot(inp["desc"], it, color_possible, inp["colors"], 0)
@@ -182,13 +180,10 @@ def solve_iteration(inp, color_possible, it, check_all):
         break
     if still_non_generated:
       color_possible = generate_new_solutions(inp, color_possible)
-    else:   
-      print("WARNING! No updates possible, but all lines generated - stuck!")
-    check_all = True
-  else:
-    check_all = False
+    else: 
+      raise Exception("WARNING! No updates possible, but all lines generated - stuck!")
   
-  return color_possible, check_all
+  return color_possible
 
 def solve(inp):
   """Main solving loop - coordinates iteration, refinement, and generation."""
@@ -213,13 +208,16 @@ def solve(inp):
         color_possible[:,line,:] = np.logical_and(color_possible[:,line,:], ans)
       else:
         color_possible[line,:,:] = np.logical_and(color_possible[line,:,:], ans)
-  
-  it = 0
-  
-  check_all = True
-  while np.any(np.sum(color_possible, axis=2)>1):
+
+  # Trigger initial update of line_status
+  for ori, tmp in status.items():
+    for line, status0 in tmp.items():
+      status0.slice_of_color_possible = extract_row_2(color_possible, ori, line) * -1
+
+  it = 0  
+  while not solved(color_possible):
     it += 1
-    color_possible, check_all = solve_iteration(inp, color_possible, it, check_all)
+    color_possible = solve_iteration(inp, color_possible, it)
   
   # Save solution
   solution_file = os.path.join('solutions', 'python', str(inp["id0"]) + '.npy')

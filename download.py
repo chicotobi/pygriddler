@@ -105,7 +105,6 @@ def get_input(inp):
         possible_lines=None,
         generated=False,
         count=0,
-        worth_checking=True,
         block_colors=tuple(data["block_colors"]),
         block_lengths=tuple(data["block_lengths"])
       ) for idx, data in puzzle_data["status"][ori_key].items()}
