@@ -1,6 +1,7 @@
 import urllib.request
 import os.path
 import json
+from utils import LineStatus
 
 def get_id(inp):  
   example = inp["example"]
@@ -84,31 +85,31 @@ def translate_raw_to_json(id0):
   with open(fname_json, 'w') as f:
     json.dump(puzzle_data, f, indent=2)
   
-  return puzzle_data
-  
 def get_input(inp):
   id0 = get_id(inp)
   fname_json = os.path.join('json', str(id0) + '.json')
-  fname_raw = os.path.join('raw', str(id0))
   
-  # Check if puzzle is already translated in json
-  if os.path.isfile(fname_json):
-    with open(fname_json, 'r') as f:
-      puzzle_data = json.load(f)
-  else:
-    # Check if puzzle is already in raw
+  if not os.path.isfile(fname_json):
+    fname_raw = os.path.join('raw', str(id0))
     if not os.path.isfile(fname_raw):
-      # Download puzzle into raw
       download_and_write_file(id0)
+    translate_raw_to_json(id0)
     
-    # Translate to json
-    puzzle_data = translate_raw_to_json(id0)
+  with open(fname_json, 'r') as f:
+    puzzle_data = json.load(f)
   
-  # Convert line index keys from strings to integers (JSON converts int keys to strings)
+  # Convert status dicts to LineStatus objects (handles string keys from JSON)
+  status = {}
   for ori_key in ["vertical", "horizontal"]:
-    if ori_key in puzzle_data["status"]:
-      if isinstance(list(puzzle_data["status"][ori_key].keys())[0], str):
-        puzzle_data["status"][ori_key] = {int(idx): data for idx, data in puzzle_data["status"][ori_key].items()}
+    status[ori_key] = { int(idx): LineStatus(
+        possible_lines=None,
+        generated=False,
+        count=0,
+        worth_checking=True,
+        block_colors=tuple(data["block_colors"]),
+        block_lengths=tuple(data["block_lengths"])
+      ) for idx, data in puzzle_data["status"][ori_key].items()}
+  puzzle_data["status"] = status
   
   inp.update(puzzle_data)
   return inp

@@ -1,25 +1,11 @@
 import numpy as np
 import os.path
 import json
-from dataclasses import dataclass
-from typing import Optional
 
-from utils import plot, msg, totuple
+from utils import plot, msg, totuple, LineStatus
 from generators import generate, generate_count
 from generators import generate_with_info, generate_count_with_info
 from generators import generate_color_possible
-
-@dataclass
-class LineStatus:
-  """Tracks the state of a single row/column in the puzzle."""
-  possible_lines: Optional[np.ndarray]
-  generated: bool
-  count: int
-  worth_checking: bool = True
-  
-  # Keep other fields from original status dict
-  block_colors: Optional[tuple] = None
-  block_lengths: Optional[tuple] = None
 
 def initialize(inp):
   status = inp["status"]
@@ -28,26 +14,14 @@ def initialize(inp):
   for ori, tmp in status.items():
     len_line = len(status[other_ori[ori]])
     for line, status0 in tmp.items():
-      block_colors  = tuple(status0["block_colors"])
-      block_lengths = tuple(status0["block_lengths"])
+      block_colors  = status0.block_colors
+      block_lengths = status0.block_lengths
       n_pos = generate_count(len_line, block_lengths, block_colors, -1)
+      status0.count = n_pos
       if n_pos < limit_generate:
-        possible_lines = generate(len_line, block_lengths, block_colors, -1)
-        generated = True
-      else:
-        possible_lines = None
-        generated = False
-      
-      # Replace dict with LineStatus dataclass
-      tmp[line] = LineStatus(
-        possible_lines=possible_lines,
-        generated=generated,
-        count=n_pos,
-        worth_checking=True,
-        block_colors=block_colors,
-        block_lengths=block_lengths
-      )
-      msg(ori,line,n_pos,generated)
+        status0.possible_lines = generate(len_line, block_lengths, block_colors, -1)
+        status0.generated = True
+      msg(ori,line,n_pos,status0.generated)
 
 def extract_row_2(color_possible, ori, idx):
   """Extract a specific row or column from color_possible based on orientation."""
@@ -128,19 +102,15 @@ def generate_new_solutions(inp, color_possible):
       info = extract_row_2(color_possible, ori, line)
       n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
       
+      status[ori][line].count = n_pos
       if n_pos < limit_generate:
         status[ori][line].possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
         status[ori][line].generated = True
-        status[ori][line].count = n_pos
         generated_new_line = True
         # So we generated a new line, which may create new restrictions for the other orientation
         # Set worth_checking TRUE for the OTHER orientation lines
         # for idx, status_other in status[other_ori[ori]].items():
         #   status_other.worth_checking = True
-      else:
-        status[ori][line].possible_lines = None
-        status[ori][line].generated = False
-        status[ori][line].count = n_pos
       msg(ori,line,n_pos, status[ori][line].generated)
         
   # If no generation was successful - we have to generate the smallest one

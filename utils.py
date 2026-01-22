@@ -2,6 +2,21 @@ import matplotlib.pyplot as plt
 import matplotlib.colors
 import numpy as np
 
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class LineStatus:
+  """Tracks the state of a single row/column in the puzzle."""
+  possible_lines: Optional[np.ndarray]
+  generated: bool
+  count: int
+  worth_checking: bool = True
+  
+  # Keep other fields from original status dict
+  block_colors: Optional[tuple] = None
+  block_lengths: Optional[tuple] = None
+
 def totuple(x):
   return tuple(tuple(i) for i in x)
 
