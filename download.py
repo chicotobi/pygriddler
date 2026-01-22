@@ -1,7 +1,7 @@
 import urllib.request
 import os.path
 import json
-from utils import LineStatus
+from puzzle_line import PuzzleLine
 
 def get_id(inp):  
   example = inp["example"]
@@ -98,15 +98,15 @@ def get_input(inp):
   with open(fname_json, 'r') as f:
     puzzle_data = json.load(f)
   
-  # Convert status dicts to LineStatus objects (handles string keys from JSON)
+  # Convert status dicts to PuzzleLine objects (handles string keys from JSON)
   status = {}
   for ori_key in ["vertical", "horizontal"]:
-    status[ori_key] = { int(idx): LineStatus(
+    status[ori_key] = { int(idx): PuzzleLine(
+        block_colors=tuple(data["block_colors"]),
+        block_lengths=tuple(data["block_lengths"]),
         possible_lines=None,
         generated=False,
-        count=0,
-        block_colors=tuple(data["block_colors"]),
-        block_lengths=tuple(data["block_lengths"])
+        count=0
       ) for idx, data in puzzle_data["status"][ori_key].items()}
   puzzle_data["status"] = status
   

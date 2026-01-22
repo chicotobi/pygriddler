@@ -2,7 +2,8 @@ import numpy as np
 import os.path
 import json
 
-from utils import plot, msg, totuple, LineStatus
+from utils import plot, msg, totuple
+from puzzle_line import PuzzleLine
 from generators import generate, generate_count
 from generators import generate_with_info, generate_count_with_info
 from generators import generate_color_possible
@@ -41,12 +42,12 @@ def solved(color_possible):
   """Check if the puzzle is solved (each cell has exactly one possible color)."""
   return np.all(np.sum(color_possible, axis=2) == 1)
 
-def update_color_possible_from_line_status(ori, line, line_status, color_possible):
-  """Update color_possible based on the possible lines of a specific line status."""
+def apply_line_constraints(ori, line, line_status, color_possible):
+  """Apply line constraints to color_possible based on allowed colors."""
+  allowed_colors = line_status.get_allowed_colors()
+  if allowed_colors is None:
+    return
   n_colors = color_possible.shape[2]
-  possible_lines0 = line_status.possible_lines
-  _, n2 = possible_lines0.shape
-  allowed_colors = [np.unique(possible_lines0[:,i]) for i in range(n2)]
   for idx2, allowed_colors0 in enumerate(allowed_colors):
     for color in range(n_colors):
       if color not in allowed_colors0:
@@ -54,24 +55,6 @@ def update_color_possible_from_line_status(ori, line, line_status, color_possibl
           color_possible[line,idx2,color] = 0
         else:
           color_possible[idx2,line,color] = 0
-  return color_possible
-
-def update_line_status_from_color_possible(ori, line, line_status, color_possible):
-  """Update line_status possible lines based on color_possible."""
-  n_colors = color_possible.shape[2]
-  old_count = line_status.count
-  possible_lines0 = line_status.possible_lines
-  for color in range(n_colors):
-    extracted_row = extract_row(color_possible, ori, line, color)
-    for idx2, val in enumerate(extracted_row):
-      if val == 0:
-        keep = possible_lines0[:,idx2] != color
-        possible_lines0 = possible_lines0[keep,:]
-  line_status.count = len(possible_lines0)
-  line_status.possible_lines = possible_lines0
-  msg(ori,line,line_status.count,"Reduced to",old_count)
-  return line_status
-
 
 def refine_solutions(inp, color_possible):
   """Refine existing solutions by filtering possible lines based on color_possible."""
@@ -91,10 +74,8 @@ def refine_solutions(inp, color_possible):
       if np.all(status0.slice_of_color_possible == extract_row_2(color_possible, ori, idx)):
         continue
       
-      status0 = update_line_status_from_color_possible(ori, idx, status0, color_possible)
-
-      color_possible = update_color_possible_from_line_status(ori, idx, status0, color_possible)
-
+      status0.update_from_color_possible(ori, idx, color_possible, msg)
+      apply_line_constraints(ori, idx, status0, color_possible)
       status0.slice_of_color_possible = extract_row_2(color_possible, ori, idx).copy()
     
   return color_possible, old
@@ -128,7 +109,7 @@ def generate_new_solutions(inp, color_possible):
       msg(ori,line,n_pos, status[ori][line].generated)
 
       # Update color_possible
-      color_possible = update_color_possible_from_line_status(ori, line, status[ori][line], color_possible)
+      apply_line_constraints(ori, line, status[ori][line], color_possible)
 
   if generated_new_line:
     return color_possible
@@ -151,7 +132,7 @@ def generate_new_solutions(inp, color_possible):
   status[ori0][line0].generated = True
 
   # Update color_possible
-  color_possible = update_color_possible_from_line_status(ori0, line0, status[ori0][line0], color_possible)
+  apply_line_constraints(ori0, line0, status[ori0][line0], color_possible)
 
   msg(ori0,line0,count0,True)
   
