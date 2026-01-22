@@ -49,6 +49,20 @@ def initialize(inp):
       )
       msg(ori,line,n_pos,generated)
 
+def extract_row_2(color_possible, ori, idx):
+  """Extract a specific row or column from color_possible based on orientation."""
+  if ori == "vertical":
+    return color_possible[:, idx, :]
+  else:
+    return color_possible[idx, :, :]
+
+def extract_row(color_possible, ori, idx, color):
+  """Extract a specific row or column from color_possible based on orientation."""
+  if ori == "vertical":
+    return color_possible[:, idx, color]
+  else:
+    return color_possible[idx, :, color]
+
 def refine_solutions(inp, color_possible):
   """Refine existing solutions by filtering possible lines based on color_possible."""
   status = inp["status"]
@@ -67,7 +81,8 @@ def refine_solutions(inp, color_possible):
       possible_lines0 = status0.possible_lines
       old_count = status0.count
       for color in range(n_colors):
-        for idx2, val in enumerate(color_possible[:,idx,color]):
+        extracted_row = extract_row(color_possible, ori, idx, color)
+        for idx2, val in enumerate(extracted_row):
           if val == 0:
             keep = possible_lines0[:,idx2] != color
             possible_lines0 = possible_lines0[keep,:]
@@ -82,13 +97,14 @@ def refine_solutions(inp, color_possible):
       for idx2, allowed_colors0 in enumerate(allowed_colors):
         for color in range(n_colors):
           if color not in allowed_colors0:
-            color_possible[idx2,idx,color] = 0
+            if ori == "horizontal":
+              color_possible[idx,idx2,color] = 0
+            else:
+              color_possible[idx2,idx,color] = 0
     
     # Update worth_checking flags for each line based on changes
     # for idx, status1 in status[other_ori[ori]].items():
-    #   status1.worth_checking = np.any(color_possible_before[idx,:,:] != color_possible[idx,:,:])
-    
-    color_possible = np.transpose(color_possible, axes=(1,0,2))
+    #   status1.worth_checking = np.any(color_possible_before[idx,:,:] != color_possible[idx,:,:])   
   
   return color_possible, old
 
@@ -109,7 +125,7 @@ def generate_new_solutions(inp, color_possible):
       block_colors  = status0.block_colors
       block_lengths = status0.block_lengths
       
-      info = color_possible[:, line, :]
+      info = extract_row_2(color_possible, ori, line)
       n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
       
       if n_pos < limit_generate:
@@ -126,7 +142,6 @@ def generate_new_solutions(inp, color_possible):
         status[ori][line].generated = False
         status[ori][line].count = n_pos
       msg(ori,line,n_pos, status[ori][line].generated)
-    color_possible = np.transpose(color_possible, axes=(1,0,2))
         
   # If no generation was successful - we have to generate the smallest one
   if not generated_new_line:
@@ -148,17 +163,13 @@ def generate_new_solutions(inp, color_possible):
         for line, status0 in pos0.items():
           status0.worth_checking = True
       return color_possible      
-    if ori0 == "horizontal":
-      color_possible = np.transpose(color_possible, axes=(1,0,2))
     len_line = len(status[other_ori[ori0]])
     block_colors  = status[ori0][line0].block_colors
     block_lengths = status[ori0][line0].block_lengths
-    info = color_possible[:, line0, :]
+    info = extract_row_2(color_possible, ori0, line0)
     status[ori0][line0].possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
     status[ori0][line0].generated = True
     msg(ori0,line0,count0,True)
-    if ori0 == "horizontal":
-      color_possible = np.transpose(color_possible, axes=(1,0,2))
   
   return color_possible
 
@@ -188,19 +199,23 @@ def solve(inp):
   y = inp["y"]
   n_colors = inp["n_colors"]
   status = inp["status"]
-  other_ori = {"vertical": "horizontal", "horizontal": "vertical"}
   
   # Initialize color_possible from sweeping the input from left to right, top to bottom
   # It creates simple restrictions even from lines that were only counted
   color_possible = np.ones((y,x,n_colors))
   for ori, tmp in status.items():
-    len_line = len(status[other_ori[ori]])
+    if ori == "horizontal":
+      len_line = len(status["vertical"])
+    else:
+      len_line = len(status["horizontal"])
     for line, status0 in tmp.items():
       block_colors  = status0.block_colors
       block_lengths = status0.block_lengths
       ans = generate_color_possible(len_line, block_lengths, block_colors, n_colors)
-      color_possible[:,line,:] = np.logical_and(color_possible[:,line,:], ans)
-    color_possible = np.transpose(color_possible, axes=(1,0,2))
+      if ori == "vertical":
+        color_possible[:,line,:] = np.logical_and(color_possible[:,line,:], ans)
+      else:
+        color_possible[line,:,:] = np.logical_and(color_possible[line,:,:], ans)
   
   it = 0
   
