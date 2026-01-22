@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt 
 import matplotlib.colors
 import numpy as np
+import difflib
 
 def totuple(x):
   return tuple(tuple(i) for i in x)
@@ -61,3 +62,23 @@ def plot(title, iteration, color_possible, colors, ori):
   plt.title(title+" - "+str(iteration))
   plt.draw()
   plt.pause(0.001)  # Brief pause to update the display
+
+def compare_output_with_blueprint(example_number):
+  blueprint_file = os.path.join('blueprint', f'{example_number}.txt')
+  if not os.path.isfile(blueprint_file):
+    raise ValueError(f"Blueprint file for example {example_number} does not exist.")
+  with open('output.txt', 'r') as f:
+    output = f.read()
+  with open(blueprint_file, 'r') as f:
+    blueprint = f.read()
+  match = output == blueprint
+  print(f"\n{'✓ SUCCESS' if match else '✗ FAILURE'}: Output {'matches' if match else 'does not match'} blueprint")
+  
+  if not match:
+    print("\nDifferences:")
+    output_lines = output.splitlines(keepends=True)
+    blueprint_lines = blueprint.splitlines(keepends=True)
+    diff = difflib.unified_diff(blueprint_lines, output_lines, fromfile='blueprint', tofile='output', lineterm='')
+    print(''.join(diff))
+  
+  return match
