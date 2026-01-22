@@ -1,5 +1,11 @@
 import numpy as np
+import pandas as pd
 from typing import Optional
+import time
+
+# Global counter for benchmarking get_allowed_colors bottleneck
+_time_unique = 0.0
+_time_keep = 0.0
 
 
 class PuzzleLine:
@@ -58,23 +64,32 @@ class PuzzleLine:
   
   def update_from_color_possible(self, ori: str, line: int, color_possible: np.ndarray, msg_func):
     """Update this line's possible_lines based on color_possible constraints."""
+    global _time_keep
     from solution import extract_row
     n_colors = color_possible.shape[2]
     old_count = self._count
     possible_lines0 = self._possible_lines
+    start = time.perf_counter()
     for color in range(n_colors):
       extracted_row = extract_row(color_possible, ori, line, color)
       for idx2, val in enumerate(extracted_row):
         if val == 0:
           keep = possible_lines0[:,idx2] != color
           possible_lines0 = possible_lines0[keep,:]
+    _time_keep += time.perf_counter() - start
     self._count = len(possible_lines0)
     self._possible_lines = possible_lines0
     msg_func(ori, line, self._count, "Reduced to", old_count)
   
   def get_allowed_colors(self):
     """Return list of allowed colors for each position in this line."""
+    global _time_unique
     if self._possible_lines is None:
       return None
     _, n2 = self._possible_lines.shape
-    return [np.unique(self._possible_lines[:,i]) for i in range(n2)]
+    # Possibly the computational bottleneck
+    start = time.perf_counter()
+    #x = [np.unique(self._possible_lines[:,i]) for i in range(n2)]
+    x = [pd.unique(self._possible_lines[:,i]) for i in range(n2)]
+    _time_unique += time.perf_counter() - start
+    return x
