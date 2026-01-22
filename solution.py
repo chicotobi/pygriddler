@@ -49,7 +49,7 @@ def initialize(inp):
       )
       msg(ori,line,n_pos,generated)
 
-def refine_solutions(inp, color_possible, generated_new_line):
+def refine_solutions(inp, color_possible):
   """Refine existing solutions by filtering possible lines based on color_possible."""
   status = inp["status"]
   n_colors = inp["n_colors"]
@@ -60,10 +60,7 @@ def refine_solutions(inp, color_possible, generated_new_line):
   for ori, pos0 in status.items():
     color_possible_before = color_possible.copy()
     for idx, status0 in pos0.items():      
-      if not status0.generated:
-        continue
-            
-      if not generated_new_line and not status0.worth_checking:
+      if not status0.generated or not status0.worth_checking:
         continue
       
       # Remove lines in pos, depending on solution
@@ -88,8 +85,8 @@ def refine_solutions(inp, color_possible, generated_new_line):
             color_possible[idx2,idx,color] = 0
     
     # Update worth_checking flags for each line based on changes
-    for idx, status0 in status[other_ori[ori]].items():
-      status0.worth_checking = np.any(color_possible_before[idx] != color_possible[idx])
+    # for idx, status1 in status[other_ori[ori]].items():
+    #   status1.worth_checking = np.any(color_possible_before[idx,:,:] != color_possible[idx,:,:])
     
     color_possible = np.transpose(color_possible, axes=(1,0,2))
   
@@ -120,6 +117,10 @@ def generate_new_solutions(inp, color_possible):
         status[ori][line].generated = True
         status[ori][line].count = n_pos
         generated_new_line = True
+        # So we generated a new line, which may create new restrictions for the other orientation
+        # Set worth_checking TRUE for the OTHER orientation lines
+        # for idx, status_other in status[other_ori[ori]].items():
+        #   status_other.worth_checking = True
       else:
         status[ori][line].possible_lines = None
         status[ori][line].generated = False
@@ -129,18 +130,26 @@ def generate_new_solutions(inp, color_possible):
         
   # If no generation was successful - we have to generate the smallest one
   if not generated_new_line:
-    ori0 = -1
-    line0 = -1
+    print("No line was below the generate limit",limit_generate)
+    # Find minimum count among non-generated
+    ori0 = None
+    line0 = None
     count0 = 1e10
     for ori, pos0 in status.items():
       for line, status0 in pos0.items():
         if not status0.generated and status0.count < count0:
-          ori0 = ori
-          line0 = line
-          count0 = status0.count
+          ori0, line0, count0 = ori, line, status0.count
+    if ori0 is None:
+      # This is a bug, we look for non-generated lines but all are generated
+      # Somehow our decision "We have to generate a new line" was wrong
+      # For now, just return, but we should look into it
+      # Just reset all worth_checking flags to True
+      for ori, pos0 in status.items():
+        for line, status0 in pos0.items():
+          status0.worth_checking = True
+      return color_possible      
     if ori0 == "horizontal":
       color_possible = np.transpose(color_possible, axes=(1,0,2))
-    print("No line was below the generate limit",limit_generate)
     len_line = len(status[other_ori[ori0]])
     block_colors  = status[ori0][line0].block_colors
     block_lengths = status[ori0][line0].block_lengths
@@ -148,29 +157,30 @@ def generate_new_solutions(inp, color_possible):
     status[ori0][line0].possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
     status[ori0][line0].generated = True
     msg(ori0,line0,count0,True)
-    generated_new_line = True
     if ori0 == "horizontal":
       color_possible = np.transpose(color_possible, axes=(1,0,2))
   
-  return color_possible, generated_new_line
+  return color_possible
 
-def solve_iteration(inp, color_possible, it, generated_new_line):
+def solve_iteration(inp, color_possible, it):
   """Perform one iteration of the solving algorithm."""
   print("\nIteration",it)
   
   # Refine existing solutions
-  color_possible, old = refine_solutions(inp, color_possible, generated_new_line)
+  color_possible, old = refine_solutions(inp, color_possible)
   
   if inp["plot"]:
     plot(inp["desc"], it, color_possible, inp["colors"], 0)
-  
-  generated_new_line = False
     
   # No updates? Generate new solutions
   if np.all(old == color_possible):
-    color_possible, generated_new_line = generate_new_solutions(inp, color_possible)
+    color_possible = generate_new_solutions(inp, color_possible)
+
+  # Wait for a second
+  #from time import sleep
+  #sleep(1)  
   
-  return color_possible, generated_new_line
+  return color_possible
 
 def solve(inp):
   """Main solving loop - coordinates iteration, refinement, and generation."""
@@ -193,11 +203,10 @@ def solve(inp):
     color_possible = np.transpose(color_possible, axes=(1,0,2))
   
   it = 0
-  generated = True
   
   while np.any(np.sum(color_possible, axis=2)>1):
     it += 1
-    color_possible, generated = solve_iteration(inp, color_possible, it, generated)
+    color_possible = solve_iteration(inp, color_possible, it)
   
   # Save solution
   solution_file = os.path.join('solutions', 'python', str(inp["id0"]) + '.npy')
