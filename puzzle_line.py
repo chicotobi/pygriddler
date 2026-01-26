@@ -12,11 +12,13 @@ class PuzzleLine:
   """Tracks the state of a single row/column in the puzzle."""
   
   def __init__(self, block_colors: tuple, block_lengths: tuple, 
+               n_colors: int,
                possible_lines: Optional[np.ndarray] = None, 
                generated: bool = False, 
                count: int = 0):
     self._block_colors = block_colors
     self._block_lengths = block_lengths
+    self._n_colors = n_colors
     self._possible_lines = possible_lines
     self._generated = generated
     self._count = count
@@ -62,16 +64,21 @@ class PuzzleLine:
   def slice_of_color_possible(self, value: Optional[np.ndarray]):
     self._slice_of_color_possible = value
   
-  def update_from_color_possible(self, ori: str, line: int, color_possible: np.ndarray, msg_func):
-    """Update this line's possible_lines based on color_possible constraints."""
+  def update_from_color_possible(self, ori: str, line: int, row_data: np.ndarray, msg_func):
+    """Update this line's possible_lines based on color_possible constraints.
+    
+    Args:
+      ori: Orientation ('horizontal' or 'vertical')
+      line: Line index
+      row_data: Extracted row data (len_line x n_colors)
+      msg_func: Message function for logging
+    """
     global _time_keep
-    from solution import extract_row
-    n_colors = color_possible.shape[2]
     old_count = self._count
     possible_lines0 = self._possible_lines
     start = time.perf_counter()
-    for color in range(n_colors):
-      extracted_row = extract_row(color_possible, ori, line, color)
+    for color in range(self._n_colors):
+      extracted_row = row_data[:, color]
       for idx2, val in enumerate(extracted_row):
         if val == 0:
           keep = possible_lines0[:,idx2] != color

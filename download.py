@@ -102,10 +102,12 @@ def get_input(inp):
   
   # Convert status dicts to PuzzleLine objects (handles string keys from JSON)
   status = {}
+  n_colors = puzzle_data["n_colors"]
   for ori_key in ["vertical", "horizontal"]:
     status[ori_key] = { int(idx): PuzzleLine(
         block_colors=tuple(data["block_colors"]),
         block_lengths=tuple(data["block_lengths"]),
+        n_colors=n_colors,
         possible_lines=None,
         generated=False,
         count=0
