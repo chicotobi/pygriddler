@@ -15,39 +15,37 @@ The PyGriddler solver has been refactored to use an object-oriented design with 
 The `Puzzle` class is the main entry point for solving nonogram puzzles. It manages:
 - Puzzle metadata (dimensions, colors, description)
 - Color possibility tracking (`color_possible` 3D array)
-- Line constraints (`status` dictionary of `PuzzleLine` objects)
+- Line constraints (`lines` dictionary of `PuzzleLine` objects)
 - Solving algorithm orchestration
 - Solution saving and visualization
 
 ### Constructor
 
 ```python
-def __init__(self, puzzle_data: dict, limit_generate: int = 5_000_000)
+def __init__(self, puzzle_id: int, limit_generate: int = 5_000_000)
 ```
 
 **Parameters:**
-- `puzzle_data` (dict): Puzzle data from `download.get_input()` containing:
-  - `id0` (int): Puzzle ID from griddlers.net
-  - `desc` (str): Puzzle description and metadata
-  - `x` (int): Width (number of columns)
-  - `y` (int): Height (number of rows)
-  - `n_colors` (int): Number of colors (including white/background)
-  - `colors` (list): Color values
-  - `status` (dict): Dictionary with `"vertical"` and `"horizontal"` keys, containing `PuzzleLine` objects for each column/row
+- `puzzle_id` (int): Puzzle ID from griddlers.net or example number (1-9)
+  - Downloads and parses puzzle automatically using `GriddlerParser`
+  - Example: `puzzle_id=4` loads "Beautiful eye" (35x25x7)
+  - Example: `puzzle_id=39756` loads puzzle directly by ID
 - `limit_generate` (int, optional): Maximum number of solutions to generate eagerly during initialization. Default: 5,000,000
 
 **Initializes:**
-- Puzzle metadata attributes
+- Puzzle metadata attributes (id0, desc, x, y, n_colors, colors)
+- `lines`: Dictionary with PuzzleLine objects for each row/column
 - `color_possible`: 3D NumPy array of shape `(y, x, n_colors)`, initially all 1s
 
 **Example:**
 ```python
-from download import get_input
 from puzzle import Puzzle
 
-config = {"example": 4, "limit_generate": 5_000_000}
-puzzle_data = get_input(config)
-puzzle = Puzzle(puzzle_data, limit_generate=config["limit_generate"])
+# Using example number
+puzzle = Puzzle(puzzle_id=4, limit_generate=5_000_000)
+
+# Using direct puzzle ID
+puzzle = Puzzle(puzzle_id=39756)
 ```
 
 ---
@@ -71,7 +69,7 @@ puzzle = Puzzle(puzzle_data, limit_generate=config["limit_generate"])
   - `color_possible[row, col, color] = 0` means color is ruled out
   - Updated during solving as constraints are applied
 
-- **`status`** (dict): Dictionary with two keys:
+- **`lines`** (dict): Dictionary with two keys:
   - `"vertical"`: Dict mapping column index → `PuzzleLine` object
   - `"horizontal"`: Dict mapping row index → `PuzzleLine` object
 

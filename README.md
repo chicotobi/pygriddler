@@ -34,23 +34,12 @@ pip install numpy matplotlib pandas
 ## Quick Start
 
 ```python
-from download import get_input
 from puzzle import Puzzle
 
-# Configure puzzle (example 4 = "Beautiful eye" 35x25x7)
-config = {
-    "example": 4,
-    "limit_generate": 5_000_000,
-    "plot": True
-}
-
-# Load puzzle data
-puzzle_data = get_input(config)
-
-# Create and solve puzzle
-puzzle = Puzzle(puzzle_data, limit_generate=config["limit_generate"])
+# Create and solve puzzle (example 4 = "Beautiful eye" 35x25x7)
+puzzle = Puzzle(puzzle_id=4, limit_generate=5_000_000)
 puzzle.initialize()
-puzzle.solve(do_plot=config["plot"])
+puzzle.solve(do_plot=True)
 
 # Save results
 puzzle.save_solution()
@@ -76,7 +65,7 @@ The system includes 9 predefined example puzzles:
 You can also use any puzzle ID from griddlers.net:
 
 ```python
-config = {"example": 39756, "limit_generate": 5_000_000, "plot": False}
+puzzle = Puzzle(puzzle_id=39756, limit_generate=5_000_000)
 ```
 
 ## Project Structure
@@ -91,7 +80,7 @@ pygriddler/
 ├── puzzle.py              # Main Puzzle class
 ├── puzzle_line.py         # PuzzleLine class for individual constraints
 ├── generators.py          # Solution generation algorithms
-├── download.py            # Puzzle loading and caching
+├── griddler_parser.py     # Puzzle downloading and parsing
 ├── utils.py               # Utility functions (plotting, logging)
 ├── script.py              # Main execution script
 ├── raw/                   # Raw puzzle files from griddlers.net
@@ -136,21 +125,21 @@ Initialize → Refine Solutions → Check Progress
 
 ## Configuration Options
 
-### `limit_generate`
+### `puzzle_id` (required)
+Puzzle selection:
+- **1-9**: Predefined examples (e.g., 4 = "Beautiful eye")
+- **Any integer**: Direct puzzle ID from griddlers.net
+
+### `limit_generate` (optional)
 Maximum number of possible lines to generate eagerly for a single row/column.
 - **Default**: 5,000,000
 - **Lower values**: Faster initialization, more lazy generation during solving
 - **Higher values**: Slower initialization, faster solving
 
-### `plot`
+### `do_plot` (solve method)
 Enable real-time visualization of solving progress.
 - **True**: Show matplotlib plot (slower, interactive)
 - **False**: No visualization (faster, batch mode)
-
-### `example`
-Puzzle selection:
-- **1-9**: Predefined examples
-- **Any integer**: Direct puzzle ID from griddlers.net
 
 ## Performance
 

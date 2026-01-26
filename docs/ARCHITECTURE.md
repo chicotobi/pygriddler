@@ -6,7 +6,7 @@ This document describes the system architecture, call flow, and internal working
 
 PyGriddler consists of four main components:
 
-1. **Puzzle Loading** (`download.py`) - Three-tier caching for puzzle data
+1. **Puzzle Loading** (`griddler_parser.py`) - Three-tier caching for puzzle data
 2. **Puzzle Class** (`puzzle.py`) - Main solver orchestration and state management
 3. **Line Solving** (`puzzle_line.py`) - Individual row/column constraint tracking
 4. **Generation** (`generators.py`) - Candidate solution generation algorithms
@@ -15,7 +15,7 @@ PyGriddler consists of four main components:
 
 ```
 pygriddler/
-├── download.py       # Puzzle loading and caching system
+├── griddler_parser.py # Puzzle downloading and parsing
 ├── puzzle.py         # Puzzle class - main solver
 ├── puzzle_line.py    # PuzzleLine class - constraint tracking
 ├── generators.py     # Solution generation (cached recursive algorithms)
@@ -31,35 +31,55 @@ pygriddler/
 
 ---
 
-## 1. Puzzle Loading (download.py)
+## 1. Puzzle Loading (griddler_parser.py)
 
 ### Three-Tier Caching Strategy
 
 ```mermaid
 flowchart TD
-    A[get_input config] --> B[get_id config]
+    A[Puzzle puzzle_id] --> B[GriddlerParser puzzle_id]
     B --> C{JSON cache exists?<br/>json/id.json}
     C -->|Yes ~1ms| D[Load from JSON ✓]
     C -->|No| E{Raw cache exists?<br/>raw/id}
-    E -->|No| F[download_and_write_file id]
+    E -->|No| F[_download_and_write_file]
     F --> G[Download from griddlers.net]
     G --> H[Save to raw/id]
-    H --> I[translate_raw_to_json id]
+    H --> I[_translate_raw_to_json]
     E -->|Yes ~50ms| I
     I --> J[Parse raw file]
     J --> K[Save to json/id.json]
     K --> L[Return puzzle data ✓]
-    D --> M[Return puzzle_data dict]
+    D --> M[load_puzzle_data]
     L --> M
+    M --> N[Return puzzle_data dict]
 ```
 
-### Functions
+### GriddlerParser Class
 
-#### `get_input(config: dict) -> dict`
-Orchestrates the three-tier caching system to load puzzle data.
+#### `__init__(puzzle_id: int)`
+Initialize parser for a specific puzzle ID.
 
 **Parameters:**
-- `config`: Dictionary with `example` (puzzle ID or 1-9) and other settings
+- `puzzle_id`: Puzzle ID from griddlers.net or example number (1-9)
+
+**Example Mappings (EXAMPLES dict):**
+- 1 → 241934 (Owl)
+- 4 → 39756 (Beautiful eye)
+- 9 → 118315 (Family in Summer Heat)
+
+#### `ensure_json_exists() -> str`
+Ensures JSON file exists for the puzzle, downloading/parsing if needed.
+
+**Returns:**
+- Path to JSON file
+
+**Cache Levels:**
+1. **JSON** (`json/{id}.json`): ~1ms - Direct load
+2. **Raw** (`raw/{id}`): ~50ms - Parse required
+3. **Download**: ~500ms+ - Network + parse
+
+#### `load_puzzle_data(json_path: str) -> dict` (static)
+Loads and converts JSON file to puzzle_data dictionary.
 
 **Returns:**
 - `puzzle_data`: Dictionary containing:
@@ -68,27 +88,15 @@ Orchestrates the three-tier caching system to load puzzle data.
   - `x`, `y`: Width and height
   - `n_colors`: Number of colors
   - `colors`: List of color values
-  - `status`: Dictionary with `"vertical"` and `"horizontal"` keys, each containing PuzzleLine objects
+  - `lines`: Dictionary with `"vertical"` and `"horizontal"` keys, each containing PuzzleLine objects
 
-**Cache Levels:**
-1. **JSON** (`json/{id}.json`): ~1ms - Direct load
-2. **Raw** (`raw/{id}`): ~50ms - Parse required
-3. **Download**: ~500ms+ - Network + parse
+#### Private Methods
 
-#### `get_id(config: dict) -> int`
-Maps example number (1-9) to puzzle ID, or returns direct ID.
-
-#### `download_and_write_file(id0: int) -> None`
-Downloads puzzle from griddlers.net and saves to `raw/{id}`.
-
-#### `translate_raw_to_json(id0: int) -> dict`
-Parses raw puzzle file and saves to `json/{id}.json`.
-
-**Parsing Logic:**
-- Extracts dimensions (x, y)
-- Parses color palette
-- Extracts row and column constraints (block colors and lengths)
-- Creates PuzzleLine objects for each row/column
+- `_resolve_id(puzzle_id: int) -> int`: Maps example numbers to puzzle IDs
+- `_get_title() -> str`: Fetches puzzle title from griddlers.net
+- `_get_desc() -> str`: Builds description string
+- `_download_and_write_file() -> None`: Downloads puzzle and saves to raw/
+- `_translate_raw_to_json() -> dict`: Parses raw file and saves to JSON
 
 ---
 
@@ -111,7 +119,7 @@ class Puzzle:
     
     # State
     color_possible: np.ndarray  # (y, x, n_colors) - color possibilities
-    status: dict                # {"vertical": {idx: PuzzleLine}, 
+    lines: dict                 # {"vertical": {idx: PuzzleLine}, 
                                 #  "horizontal": {idx: PuzzleLine}}
 ```
 
@@ -138,8 +146,18 @@ flowchart TD
 
 ### Key Methods
 
-#### `__init__(puzzle_data: dict, limit_generate: int = 5_000_000)`
-Initialize puzzle from parsed data.
+#### `__init__(puzzle_id: int, limit_generate: int = 5_000_000)`
+Initialize puzzle from puzzle ID (automatically downloads/parses as needed).
+
+**Parameters:**
+- `puzzle_id`: Puzzle ID from griddlers.net or example number (1-9)
+- `limit_generate`: Max solutions to generate eagerly
+
+**Internal Process:**
+1. Creates `GriddlerParser(puzzle_id)`
+2. Calls `parser.ensure_json_exists()` to get JSON path
+3. Calls `GriddlerParser.load_puzzle_data(json_path)` to load puzzle
+4. Initializes puzzle state
 
 #### `initialize() -> None`
 Initialize puzzle lines and generate initial solutions.

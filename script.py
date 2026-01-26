@@ -1,4 +1,3 @@
-from download import get_input
 from puzzle import Puzzle
 import matplotlib.pyplot as plt
 import sys
@@ -7,20 +6,13 @@ import time
 
 plt.ion()
 
-inp = {}
-inp["limit_generate"] = 5_000_000
-inp["plot"] = True
-inp["example"] = 8
-
-inp = get_input(inp)
-
 # Create and initialize the puzzle
-puzzle = Puzzle(inp, inp["limit_generate"])
+puzzle = Puzzle(puzzle_id=4, limit_generate=5_000_000)
 puzzle.initialize()
 
 # Start full runtime timer
 script_start = time.perf_counter()
-puzzle.solve(do_plot=inp["plot"])
+puzzle.solve(do_plot=True)
 
 # Calculate total runtime
 total_runtime = time.perf_counter() - script_start

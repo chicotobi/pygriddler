@@ -8,7 +8,7 @@ Complete API documentation for PyGriddler classes, methods, and functions.
 
 1. [puzzle.py - Puzzle Class](#puzzlepy---puzzle-class)
 2. [puzzle_line.py - PuzzleLine Class](#puzzle_linepy---puzzleline-class)
-3. [download.py - Puzzle Loading](#downloadpy---puzzle-loading)
+3. [griddler_parser.py - Puzzle Loading](#griddler_parserpy---puzzle-loading)
 4. [generators.py - Solution Generation](#generatorspy---solution-generation)
 5. [utils.py - Utilities](#utilspy---utilities)
 
@@ -23,23 +23,19 @@ Main class for representing and solving nonogram puzzles.
 #### Constructor
 
 ```python
-Puzzle(puzzle_data: dict, limit_generate: int = 5_000_000)
+Puzzle(puzzle_id: int, limit_generate: int = 5_000_000)
 ```
 
 **Parameters:**
-- `puzzle_data` (dict): Puzzle data from `get_input()` containing:
-  - `id0` (int): Puzzle ID
-  - `desc` (str): Description
-  - `x` (int): Width
-  - `y` (int): Height
-  - `n_colors` (int): Number of colors
-  - `colors` (list): Color palette
-  - `status` (dict): Row/column constraints
+- `puzzle_id` (int): Puzzle ID from griddlers.net or example number (1-9)
+  - Automatically downloads and parses puzzle using GriddlerParser
+  - Example: `4` loads "Beautiful eye" (35x25x7)
+  - Example: `39756` loads puzzle directly by ID
 - `limit_generate` (int): Max solutions to generate eagerly (default: 5,000,000)
 
 **Example:**
 ```python
-puzzle = Puzzle(puzzle_data, limit_generate=5_000_000)
+puzzle = Puzzle(puzzle_id=4, limit_generate=5_000_000)
 ```
 
 #### Attributes
@@ -52,7 +48,7 @@ puzzle = Puzzle(puzzle_data, limit_generate=5_000_000)
 - `colors` (list): Color values
 - `limit_generate` (int): Generation limit
 - `color_possible` (np.ndarray): Shape `(y, x, n_colors)`, tracks color possibilities
-- `status` (dict): `{"vertical": {idx: PuzzleLine}, "horizontal": {idx: PuzzleLine}}`
+- `lines` (dict): `{"vertical": {idx: PuzzleLine}, "horizontal": {idx: PuzzleLine}}`
 
 #### Methods
 
@@ -66,7 +62,7 @@ Initialize puzzle lines and generate initial solutions.
 3. Initialize `color_possible` from constraints
 
 **Side Effects:**
-- Populates `status` with counts and solutions
+- Populates PuzzleLine objects with counts and solutions
 - Updates `color_possible` array
 
 **Example:**
@@ -317,102 +313,147 @@ Filter `possible_lines` based on color constraints.
 
 ---
 
-## download.py - Puzzle Loading
+## griddler_parser.py - Puzzle Loading
 
-### Function: `get_input(config: dict) -> dict`
+### Class: `GriddlerParser`
 
-Load puzzle data with three-tier caching.
+Handles downloading and parsing puzzles from griddlers.net with three-tier caching.
+
+#### Class Attribute
+
+```python
+EXAMPLES = {
+    1: 241934,   # Owl - 30 x 35 x 2
+    2: 252952,   # Dog - 40 x 45 x 2
+    3: 202358,   # Maple leaf - 30 x 30 x 2
+    4: 39756,    # Beautiful eye - 35 x 25 x 7
+    5: 275510,   # Flamingo - 13 x 20 x 4
+    6: 236744,   # Rosebud - 27 x 45 x 8
+    7: 233499,   # Santorini - 40 x 50 x 8
+    8: 88712,    # Lion - 45 x 45 x 2
+    9: 118315,   # Family in the Summer Heat - 50 x 50 x 6
+}
+```
+
+Maps example numbers (1-9) to puzzle IDs.
+
+---
+
+#### Constructor
+
+```python
+GriddlerParser(puzzle_id: int)
+```
 
 **Parameters:**
-- `config` (dict): Configuration with keys:
-  - `example` (int): Puzzle ID or example number (1-9)
-  - Other keys merged into output
-
-**Returns:**
-- Dictionary with puzzle data and PuzzleLine objects
-
-**Cache Levels:**
-1. JSON cache (~1ms): `json/{id}.json`
-2. Raw cache (~50ms): `raw/{id}`
-3. Download (~500ms): griddlers.net
+- `puzzle_id` (int): Puzzle ID from griddlers.net or example number (1-9)
 
 **Example:**
 ```python
-config = {"example": 4, "limit_generate": 5_000_000}
-puzzle_data = get_input(config)
+parser = GriddlerParser(4)  # Loads "Beautiful eye"
+parser = GriddlerParser(39756)  # Direct ID
 ```
 
 ---
 
-### Function: `get_id(config: dict) -> int`
+#### Method: `ensure_json_exists() -> str`
 
-Map example number to puzzle ID.
-
-**Parameters:**
-- `config` (dict): Configuration with `example` key
+Ensures JSON file exists for the puzzle using three-tier caching.
 
 **Returns:**
-- Puzzle ID (int)
+- Path to JSON file (str): `json/{id}.json`
 
-**Mapping:**
-- 1 → 241934 (Owl)
-- 2 → 252952 (Dog)
-- 3 → 202358 (Maple Leaf)
-- 4 → 39756 (Beautiful Eye)
-- 5 → 275510 (Flamingo)
-- 6 → 236744 (Rosebud)
-- 7 → 233499 (Santorini)
-- 8 → 88712 (Lion)
-- 9 → 118315 (Family in Summer Heat)
-- Other → Direct ID
+**Cache Levels:**
+1. **JSON** (~1ms): Direct load from `json/{id}.json`
+2. **Raw** (~50ms): Parse from `raw/{id}`
+3. **Download** (~500ms+): Download from griddlers.net, save to raw, parse to JSON
+
+**Side Effects:**
+- May download puzzle to `raw/{id}`
+- May create `json/{id}.json`
+
+**Example:**
+```python
+parser = GriddlerParser(4)
+json_path = parser.ensure_json_exists()
+# Returns: "json/39756.json"
+```
 
 ---
 
-### Function: `get_title(id0: int) -> str`
+#### Static Method: `load_puzzle_data(json_path: str) -> dict`
 
-Fetch puzzle title from griddlers.net.
+Load and convert JSON file to puzzle_data dictionary.
 
 **Parameters:**
-- `id0` (int): Puzzle ID
+- `json_path` (str): Path to JSON file
+
+**Returns:**
+- Dictionary containing:
+  - `id0` (int): Puzzle ID
+  - `desc` (str): Description (title, dimensions, colors)
+  - `x` (int): Width
+  - `y` (int): Height
+  - `n_colors` (int): Number of colors
+  - `colors` (list): Color values
+  - `lines` (dict): `{"vertical": {idx: PuzzleLine}, "horizontal": {idx: PuzzleLine}}`
+
+**Example:**
+```python
+data = GriddlerParser.load_puzzle_data("json/39756.json")
+```
+
+---
+
+#### Private Methods
+
+These methods are used internally by the class:
+
+##### `_resolve_id(puzzle_id: int) -> int`
+
+Convert example number to puzzle ID if needed.
+
+**Parameters:**
+- `puzzle_id` (int): Puzzle ID or example number (1-9)
+
+**Returns:**
+- Actual puzzle ID from griddlers.net (int)
+
+---
+
+##### `_get_title() -> str`
+
+Fetch puzzle title from griddlers.net.
 
 **Returns:**
 - Puzzle title (str), or empty string if fetch fails
 
 ---
 
-### Function: `get_desc(id0: int, x: int, y: int, n_colors: int) -> str`
+##### `_get_desc() -> str`
 
 Create puzzle description string.
 
-**Parameters:**
-- `id0` (int): Puzzle ID
-- `x` (int): Width
-- `y` (int): Height
-- `n_colors` (int): Number of colors
-
 **Returns:**
-- Description string (e.g., "Beautiful eye 35 x 25 x 7\n39756")
+- Description (e.g., "Beautiful eye 35 x 25 x 7\n39756")
 
 ---
 
-### Function: `download_and_write_file(id0: int) -> None`
+##### `_download_and_write_file() -> None`
 
 Download puzzle from griddlers.net and save to `raw/{id}`.
-
-**Parameters:**
-- `id0` (int): Puzzle ID
 
 **Side Effects:**
 - Creates file `raw/{id}`
 
 ---
 
-### Function: `translate_raw_to_json(id0: int) -> None`
+##### `_translate_raw_to_json() -> dict`
 
 Parse raw puzzle file and save to JSON.
 
-**Parameters:**
-- `id0` (int): Puzzle ID
+**Returns:**
+- Parsed puzzle data (dict)
 
 **Side Effects:**
 - Creates file `json/{id}.json`
@@ -420,6 +461,7 @@ Parse raw puzzle file and save to JSON.
 **Parsing:**
 - Extracts dimensions, colors, block constraints
 - Adjusts color indices (griddlers.net uses 1-based)
+- Creates PuzzleLine objects for rows and columns
 
 ---
 

@@ -7,25 +7,33 @@ from generators import generate, generate_count
 from generators import generate_with_info, generate_count_with_info
 from generators import generate_color_possible
 from utils import plot, msg, totuple
+from griddler_parser import GriddlerParser
 
 
 class Puzzle:
   """Represents a nonogram puzzle with color possibilities and puzzle lines."""
   
-  def __init__(self, puzzle_data: dict, limit_generate: int = 5_000_000):
-    """Initialize puzzle from puzzle data dictionary.
+  def __init__(self, puzzle_id: int, limit_generate: int = 5_000_000):
+    """Initialize puzzle from puzzle ID.
     
     Args:
-      puzzle_data: Dictionary containing id0, desc, status, colors, n_colors, x, y
+      puzzle_id: Puzzle ID from griddlers.net or example number (1-9).
+                 Will download/parse puzzle as needed.
       limit_generate: Maximum number of possible lines to generate for a line
     """
-    self.id0 = puzzle_data["id0"]
-    self.desc = puzzle_data["desc"]
-    self.status = puzzle_data["status"]
-    self.colors = puzzle_data["colors"]
-    self.n_colors = puzzle_data["n_colors"]
-    self.x = puzzle_data["x"]
-    self.y = puzzle_data["y"]
+    # Load puzzle from ID
+    parser = GriddlerParser(puzzle_id)
+    json_path = parser.ensure_json_exists()
+    data = GriddlerParser.load_puzzle_data(json_path)
+    
+    # Initialize from data
+    self.id0 = data["id0"]
+    self.desc = data["desc"]
+    self.lines = data["lines"]
+    self.colors = data["colors"]
+    self.n_colors = data["n_colors"]
+    self.x = data["x"]
+    self.y = data["y"]
     self.limit_generate = limit_generate
     
     # Initialize color_possible array (y x x x n_colors)
@@ -35,8 +43,8 @@ class Puzzle:
     """Initialize puzzle lines by counting possible solutions and generating initial constraints."""
     other_ori = {"vertical": "horizontal", "horizontal": "vertical"}
     
-    for ori, tmp in self.status.items():
-      len_line = len(self.status[other_ori[ori]])
+    for ori, tmp in self.lines.items():
+      len_line = len(self.lines[other_ori[ori]])
       for line, status0 in tmp.items():
         block_colors = status0.block_colors
         block_lengths = status0.block_lengths
@@ -48,8 +56,8 @@ class Puzzle:
         msg(ori, line, n_pos, status0.generated)
     
     # Initialize color_possible from sweeping the input
-    for ori, tmp in self.status.items():
-      len_line = len(self.status[other_ori[ori]])
+    for ori, tmp in self.lines.items():
+      len_line = len(self.lines[other_ori[ori]])
       for line, status0 in tmp.items():
         block_colors = status0.block_colors
         block_lengths = status0.block_lengths
@@ -60,7 +68,7 @@ class Puzzle:
           self.color_possible[line, :, :] = np.logical_and(self.color_possible[line, :, :], ans)
     
     # Trigger initial update of line_status
-    for ori, tmp in self.status.items():
+    for ori, tmp in self.lines.items():
       for line, status0 in tmp.items():
         status0.slice_of_color_possible = self.extract_row_2(ori, line) * -1
   
@@ -105,7 +113,7 @@ class Puzzle:
     other_ori = {"vertical": "horizontal", "horizontal": "vertical"}
     old = self.color_possible.copy()
     
-    for ori, pos0 in self.status.items():
+    for ori, pos0 in self.lines.items():
       for idx, status0 in pos0.items():
         if not status0.generated:
           continue
@@ -132,8 +140,8 @@ class Puzzle:
     
     print("\nNo update to color_possible: Generate new solutions")
     
-    for ori, pos0 in self.status.items():
-      len_line = len(self.status[other_ori[ori]])
+    for ori, pos0 in self.lines.items():
+      len_line = len(self.lines[other_ori[ori]])
       for line, status0 in pos0.items():
         if status0.generated:
           continue
@@ -162,7 +170,7 @@ class Puzzle:
     ori0 = None
     line0 = None
     count0 = 1e10
-    for ori, pos0 in self.status.items():
+    for ori, pos0 in self.lines.items():
       for line, status0 in pos0.items():
         if not status0.generated and status0.count < count0:
           ori0, line0, count0 = ori, line, status0.count
@@ -170,15 +178,15 @@ class Puzzle:
     if ori0 is None:
       raise Exception("WARNING! No updates possible, but all lines generated - stuck!")
     
-    len_line = len(self.status[other_ori[ori0]])
-    block_colors = self.status[ori0][line0].block_colors
-    block_lengths = self.status[ori0][line0].block_lengths
+    len_line = len(self.lines[other_ori[ori0]])
+    block_colors = self.lines[ori0][line0].block_colors
+    block_lengths = self.lines[ori0][line0].block_lengths
     info = self.extract_row_2(ori0, line0)
-    self.status[ori0][line0].possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
-    self.status[ori0][line0].generated = True
+    self.lines[ori0][line0].possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+    self.lines[ori0][line0].generated = True
     
     # Update color_possible
-    self.apply_line_constraints(ori0, line0, self.status[ori0][line0])
+    self.apply_line_constraints(ori0, line0, self.lines[ori0][line0])
     
     msg(ori0, line0, count0, True)
     
@@ -204,7 +212,7 @@ class Puzzle:
       # Check if there are still non-generated lines
       still_non_generated = any(
         not status0.generated
-        for ori, pos0 in self.status.items()
+        for ori, pos0 in self.lines.items()
         for line, status0 in pos0.items()
       )
       
