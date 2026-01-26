@@ -87,6 +87,7 @@ class PuzzleLine:
     self._count = len(possible_lines0)
     self._possible_lines = possible_lines0
     msg_func(ori, line, self._count, "Reduced to", old_count)
+    return self._count
   
   def get_allowed_colors(self):
     """Return list of allowed colors for each position in this line."""
