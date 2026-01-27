@@ -60,8 +60,10 @@ def plot(title, iteration, color_possible, colors, ori):
   plt.gca().get_xaxis().set_visible(False)
   plt.gca().get_yaxis().set_visible(False)
   plt.title(title+" - "+str(iteration))
-  plt.draw()
-  plt.pause(0.001)  # Brief pause to update the display
+  plt.gcf().canvas.draw()
+  plt.gcf().canvas.flush_events()
+  plt.show(block=False)
+  plt.pause(0.05)  # Longer pause to ensure display updates
 
 def compare_output_with_blueprint(example_number):
   blueprint_file = os.path.join('blueprint', f'{example_number}.txt')
