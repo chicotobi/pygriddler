@@ -49,7 +49,7 @@ flowchart TD
     I --> J[Parse raw file]
     J --> K[Save to json/id.json]
     K --> L[Return puzzle data ✓]
-    D --> M[load_puzzle_data]
+    D --> M[open/json.load]
     L --> M
     M --> N[Return puzzle_data dict]
 ```
@@ -156,7 +156,7 @@ Initialize puzzle from puzzle ID (automatically downloads/parses as needed).
 **Internal Process:**
 1. Creates `GriddlerParser(puzzle_id)`
 2. Calls `parser.ensure_json_exists()` to get JSON path
-3. Calls `GriddlerParser.load_puzzle_data(json_path)` to load puzzle
+3. Loads JSON directly with `json.load()` and passes to `Puzzle.from_dict()`
 4. Initializes puzzle state
 
 #### `initialize() -> None`

@@ -23,7 +23,7 @@ Main class for representing and solving nonogram puzzles.
 #### Constructor
 
 ```python
-Puzzle(puzzle_id: int, limit_generate: int = 5_000_000)
+Puzzle(puzzle_id: int, limit_generate: int = 5_000_000, strategy: str = "generate")
 ```
 
 **Parameters:**
@@ -32,10 +32,55 @@ Puzzle(puzzle_id: int, limit_generate: int = 5_000_000)
   - Example: `4` loads "Beautiful eye" (35x25x7)
   - Example: `39756` loads puzzle directly by ID
 - `limit_generate` (int): Max solutions to generate eagerly (default: 5,000,000)
+- `strategy` (str): Solving strategy when stuck (default: "generate")
+  - `"generate"`: Force-generate solutions for complex lines
+  - `"assumption"`: Try pixel assumptions to find contradictions
 
 **Example:**
 ```python
-puzzle = Puzzle(puzzle_id=4, limit_generate=5_000_000)
+puzzle = Puzzle(puzzle_id=4, limit_generate=5_000_000, strategy="generate")
+```
+
+---
+
+#### Class Method: `from_dict(puzzle_dict: dict, limit_generate: int = 5_000_000, strategy: str = "generate") -> Puzzle`
+
+Create a puzzle from a dictionary (custom puzzles or loaded JSON).
+
+**Parameters:**
+- `puzzle_dict` (dict): Puzzle data in GriddlerParser JSON format:
+  ```python
+  {
+      "id0": "custom_001",
+      "desc": "My puzzle - 5 x 5 x 2",
+      "x": 5,  # width
+      "y": 5,  # height
+      "n_colors": 2,
+      "colors": ["ffffff", "000000"],
+      "lines": {
+          "horizontal": {
+              0: {"block_colors": [1], "block_lengths": [3]},
+              ...
+          },
+          "vertical": {
+              0: {"block_colors": [1, 1], "block_lengths": [1, 2]},
+              ...
+          }
+      }
+  }
+  ```
+- `limit_generate` (int): Max solutions to generate (default: 5,000,000)
+- `strategy` (str): Solving strategy (default: "generate")
+
+**Returns:**
+- Puzzle instance
+
+**Example:**
+```python
+import json
+with open('json/39756.json') as f:
+    data = json.load(f)
+puzzle = Puzzle.from_dict(data)
 ```
 
 #### Attributes
