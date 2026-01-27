@@ -95,6 +95,9 @@ class Puzzle:
     # Initialize color_possible array
     puzzle.color_possible = np.ones((puzzle.y, puzzle.x, puzzle.n_colors))
     
+    # Track last pixel solved by assumption (for sorting heuristic)
+    puzzle.last_assumption_pixel = None
+    
     # Create lines structure with PuzzleLine objects
     puzzle.lines = {}
     for ori_key in ["vertical", "horizontal"]:
@@ -372,6 +375,7 @@ class Puzzle:
     new_puzzle.y = self.y
     new_puzzle.limit_generate = self.limit_generate
     new_puzzle.strategy = self.strategy
+    new_puzzle.last_assumption_pixel = self.last_assumption_pixel
     
     # Deep copy color_possible array
     new_puzzle.color_possible = self.color_possible.copy()
@@ -516,13 +520,22 @@ class Puzzle:
     # Single loop for all unsolved pixels
     for row, col in unsolved_indices:
       min_distance = distance_map[row, col]
-      min_count = min(self.lines["horizontal"][row].count, self.lines["vertical"][col].count)
+      
+      # Second key: Chebyshev distance to last assumption pixel (if any)
+      if self.last_assumption_pixel is not None:
+        last_row, last_col = self.last_assumption_pixel
+        distance_to_last_assumption = max(abs(row - last_row), abs(col - last_col))
+      else:
+        # Fallback: use minimum line count if no assumption made yet
+        distance_to_last_assumption = min(self.lines["horizontal"][row].count, 
+                                          self.lines["vertical"][col].count)
+      
       possible_colors = np.where(self.color_possible[row, col, :] == 1)[0]
       
       for color in possible_colors:
-        pixel_color_combinations.append((min_distance, min_count, row, col, color))
+        pixel_color_combinations.append((distance_to_last_assumption, min_distance, row, col, color))
     
-    # Sort by distance ascending (closest to solved pixels first), then by min_count ascending (more constrained first)
+    # Sort by distance ascending (closest to solved pixels first), then by distance to last assumption ascending
     pixel_color_combinations.sort(key=lambda x: (x[0], x[1]))
     
     # Return list of (row, col, color) tuples
@@ -545,10 +558,18 @@ class Puzzle:
     """
     # Get sorted list of all (pixel, color) combinations (furthest from center first)
     pixel_color_combos = self.get_sorted_unsolved_pixels()
+    total = len(pixel_color_combos)
+    
+    print(f"\nTesting assumptions: {total} pixel-color combinations to check")
     
     # Try all pixel-color combinations
-    for row, col, assumed_color in pixel_color_combos:
-      print(f"Testing assumption: pixel ({row}, {col}) = color {assumed_color}")
+    for idx, (row, col, assumed_color) in enumerate(pixel_color_combos, 1):
+      # Show progress bar
+      progress = idx / total
+      bar_length = 40
+      filled = int(bar_length * progress)
+      bar = '█' * filled + '░' * (bar_length - filled)
+      print(f'\r[{bar}] {idx}/{total} checked', end='', flush=True)
       
       # Create a deep copy of the puzzle (suppress iteration output only)
       import sys
@@ -566,24 +587,27 @@ class Puzzle:
         puzzle_copy.color_possible[row, col, :] = 0
         puzzle_copy.color_possible[row, col, assumed_color] = 1
         
-        # Run limited iterations to test the assumption (max 3)
-        puzzle_copy.solve(do_plot=False, max_iterations=3)
+        # Run limited iterations to test the assumption (max 2)
+        puzzle_copy.solve(do_plot=False, max_iterations=2)
         
         # If we reach here, no contradiction was found
         # Restore output and continue to next pixel-color combination
         sys.stdout = old_stdout
-        print(f"  → Inconclusive (no contradiction detected)")
         
       except (ValueError, Exception) as e:
         # Restore output first
         sys.stdout = old_stdout
         
         # Contradiction found! The assumed color is impossible
-        print(f"  → Contradiction! Eliminating color {assumed_color} from pixel ({row}, {col})")
+        print(f'\n  → Contradiction found! Eliminating color {assumed_color} from pixel ({row}, {col})')
         
         # Eliminate this color from the original puzzle
         self.color_possible[row, col, assumed_color] = 0
         
+        # Track this pixel as the last assumption that led to progress
+        self.last_assumption_pixel = (row, col)
+        
         return True
     
+    print()  # New line after progress bar
     return False
