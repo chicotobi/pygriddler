@@ -26,24 +26,84 @@ class Puzzle:
                 - "generate": Generate more solutions for complex lines (default)
                 - "assumption": Try random pixel assumptions to eliminate possibilities
     """
-    # Load puzzle from ID
+    # Load puzzle from ID and get raw JSON data
     parser = GriddlerParser(puzzle_id)
     json_path = parser.ensure_json_exists()
-    data = GriddlerParser.load_puzzle_data(json_path)
     
-    # Initialize from data
-    self.id0 = data["id0"]
-    self.desc = data["desc"]
-    self.lines = data["lines"]
-    self.colors = data["colors"]
-    self.n_colors = data["n_colors"]
-    self.x = data["x"]
-    self.y = data["y"]
-    self.limit_generate = limit_generate
-    self.strategy = strategy
+    with open(json_path, 'r') as f:
+      puzzle_data = json.load(f)
     
-    # Initialize color_possible array (y x x x n_colors)
-    self.color_possible = np.ones((self.y, self.x, self.n_colors))
+    # Use from_dict to initialize (reuse common logic)
+    puzzle = Puzzle.from_dict(puzzle_data, limit_generate, strategy)
+    
+    # Copy all attributes to self
+    self.__dict__.update(puzzle.__dict__)
+  
+  @classmethod
+  def from_dict(cls, puzzle_dict: dict, limit_generate: int = 5_000_000, 
+                strategy: str = "generate"):
+    """Create a Puzzle instance from a custom dictionary structure.
+    
+    Uses the same JSON structure as GriddlerParser._translate_raw_to_json():
+    {
+        "id0": "custom_001",
+        "desc": "My custom puzzle description",
+        "x": 10,  # width
+        "y": 10,  # height
+        "n_colors": 2,
+        "colors": ["ffffff", "000000"],  # hex color codes
+        "lines": {
+            "horizontal": {
+                0: {"block_colors": [1, 1], "block_lengths": [3, 2]},
+                1: {"block_colors": [1], "block_lengths": [5]},
+                ...
+            },
+            "vertical": {
+                0: {"block_colors": [1, 1], "block_lengths": [2, 3]},
+                1: {"block_colors": [1], "block_lengths": [4]},
+                ...
+            }
+        }
+    }
+    
+    Note: block_colors are 0-indexed (0=first color, 1=second color, etc.)
+    
+    Args:
+      puzzle_dict: Dictionary with puzzle structure (see above)
+      limit_generate: Maximum number of possible lines to generate for a line
+      strategy: Solving strategy - "generate" or "assumption"
+      
+    Returns:
+      Puzzle instance
+    """
+    # Create a new puzzle instance (bypass normal __init__)
+    puzzle = cls.__new__(cls)
+    
+    # Set basic attributes
+    puzzle.id0 = puzzle_dict.get("id0", "custom")
+    puzzle.desc = puzzle_dict.get("desc", "Custom puzzle")
+    puzzle.x = puzzle_dict["x"]
+    puzzle.y = puzzle_dict["y"]
+    puzzle.colors = puzzle_dict["colors"]
+    puzzle.n_colors = puzzle_dict["n_colors"]
+    puzzle.limit_generate = limit_generate
+    puzzle.strategy = strategy
+    
+    # Initialize color_possible array
+    puzzle.color_possible = np.ones((puzzle.y, puzzle.x, puzzle.n_colors))
+    
+    # Create lines structure with PuzzleLine objects
+    puzzle.lines = {}
+    for ori_key in ["vertical", "horizontal"]:
+      puzzle.lines[ori_key] = {
+        int(idx): PuzzleLine(
+          block_colors=tuple(data["block_colors"]),
+          block_lengths=tuple(data["block_lengths"]),
+          n_colors=puzzle.n_colors
+        ) for idx, data in puzzle_dict["lines"][ori_key].items()
+      }
+    
+    return puzzle
     
   def initialize(self):
     """Initialize puzzle lines by counting possible solutions and generating initial constraints."""

@@ -147,34 +147,4 @@ class GriddlerParser:
             self._translate_raw_to_json()
         
         return fname_json
-    
-    @staticmethod
-    def load_puzzle_data(json_path: str) -> dict:
-        """Load and parse puzzle data from JSON file.
-        
-        Args:
-            json_path: Path to JSON file
-            
-        Returns:
-            Dictionary with puzzle data and PuzzleLine objects
-        """
-        with open(json_path, 'r') as f:
-            puzzle_data = json.load(f)
-        
-        # Convert lines dicts to PuzzleLine objects (handles string keys from JSON)
-        lines = {}
-        n_colors = puzzle_data["n_colors"]
-        for ori_key in ["vertical", "horizontal"]:
-            lines[ori_key] = {
-                int(idx): PuzzleLine(
-                    block_colors=tuple(data["block_colors"]),
-                    block_lengths=tuple(data["block_lengths"]),
-                    n_colors=n_colors,
-                    possible_lines=None,
-                    generated=False,
-                    count=0
-                ) for idx, data in puzzle_data.get("lines", puzzle_data.get("status", {}))[ori_key].items()
-            }
-        puzzle_data["lines"] = lines
-        
-        return puzzle_data
+
