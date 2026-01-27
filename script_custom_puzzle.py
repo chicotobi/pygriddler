@@ -34,7 +34,7 @@ simple_puzzle = {
 }
 
 # Create puzzle from dictionary using the class method
-puzzle = Puzzle.from_dict(simple_puzzle, limit_generate=2, strategy='assumption')
+puzzle = Puzzle.from_dict(simple_puzzle, limit_generate=1, strategy='assumption')
 puzzle.initialize()
 
 puzzle.solve(do_plot=True)

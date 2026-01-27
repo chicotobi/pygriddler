@@ -222,7 +222,7 @@ class Puzzle:
         n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
         
         status0.count = n_pos
-        if n_pos < self.limit_generate:
+        if n_pos <= self.limit_generate:
           status0.possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
           status0.generated = True
           generated_new_line = True
@@ -285,9 +285,6 @@ class Puzzle:
     # Refine existing solutions
     updated = self.refine_solutions()
     
-    if do_plot:
-      plot(self.desc, it, self.color_possible, self.colors, 0)
-    
     # No updates? Try to generate new solutions under the limit
     if not updated:
       updated = self.generate_solutions_under_limit()
@@ -303,6 +300,9 @@ class Puzzle:
     # STILL no updates? That should not happen, it means the algorithm is stuck
     if not updated:
       raise Exception("WARNING! Solver is stuck with no possible updates!")
+      
+    if do_plot:
+      plot(self.desc, it, self.color_possible, self.colors, 0)
   
   def solve(self, do_plot: bool = False, max_iterations: Optional[int] = None):
     """Main solving loop - coordinates iteration, refinement, and generation.
