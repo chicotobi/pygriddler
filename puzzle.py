@@ -10,6 +10,9 @@ from generators import generate_color_possible
 from utils import plot, msg, totuple
 from griddler_parser import GriddlerParser
 
+# Debug flag - set to True to enable distance map visualization
+DEBUG = False
+
 
 class Puzzle:
   """Represents a nonogram puzzle with color possibilities and puzzle lines."""
@@ -426,7 +429,59 @@ class Puzzle:
                                    np.abs(col_grid - solved_col))
       distance_map = np.minimum(distance_map, chebyshev_dist)
     
+    # Debug plot - show distance map the first time it's calculated
+    if DEBUG:
+      self._plot_distance_map(distance_map, solved_coords)
+    
     return distance_map
+  
+  def _plot_distance_map(self, distance_map, solved_coords):
+    """Debug visualization: plot distance map with heatmap and annotations."""
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    
+    fig, ax = plt.subplots(figsize=(max(8, self.x * 0.6), max(6, self.y * 0.6)))
+    
+    # Create heatmap with a nice color gradient
+    im = ax.imshow(distance_map, cmap='viridis_r', interpolation='nearest', 
+                   vmin=0, vmax=np.max(distance_map))
+    
+    # Add colorbar
+    cbar = plt.colorbar(im, ax=ax, label='Distance to nearest solved pixel')
+    
+    # Annotate each cell with its distance value
+    for i in range(self.y):
+      for j in range(self.x):
+        dist = distance_map[i, j]
+        if np.isfinite(dist):
+          text_color = 'white' if dist > np.max(distance_map) / 2 else 'black'
+          ax.text(j, i, f'{int(dist)}', ha='center', va='center', 
+                 color=text_color, fontsize=8, weight='bold')
+    
+    # Mark solved pixels with red X
+    for row, col in solved_coords:
+      ax.plot(col, row, 'rx', markersize=12, markeredgewidth=2)
+    
+    # Configure grid and labels
+    ax.set_xticks(np.arange(self.x))
+    ax.set_yticks(np.arange(self.y))
+    ax.set_xticklabels(np.arange(self.x))
+    ax.set_yticklabels(np.arange(self.y))
+    ax.grid(which='minor', color='gray', linestyle='-', linewidth=0.5, alpha=0.3)
+    ax.set_xticks(np.arange(-0.5, self.x, 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, self.y, 1), minor=True)
+    
+    # Add legend
+    solved_patch = mpatches.Patch(color='red', label=f'Solved pixels ({len(solved_coords)})')
+    ax.legend(handles=[solved_patch], loc='upper right', bbox_to_anchor=(1.0, -0.05))
+    
+    plt.title(f'Distance Map: Chebyshev Distance to Nearest Solved Pixel\n{self.desc}', 
+             fontsize=12, weight='bold')
+    plt.tight_layout()
+    plt.show(block=True)
+    
+    print("\n[DEBUG] Distance map visualization complete. Press any key to continue...")
+    input()
   
   def get_sorted_unsolved_pixels(self) -> list:
     """Get unsolved pixel-color combinations sorted by distance from solved regions.

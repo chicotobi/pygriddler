@@ -7,7 +7,7 @@ import time
 plt.ion()
 
 # Create and initialize the puzzle
-puzzle = Puzzle(puzzle_id=8, limit_generate=100_000, strategy='generate')
+puzzle = Puzzle(puzzle_id=9, limit_generate=10_000, strategy='assumption')
 puzzle.initialize()
 
 # Start full runtime timer
