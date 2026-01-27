@@ -394,14 +394,49 @@ class Puzzle:
     
     return new_puzzle
   
-  def get_sorted_unsolved_pixels(self) -> list:
-    """Get unsolved pixel-color combinations sorted by distance from center (furthest first).
+  def _calculate_distance_from_solved(self):
+    """Calculate minimum Chebyshev distance from each pixel to any solved pixel.
     
-    Pixels near the boundary are tried first as they tend to lead to contradictions
-    more quickly due to edge constraints.
+    Uses vectorized NumPy operations for efficiency - O(num_solved * height * width).
     
     Returns:
-      List of (row, col, color) tuples sorted by distance from center (descending)
+      np.ndarray or None: Distance map of shape (height, width) where each cell contains
+                         the minimum Chebyshev distance to any solved pixel.
+                         Returns None if no pixels are solved yet.
+    """
+    # Find solved pixels (where exactly one color is possible)
+    solved_mask = np.sum(self.color_possible, axis=2) == 1
+    solved_coords = np.argwhere(solved_mask)
+    
+    if len(solved_coords) == 0:
+      return None
+    
+    # Create coordinate grids for all pixels
+    rows = np.arange(self.y)
+    cols = np.arange(self.x)
+    row_grid, col_grid = np.meshgrid(rows, cols, indexing='ij')
+    
+    # Initialize distance map with infinity
+    distance_map = np.full((self.y, self.x), np.inf)
+    
+    # For each solved pixel, calculate Chebyshev distance to all pixels
+    # and keep the minimum (vectorized per solved pixel)
+    for solved_row, solved_col in solved_coords:
+      chebyshev_dist = np.maximum(np.abs(row_grid - solved_row), 
+                                   np.abs(col_grid - solved_col))
+      distance_map = np.minimum(distance_map, chebyshev_dist)
+    
+    return distance_map
+  
+  def get_sorted_unsolved_pixels(self) -> list:
+    """Get unsolved pixel-color combinations sorted by distance from solved regions.
+    
+    Uses minimum Chebyshev distance to any solved pixel - this creates a "flood fill"
+    effect from solved regions into unsolved regions. Pixels at the boundary between
+    solved and unsolved areas are prioritized.
+    
+    Returns:
+      List of (row, col, color) tuples sorted by distance from solved pixels (ascending)
     """
     # Find all unsolved pixels (cells with more than one possible color)
     unsolved_mask = np.sum(self.color_possible, axis=2) > 1
@@ -410,25 +445,30 @@ class Puzzle:
     if len(unsolved_indices) == 0:
       return []
     
-    # Calculate center of puzzle
-    center_y = self.y / 2.0
-    center_x = self.x / 2.0
+    # Calculate distance map
+    distance_map = self._calculate_distance_from_solved()
     
-    # Calculate distance from center and create (distance, min_count, row, col, color) tuples
+    # If no solved pixels yet, use distance from edges as fallback
+    if distance_map is None:
+      rows = np.arange(self.y)
+      cols = np.arange(self.x)
+      row_grid, col_grid = np.meshgrid(rows, cols, indexing='ij')
+      distance_map = np.minimum(np.minimum(row_grid, self.y - 1 - row_grid),
+                                 np.minimum(col_grid, self.x - 1 - col_grid))
+    
     pixel_color_combinations = []
-    for row, col in unsolved_indices:
-      # Use Chebyshev distance (L∞ metric): max of absolute distances in x and y
-      distance = max(abs(row - center_y), abs(col - center_x))
-      # Get the minimum of row and column solution counts (more constrained = fewer solutions)
-      min_count = min(self.lines["horizontal"][row].count, self.lines["vertical"][col].count)
-      # Get all possible colors for this pixel
-      possible_colors = np.where(self.color_possible[row, col, :] == 1)[0]
-      # Add a tuple for each (row, col, color) combination
-      for color in possible_colors:
-        pixel_color_combinations.append((distance, min_count, row, col, color))
     
-    # Sort by distance descending (furthest from center first), then by min_count ascending (more constrained first)
-    pixel_color_combinations.sort(key=lambda x: (-x[0], x[1]))
+    # Single loop for all unsolved pixels
+    for row, col in unsolved_indices:
+      min_distance = distance_map[row, col]
+      min_count = min(self.lines["horizontal"][row].count, self.lines["vertical"][col].count)
+      possible_colors = np.where(self.color_possible[row, col, :] == 1)[0]
+      
+      for color in possible_colors:
+        pixel_color_combinations.append((min_distance, min_count, row, col, color))
+    
+    # Sort by distance ascending (closest to solved pixels first), then by min_count ascending (more constrained first)
+    pixel_color_combinations.sort(key=lambda x: (x[0], x[1]))
     
     # Return list of (row, col, color) tuples
     return [(int(row), int(col), int(color)) for _, _, row, col, color in pixel_color_combinations]
