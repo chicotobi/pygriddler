@@ -232,6 +232,7 @@ class Puzzle:
           status0.possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
           status0.generated = True
           generated_new_line = True
+          status0.slice_of_color_possible = info.copy()
           msg(ori, line, n_pos, status0.generated)
           
           # Update color_possible
@@ -533,7 +534,7 @@ class Puzzle:
       possible_colors = np.where(self.color_possible[row, col, :] == 1)[0]
       
       for color in possible_colors:
-        pixel_color_combinations.append((distance_to_last_assumption, min_distance, row, col, color))
+        pixel_color_combinations.append((min_distance, distance_to_last_assumption, row, col, color))
     
     # Sort by distance ascending (closest to solved pixels first), then by distance to last assumption ascending
     pixel_color_combinations.sort(key=lambda x: (x[0], x[1]))
@@ -556,11 +557,24 @@ class Puzzle:
     Returns:
       True if the assumption led to eliminating a color, False otherwise
     """
+    import matplotlib.pyplot as plt
+    
     # Get sorted list of all (pixel, color) combinations (furthest from center first)
     pixel_color_combos = self.get_sorted_unsolved_pixels()
     total = len(pixel_color_combos)
     
     print(f"\nTesting assumptions: {total} pixel-color combinations to check")
+    
+    # Ensure a plot is active
+    if plt.get_fignums():
+      fig = plt.gcf()
+      ax = plt.gca()
+    else:
+      # Create initial plot if none exists
+      from utils import plot as utils_plot
+      utils_plot(self.desc, "Assumption Testing", self.color_possible, self.colors, 0)
+      fig = plt.gcf()
+      ax = plt.gca()
     
     # Try all pixel-color combinations
     for idx, (row, col, assumed_color) in enumerate(pixel_color_combos, 1):
@@ -587,12 +601,18 @@ class Puzzle:
         puzzle_copy.color_possible[row, col, :] = 0
         puzzle_copy.color_possible[row, col, assumed_color] = 1
         
-        # Run limited iterations to test the assumption (max 2)
-        puzzle_copy.solve(do_plot=False, max_iterations=2)
+        # Run limited iterations to test the assumption (max 5)
+        puzzle_copy.solve(do_plot=False, max_iterations=5)
         
         # If we reach here, no contradiction was found
-        # Restore output and continue to next pixel-color combination
+        # Restore output and mark pixel with red cross
         sys.stdout = old_stdout
+        
+        # Add red cross for unsuccessful attempt (note: row/col vs x/y in imshow)
+        ax.plot(col, row, 'rx', markersize=4, markeredgewidth=1, alpha=0.7)
+        fig.canvas.draw()
+        fig.canvas.flush_events()
+        plt.pause(0.001)
         
       except (ValueError, Exception) as e:
         # Restore output first
