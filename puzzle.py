@@ -5,8 +5,8 @@ import copy
 from typing import Dict, Optional, Tuple
 from puzzle_line import PuzzleLine
 from generators import generate, generate_count
-from generators import generate_with_info, generate_count_with_info
-from generators import generate_color_possible
+from generators import generate_from_slice, generate_count_from_slice
+from generators import generate_color_possible_from_slice
 from utils import plot, msg, totuple
 from griddler_parser import GriddlerParser
 
@@ -92,8 +92,8 @@ class Puzzle:
     puzzle.limit_generate = limit_generate
     puzzle.strategy = strategy
     
-    # Initialize color_possible array
-    puzzle.color_possible = np.ones((puzzle.y, puzzle.x, puzzle.n_colors))
+    # Initialize color_possible array as boolean
+    puzzle.color_possible = np.ones((puzzle.y, puzzle.x, puzzle.n_colors), dtype=np.bool_)
     
     # Track last pixel solved by assumption (for sorting heuristic)
     puzzle.last_assumption_pixel = None
@@ -133,11 +133,12 @@ class Puzzle:
       for line, status0 in tmp.items():
         block_colors = status0.block_colors
         block_lengths = status0.block_lengths
-        ans = generate_color_possible(len_line, block_lengths, block_colors, self.n_colors)
+        current_slice = self.extract_row_2(ori, line)
+        ans = generate_color_possible_from_slice(len_line, block_lengths, block_colors, -1, self.n_colors, totuple(current_slice))
         if ori == "vertical":
-          self.color_possible[:, line, :] = np.logical_and(self.color_possible[:, line, :], ans)
+          self.color_possible[:, line, :] = ans
         else:
-          self.color_possible[line, :, :] = np.logical_and(self.color_possible[line, :, :], ans)
+          self.color_possible[line, :, :] = ans
     
     # Trigger initial update of line_status
     for ori, tmp in self.lines.items():
@@ -162,19 +163,13 @@ class Puzzle:
     """Check if the puzzle is solved (each cell has exactly one possible color)."""
     return np.all(np.sum(self.color_possible, axis=2) == 1)
   
-  def apply_line_constraints(self, ori: str, line: int, line_status: PuzzleLine):
+  def apply_line_constraints(self, ori: str, idx: int, line_status: PuzzleLine):
     """Apply line constraints to color_possible based on allowed colors."""
-    allowed_colors = line_status.get_allowed_colors()
-    if allowed_colors is None:
-      return
-    
-    for idx2, allowed_colors0 in enumerate(allowed_colors):
-      for color in range(self.n_colors):
-        if color not in allowed_colors0:
-          if ori == "horizontal":
-            self.color_possible[line, idx2, color] = 0
-          else:
-            self.color_possible[idx2, line, color] = 0
+    slice = line_status.get_color_possible_slice()
+    if ori == "vertical":
+      self.color_possible[:, idx, :] = slice
+    else:
+      self.color_possible[idx, :, :] = slice
   
   def refine_solutions(self) -> bool:
     """Refine existing solutions by filtering possible lines based on color_possible.
@@ -187,19 +182,37 @@ class Puzzle:
     
     for ori, pos0 in self.lines.items():
       for idx, status0 in pos0.items():
+        row_data = self.extract_row_2(ori, idx)
         if not status0.generated:
+          # For non-generated lines, we use generate_color_possible_from_slice
+          ans = generate_color_possible_from_slice(
+            len(self.lines[other_ori[ori]]),
+            status0.block_lengths,
+            status0.block_colors,
+            -1,
+            self.n_colors,
+            totuple(row_data)
+          )
+          
+          # Write this more restricted possibility back to color_possible#
+          if ori == "horizontal":
+            self.color_possible[idx, :, :] = ans
+          else:
+            self.color_possible[:, idx, :] = ans
+
           continue
         
         # If the relevant slice of color_possible hasn't changed, skip
-        if np.all(status0.slice_of_color_possible == self.extract_row_2(ori, idx)):
+        if np.all(status0.slice_of_color_possible == row_data):
           continue
         
-        row_data = self.extract_row_2(ori, idx)
         new_count = status0.update_from_color_possible(ori, idx, row_data, msg)
         if new_count == 0:
           # This should only happen for contradictions within assumptions
           raise ValueError(f"Line {ori} {idx} has no possible solutions left!")
+
         self.apply_line_constraints(ori, idx, status0)
+        
         status0.slice_of_color_possible = row_data.copy()
     
     return not np.all(old == self.color_possible)
@@ -225,11 +238,11 @@ class Puzzle:
         block_colors = status0.block_colors
         block_lengths = status0.block_lengths
         info = self.extract_row_2(ori, line)
-        n_pos = generate_count_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+        n_pos = generate_count_from_slice(len_line, block_lengths, block_colors, -1, totuple(info))
         
         status0.count = n_pos
         if n_pos <= self.limit_generate:
-          status0.possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+          status0.possible_lines = generate_from_slice(len_line, block_lengths, block_colors, -1, totuple(info))
           status0.generated = True
           generated_new_line = True
           status0.slice_of_color_possible = info.copy()
@@ -269,8 +282,8 @@ class Puzzle:
     len_line = len(self.lines[other_ori[ori0]])
     block_colors = self.lines[ori0][line0].block_colors
     block_lengths = self.lines[ori0][line0].block_lengths
-    info = self.extract_row_2(ori0, line0)
-    self.lines[ori0][line0].possible_lines = generate_with_info(len_line, block_lengths, block_colors, -1, totuple(info))
+    slice = self.extract_row_2(ori0, line0)
+    self.lines[ori0][line0].possible_lines = generate_from_slice(len_line, block_lengths, block_colors, -1, totuple(slice))
     self.lines[ori0][line0].generated = True
     
     # Update color_possible
@@ -531,7 +544,7 @@ class Puzzle:
         distance_to_last_assumption = min(self.lines["horizontal"][row].count, 
                                           self.lines["vertical"][col].count)
       
-      possible_colors = np.where(self.color_possible[row, col, :] == 1)[0]
+      possible_colors = np.where(self.color_possible[row, col, :])[0]
       
       for color in possible_colors:
         pixel_color_combinations.append((min_distance, distance_to_last_assumption, row, col, color))
@@ -598,8 +611,8 @@ class Puzzle:
         puzzle_copy.strategy = "generate"
         
         # Set the assumed color in the copy
-        puzzle_copy.color_possible[row, col, :] = 0
-        puzzle_copy.color_possible[row, col, assumed_color] = 1
+        puzzle_copy.color_possible[row, col, :] = False
+        puzzle_copy.color_possible[row, col, assumed_color] = True
         
         # Run limited iterations to test the assumption (max 5)
         puzzle_copy.solve(do_plot=False, max_iterations=5)
@@ -622,7 +635,7 @@ class Puzzle:
         print(f'\n  → Contradiction found! Eliminating color {assumed_color} from pixel ({row}, {col})')
         
         # Eliminate this color from the original puzzle
-        self.color_possible[row, col, assumed_color] = 0
+        self.color_possible[row, col, assumed_color] = False
         
         # Track this pixel as the last assumption that led to progress
         self.last_assumption_pixel = (row, col)

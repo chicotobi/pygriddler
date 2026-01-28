@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Optional
 import time
 
-# Global counter for benchmarking get_allowed_colors bottleneck
+# Global counter for benchmarking get_color_possible_slice bottleneck
 _time_unique = 0.0
 _time_keep = 0.0
 
@@ -80,7 +80,7 @@ class PuzzleLine:
     for color in range(self._n_colors):
       extracted_row = row_data[:, color]
       for idx2, val in enumerate(extracted_row):
-        if val == 0:
+        if not val:  # If color is not possible (False)
           keep = possible_lines0[:,idx2] != color
           possible_lines0 = possible_lines0[keep,:]
     _time_keep += time.perf_counter() - start
@@ -89,8 +89,8 @@ class PuzzleLine:
     msg_func(ori, line, self._count, "Reduced to", old_count)
     return self._count
   
-  def get_allowed_colors(self):
-    """Return list of allowed colors for each position in this line."""
+  def get_color_possible_slice(self):
+    """Reduce the possible lines to the color_possible slice of this line"""
     global _time_unique
     if self._possible_lines is None:
       return None
@@ -99,5 +99,8 @@ class PuzzleLine:
     start = time.perf_counter()
     #x = [np.unique(self._possible_lines[:,i]) for i in range(n2)]
     x = [pd.unique(self._possible_lines[:,i]) for i in range(n2)]
+    y = np.zeros((n2, self._n_colors), dtype=np.bool_)
+    for i in range(n2):
+      y[i, x[i]] = True
     _time_unique += time.perf_counter() - start
-    return x
+    return y
