@@ -93,15 +93,15 @@ class PuzzleLine:
   def get_color_possible_slice(self):
     """Reduce the possible lines to the color_possible slice of this line"""
     global _time_unique
-    if self._possible_lines is None:
-      return None
-    _, n2 = self._possible_lines.shape
+    if not self.generated:
+      raise RuntimeError("Line must be generated before getting color possible slice.")
+
     # Possibly the computational bottleneck
     start = time.perf_counter()
-    #x = [np.unique(self._possible_lines[:,i]) for i in range(n2)]
-    x = [pd.unique(self._possible_lines[:,i]) for i in range(n2)]
-    y = np.zeros((n2, self._n_colors), dtype=np.bool_)
-    for i in range(n2):
-      y[i, x[i]] = True
+    y = np.zeros((self.n, self._n_colors), dtype=np.bool_)
+    for idx in range(self.n):
+      allowed_colors = pd.unique(self._possible_lines[:, idx])
+      for color in allowed_colors:
+        y[idx, color] = True
     _time_unique += time.perf_counter() - start
     return y

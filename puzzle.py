@@ -274,22 +274,21 @@ class Puzzle:
     
     if ori0 is None:
       return False
+
+    line0 = self.lines[(ori0, idx0)]
     
-    n = self.lines[ori0][idx0].n
-    block_colors = self.lines[ori0][idx0].block_colors
-    block_lengths = self.lines[ori0][idx0].block_lengths
+    n = line0.n
     slice = self.get_slice(ori0, idx0)
-    self.lines[ori0][idx0].possible_lines = generate_from_slice(
-      n = n,
-      n_colors = self.lines[ori0][idx0]._n_colors,
-      block_lengths = block_lengths,
-      block_colors = block_colors,
+    line0.possible_lines = generate_from_slice(
+      n = line0.n,
+      n_colors = line0._n_colors,
+      block_lengths = line0.block_lengths,
+      block_colors = line0.block_colors,
       slice = totuple(slice)
     )
-    self.lines[ori0][idx0].generated = True
-    
+    line0.generated = True    
     # Update color_possible
-    self.apply_line_constraints(ori0, idx0, self.lines[ori0][idx0])
+    self.apply_line_constraints(ori0, idx0, line0)
     
     msg(ori0, idx0, count0, True)
     
