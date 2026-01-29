@@ -11,27 +11,38 @@ _time_keep = 0.0
 class PuzzleLine:
   """Tracks the state of a single row/column in the puzzle."""
   
-  def __init__(self, n: int, block_colors: tuple, block_lengths: tuple, 
+  def __init__(self,
+               n: int,
                n_colors: int,
+               block_lengths: tuple,
+               block_colors: tuple, 
                possible_lines: Optional[np.ndarray] = None, 
                generated: bool = False, 
                count: int = 0):
-    self.n = n
-    self._block_colors = block_colors
-    self._block_lengths = block_lengths
+    self._n = n
     self._n_colors = n_colors
+    self._block_lengths = block_lengths
+    self._block_colors = block_colors
     self._possible_lines = possible_lines
     self._generated = generated
     self._count = count
     self._slice_of_color_possible = None
   
   @property
-  def block_colors(self) -> tuple:
-    return self._block_colors
-  
+  def n(self) -> int:
+    return self._n
+    
+  @property
+  def n_colors(self) -> int:
+    return self._n_colors
+      
   @property
   def block_lengths(self) -> tuple:
     return self._block_lengths
+
+  @property
+  def block_colors(self) -> tuple:
+    return self._block_colors
   
   @property
   def possible_lines(self) -> Optional[np.ndarray]:

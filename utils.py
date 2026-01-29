@@ -84,3 +84,12 @@ def compare_output_with_blueprint(example_number):
     print(''.join(diff))
   
   return match
+
+class NoSolutionError(Exception):
+  """Raised when a puzzle line or configuration has no valid solution.
+  
+  This typically indicates either:
+  1. An impossible puzzle constraint
+  2. A contradiction discovered during assumption-based solving
+  """
+  pass

@@ -7,7 +7,7 @@ from puzzle_line import PuzzleLine
 from generators import generate, generate_count
 from generators import generate_from_slice, generate_count_from_slice
 from generators import generate_color_possible_from_slice
-from utils import plot, msg, totuple
+from utils import plot, msg, totuple, NoSolutionError
 from griddler_parser import GriddlerParser
 
 # Debug flag - set to True to enable distance map visualization
@@ -102,10 +102,10 @@ class Puzzle:
     for ori_key in ["vertical", "horizontal"]:
       for idx, data in puzzle_dict["lines"][ori_key].items():
         puzzle.lines[(ori_key,int(idx))] = PuzzleLine(
-            n=puzzle.x if ori_key == "horizontal" else puzzle.y,
-            n_colors=puzzle.n_colors,
-            block_colors=tuple(data["block_colors"]),
-            block_lengths=tuple(data["block_lengths"])
+            n = puzzle.x if ori_key == "horizontal" else puzzle.y,
+            n_colors = puzzle.n_colors,
+            block_lengths = tuple(data["block_lengths"]),
+            block_colors = tuple(data["block_colors"])
         )
     
     return puzzle
@@ -198,7 +198,7 @@ class Puzzle:
       new_count = puzzle_line.update_from_color_possible(ori, idx, row_data, msg)
       if new_count == 0:
         # This should only happen for contradictions within assumptions
-        raise ValueError(f"Line {ori} {idx} has no possible solutions left!")
+        raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
 
       self.apply_line_constraints(ori, idx, puzzle_line)
       
@@ -378,39 +378,39 @@ class Puzzle:
     Returns:
       A new Puzzle instance with deep-copied state
     """
+    return copy.deepcopy(self)
+  
+  def __deepcopy__(self, memo) -> 'Puzzle':
+    """Custom deep copy implementation for Puzzle objects.
+    
+    Args:
+      memo: Dictionary of objects already copied (used by copy.deepcopy)
+      
+    Returns:
+      A new Puzzle instance with deep-copied state
+    """
     # Create a new puzzle instance without calling __init__
     new_puzzle = object.__new__(Puzzle)
     
-    # Copy scalar attributes
-    new_puzzle.id0 = self.id0
-    new_puzzle.desc = self.desc
-    new_puzzle.colors = self.colors.copy() if isinstance(self.colors, list) else self.colors
-    new_puzzle.n_colors = self.n_colors
-    new_puzzle.x = self.x
-    new_puzzle.y = self.y
-    new_puzzle.limit_generate = self.limit_generate
-    new_puzzle.strategy = self.strategy
-    new_puzzle.last_assumption_pixel = self.last_assumption_pixel
+    # Add to memo to handle circular references
+    memo[id(self)] = new_puzzle
     
-    # Deep copy color_possible array
-    new_puzzle.color_possible = self.color_possible.copy()
-    
-    # Deep copy lines dictionary with PuzzleLine objects
-    new_puzzle.lines = {}
-    for (ori, idx), puzzle_line in self.lines.items():
-        # Create new PuzzleLine with copied data
-        new_puzzle_line = PuzzleLine(
-          block_colors = puzzle_line.block_colors,
-          block_lengths = puzzle_line.block_lengths,
-          n_colors = puzzle_line.n_colors,
-          possible_lines = puzzle_line.possible_lines.copy() if puzzle_line.possible_lines is not None else None,
-          generated = puzzle_line.generated,
-          count = puzzle_line.count
-        )
-        # Copy slice_of_color_possible if it exists
-        if puzzle_line.slice_of_color_possible is not None:
-          new_puzzle_line.slice_of_color_possible = puzzle_line.slice_of_color_possible.copy()
-        new_puzzle.lines[(ori, idx)] = new_puzzle_line
+    # Copy all attributes using deepcopy for mutable objects
+    for key, value in self.__dict__.items():
+      if key == 'lines':
+        # Special handling for lines dictionary with PuzzleLine objects
+        new_puzzle.lines = {}
+        for (ori, idx), puzzle_line in value.items():
+          new_puzzle.lines[(ori, idx)] = copy.deepcopy(puzzle_line, memo)
+      elif isinstance(value, np.ndarray):
+        # NumPy arrays need .copy()
+        setattr(new_puzzle, key, value.copy())
+      elif isinstance(value, (list, dict)):
+        # Deep copy mutable containers
+        setattr(new_puzzle, key, copy.deepcopy(value, memo))
+      else:
+        # Immutable objects and primitives can be copied by reference
+        setattr(new_puzzle, key, value)
     
     return new_puzzle
   
@@ -540,8 +540,7 @@ class Puzzle:
         distance_to_last_assumption = max(abs(row - last_row), abs(col - last_col))
       else:
         # Fallback: use minimum line count if no assumption made yet
-        distance_to_last_assumption = min(self.lines["horizontal"][row].count, 
-                                          self.lines["vertical"][col].count)
+        distance_to_last_assumption = 0
       
       possible_colors = np.where(self.color_possible[row, col, :])[0]
       
@@ -626,7 +625,7 @@ class Puzzle:
         fig.canvas.flush_events()
         plt.pause(0.001)
         
-      except (ValueError, Exception) as e:
+      except (NoSolutionError) as e:
         # Restore output first
         sys.stdout = old_stdout
         
