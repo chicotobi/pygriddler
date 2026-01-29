@@ -183,16 +183,8 @@ class Puzzle:
       row_data = self.get_slice(ori, idx)
       if not puzzle_line.generated:
         if self.check_ungenerated:
-          # For non-generated lines, we use generate_color_possible_from_slice
-          slice = generate_color_possible_from_slice(
-              n = puzzle_line.n,
-              n_colors = puzzle_line.n_colors,
-              block_lengths = puzzle_line.block_lengths,
-              block_colors = puzzle_line.block_colors,
-              slice = totuple(row_data)
-            )
-
-          msg(ori, idx, "reduced slice sum", np.sum(slice), np.sum(row_data))
+          # For non-generated lines, use the line's method to update the slice
+          slice = puzzle_line.update_slice_for_ungenerated(ori, idx, row_data)
           
           # Write this more restricted possibility back to color_possible
           self.set_slice(ori, idx, slice)
@@ -207,7 +199,8 @@ class Puzzle:
         # This should only happen for contradictions within assumptions
         raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
 
-      self.apply_line_constraints(ori, idx, puzzle_line)
+      slice = puzzle_line.get_color_possible_slice()
+      self.set_slice(ori, idx, slice)
       
       puzzle_line.slice_of_color_possible = row_data.copy()
     
@@ -251,11 +244,11 @@ class Puzzle:
         )
         puzzle_line.generated = True
         generated_new_line = True
-        puzzle_line.slice_of_color_possible = info.copy()
         msg(ori, idx, "generated", n_pos, puzzle_line.generated)
         
         # Update color_possible
-        self.apply_line_constraints(ori, idx, puzzle_line)
+        slice = puzzle_line.get_color_possible_slice()
+        self.set_slice(ori, idx, slice)
     
     return generated_new_line
   
@@ -295,7 +288,8 @@ class Puzzle:
     )
     line0.generated = True    
     # Update color_possible
-    self.apply_line_constraints(ori0, idx0, line0)
+    slice = line0.get_color_possible_slice()
+    self.set_slice(ori0, idx0, slice)
     
     msg(ori0, idx0, "generated", count0, True)
     

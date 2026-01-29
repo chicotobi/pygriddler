@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 import time
-from utils import msg
+from utils import msg, totuple
+from generators import generate_color_possible_from_slice
 
 # Global counter for benchmarking get_color_possible_slice bottleneck
 _time_unique = 0.0
@@ -90,12 +91,15 @@ class PuzzleLine:
     old_count = self._count
     possible_lines0 = self._possible_lines
     start = time.perf_counter()
+    # Vectorized filtering: build single mask for all constraints
+    keep_mask = np.ones(len(possible_lines0), dtype=bool)
     for color in range(self._n_colors):
       extracted_row = row_data[:, color]
-      for idx2, val in enumerate(extracted_row):
-        if not val:  # If color is not possible (False)
-          keep = possible_lines0[:,idx2] != color
-          possible_lines0 = possible_lines0[keep,:]
+      invalid_positions = np.where(~extracted_row)[0]
+      if len(invalid_positions) > 0:
+        # Lines that have this color at any invalid position should be removed
+        keep_mask &= ~(possible_lines0[:, invalid_positions] == color).any(axis=1)
+    possible_lines0 = possible_lines0[keep_mask, :]
     _time_keep += time.perf_counter() - start
     self._count = len(possible_lines0)
     self._possible_lines = possible_lines0
@@ -116,4 +120,28 @@ class PuzzleLine:
       for color in allowed_colors:
         y[idx, color] = True
     _time_unique += time.perf_counter() - start
+
+    self.slice_of_color_possible = y
     return y
+  
+  def update_slice_for_ungenerated(self, ori: str, idx: int, row_data: np.ndarray) -> np.ndarray:
+    """Generate and return updated color_possible slice for ungenerated lines.
+    
+    Args:
+      ori: Orientation ('horizontal' or 'vertical')
+      idx: Line index
+      row_data: Current row data (len_line x n_colors)
+      
+    Returns:
+      Updated slice with more restricted possibilities
+    """
+    slice = generate_color_possible_from_slice(
+      n=self._n,
+      n_colors=self._n_colors,
+      block_lengths=self._block_lengths,
+      block_colors=self._block_colors,
+      slice=totuple(row_data)
+    )
+    
+    msg(ori, idx, "reduced slice sum", np.sum(slice), np.sum(row_data))
+    return slice
