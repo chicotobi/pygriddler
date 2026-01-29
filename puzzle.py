@@ -144,7 +144,7 @@ class Puzzle:
           block_colors = puzzle_line.block_colors
         )
         puzzle_line.generated = True
-      msg(ori, idx, n_pos, puzzle_line.generated)
+      msg(ori, idx, "generated", n_pos, puzzle_line.generated)
     
       puzzle_line.slice_of_color_possible = self.get_slice(ori, idx) * -1
   
@@ -191,6 +191,8 @@ class Puzzle:
               block_colors = puzzle_line.block_colors,
               slice = totuple(row_data)
             )
+
+          msg(ori, idx, "reduced slice sum", np.sum(slice), np.sum(row_data))
           
           # Write this more restricted possibility back to color_possible
           self.set_slice(ori, idx, slice)
@@ -200,7 +202,7 @@ class Puzzle:
       if np.all(puzzle_line.slice_of_color_possible == row_data):
         continue
       
-      new_count = puzzle_line.update_from_color_possible(ori, idx, row_data, msg)
+      new_count = puzzle_line.update_from_color_possible(ori, idx, row_data)
       if new_count == 0:
         # This should only happen for contradictions within assumptions
         raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
@@ -250,7 +252,7 @@ class Puzzle:
         puzzle_line.generated = True
         generated_new_line = True
         puzzle_line.slice_of_color_possible = info.copy()
-        msg(ori, idx, n_pos, puzzle_line.generated)
+        msg(ori, idx, "generated", n_pos, puzzle_line.generated)
         
         # Update color_possible
         self.apply_line_constraints(ori, idx, puzzle_line)
@@ -295,7 +297,7 @@ class Puzzle:
     # Update color_possible
     self.apply_line_constraints(ori0, idx0, line0)
     
-    msg(ori0, idx0, count0, True)
+    msg(ori0, idx0, "generated", count0, True)
     
     return True
   

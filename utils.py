@@ -15,27 +15,29 @@ def nice_number(n):
   s2 = '.'.join([s[3*i:3*i+3] for i in range(x)])
   return s2
 
-def msg(ori, line, n, status, nold = None):
+def msg(ori, line, msg_type, n, nold = None):
   ori = {"vertical": 0, "horizontal": 1}[ori]
-  
-  if type(status) is str:
-    s3 = status
-  elif status:
-    s3 = 'Generated '
-  else:
-    s3 = 'Counted   '
-  if n == 1:
-    s3 = 'Finished  '
   line = '0'*(3-len(str(line))) + str(line)
-  s2 = nice_number(n)
   
-  if type(status) is str and status == 'Reduced to':
+  if msg_type == 'generated':
+    msg = f'{"Generated":<20}{nice_number(n)}'
+  elif msg_type == 'counted':
+    msg = f'{"Counted":<20}{nice_number(n)}'
+  elif msg_type == 'reduced':
     if n == nold:
-      s3 = 'Same at   '
+      msg = f'{"Same at":<20}{nice_number(n)}' 
     else:
-      s2 += ' from ' + nice_number(nold)
-
-  print("O"+str(ori)+"L"+str(line),s3,s2)
+      if n == 1:
+        msg = f'{"Finished":<20}{nice_number(n)} from {nice_number(nold)}'
+      else:
+        msg = f'{"Reduced to":<20}{nice_number(n)} from {nice_number(nold)}'
+  elif msg_type == 'reduced slice sum':
+    if n == nold:
+      msg = f'{"Slice sum same at":<20}{nice_number(n)}'
+    else:
+      msg = f'{"Slice sum reduced to":<20}{nice_number(n)} from {nice_number(nold)}'
+      
+  print(f"O{ori}L{line} {msg}")
   
 def plot(title, iteration, color_possible, colors, ori):
   

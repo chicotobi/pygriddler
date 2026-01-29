@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 import time
+from utils import msg
 
 # Global counter for benchmarking get_color_possible_slice bottleneck
 _time_unique = 0.0
@@ -76,7 +77,7 @@ class PuzzleLine:
   def slice_of_color_possible(self, value: Optional[np.ndarray]):
     self._slice_of_color_possible = value
   
-  def update_from_color_possible(self, ori: str, line: int, row_data: np.ndarray, msg_func):
+  def update_from_color_possible(self, ori: str, line: int, row_data: np.ndarray):
     """Update this line's possible_lines based on color_possible constraints.
     
     Args:
@@ -98,7 +99,7 @@ class PuzzleLine:
     _time_keep += time.perf_counter() - start
     self._count = len(possible_lines0)
     self._possible_lines = possible_lines0
-    msg_func(ori, line, self._count, "Reduced to", old_count)
+    msg(ori, line, "reduced", self._count, old_count)
     return self._count
   
   def get_color_possible_slice(self):
