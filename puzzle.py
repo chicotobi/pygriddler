@@ -2,6 +2,8 @@ import numpy as np
 import os.path
 import json
 import copy
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from typing import Dict, Optional, Tuple
 from puzzle_line import PuzzleLine
 from generators import generate, generate_count
@@ -316,7 +318,7 @@ class Puzzle:
     # STILL no updates? Use the configured strategy
     if not updated:
       if self.strategy == "assumption":
-        updated = self.try_assumption()
+        updated = self.try_assumption(do_plot = do_plot)
         self.generate_solutions_under_limit()
       else:
         updated = self.force_generate_smallest_line()
@@ -369,7 +371,6 @@ class Puzzle:
   
   def save_plot(self):
     """Save a PNG plot of the final solution."""
-    import matplotlib.pyplot as plt
     plot(self.desc, "FINAL", self.color_possible, self.colors, 0)
     png_file = os.path.join('solutions', 'python', 'png', str(self.id0) + '.png')
     plt.savefig(png_file, bbox_inches='tight', dpi=150)
@@ -460,8 +461,6 @@ class Puzzle:
   
   def _plot_distance_map(self, distance_map, solved_coords):
     """Debug visualization: plot distance map with heatmap and annotations."""
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as mpatches
     
     fig, ax = plt.subplots(figsize=(max(8, self.x * 0.6), max(6, self.y * 0.6)))
     
@@ -559,7 +558,7 @@ class Puzzle:
     # Return list of (row, col, color) tuples
     return [(int(row), int(col), int(color)) for _, _, row, col, color in pixel_color_combinations]
   
-  def try_assumption(self) -> bool:
+  def try_assumption(self, do_plot=False) -> bool:
     """Try solving with systematic assumptions about unsolved pixels.
     
     Uses a breadth-first heuristic: makes a deep copy of the puzzle, sets an
@@ -574,7 +573,6 @@ class Puzzle:
     Returns:
       True if the assumption led to eliminating a color, False otherwise
     """
-    import matplotlib.pyplot as plt
     
     # Get sorted list of all (pixel, color) combinations (furthest from center first)
     pixel_color_combos = self.get_sorted_unsolved_pixels()
@@ -583,13 +581,7 @@ class Puzzle:
     print(f"\nTesting assumptions: {total} pixel-color combinations to check")
     
     # Ensure a plot is active
-    if plt.get_fignums():
-      fig = plt.gcf()
-      ax = plt.gca()
-    else:
-      # Create initial plot if none exists
-      from utils import plot as utils_plot
-      utils_plot(self.desc, "Assumption Testing", self.color_possible, self.colors, 0)
+    if do_plot:
       fig = plt.gcf()
       ax = plt.gca()
     
@@ -626,10 +618,11 @@ class Puzzle:
         sys.stdout = old_stdout
         
         # Add red cross for unsuccessful attempt (note: row/col vs x/y in imshow)
-        ax.plot(col, row, 'rx', markersize=4, markeredgewidth=1, alpha=0.7)
-        fig.canvas.draw()
-        fig.canvas.flush_events()
-        plt.pause(0.001)
+        if do_plot:
+          ax.plot(col, row, 'rx', markersize=4, markeredgewidth=1, alpha=0.7)
+          fig.canvas.draw()
+          fig.canvas.flush_events()
+          plt.pause(0.001)
         
       except (NoSolutionError) as e:
         # Restore output first
