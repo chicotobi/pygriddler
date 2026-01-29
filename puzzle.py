@@ -17,7 +17,7 @@ class Puzzle:
   """Represents a nonogram puzzle with color possibilities and puzzle lines."""
   
   def __init__(self, puzzle_id: int, limit_generate: int = 5_000_000, 
-               strategy: str = "generate"):
+               strategy: str = "generate", check_ungenerated: bool = True):
     """Initialize puzzle from puzzle ID.
     
     Args:
@@ -27,6 +27,7 @@ class Puzzle:
       strategy: Solving strategy when stuck - "generate" or "assumption"
                 - "generate": Generate more solutions for complex lines (default)
                 - "assumption": Try random pixel assumptions to eliminate possibilities
+      check_ungenerated: Whether to check ungenerated lines during solving
     """
     # Load puzzle from ID and get raw JSON data
     parser = GriddlerParser(puzzle_id)
@@ -36,14 +37,14 @@ class Puzzle:
       puzzle_data = json.load(f)
     
     # Use from_dict to initialize (reuse common logic)
-    puzzle = Puzzle.from_dict(puzzle_data, limit_generate, strategy)
+    puzzle = Puzzle.from_dict(puzzle_data, limit_generate, strategy, check_ungenerated)
     
     # Copy all attributes to self
     self.__dict__.update(puzzle.__dict__)
   
   @classmethod
   def from_dict(cls, puzzle_dict: dict, limit_generate: int = 5_000_000, 
-                strategy: str = "generate"):
+                strategy: str = "generate", check_ungenerated: bool = True) -> 'Puzzle':
     """Create a Puzzle instance from a custom dictionary structure.
     
     Uses the same JSON structure as GriddlerParser._translate_raw_to_json():
@@ -74,6 +75,7 @@ class Puzzle:
       puzzle_dict: Dictionary with puzzle structure (see above)
       limit_generate: Maximum number of possible lines to generate for a line
       strategy: Solving strategy - "generate" or "assumption"
+      check_ungenerated: Whether to check ungenerated lines during solving
       
     Returns:
       Puzzle instance
@@ -90,6 +92,7 @@ class Puzzle:
     puzzle.n_colors = puzzle_dict["n_colors"]
     puzzle.limit_generate = limit_generate
     puzzle.strategy = strategy
+    puzzle.check_ungenerated = check_ungenerated
     
     # Initialize color_possible array as boolean
     puzzle.color_possible = np.ones((puzzle.y, puzzle.x, puzzle.n_colors), dtype=np.bool_)
@@ -125,7 +128,7 @@ class Puzzle:
       current_slice = self.get_slice(ori, idx)
       slice = generate_color_possible_from_slice(
         n = puzzle_line.n,
-        n_colors = puzzle_line._n_colors,
+        n_colors = puzzle_line.n_colors,
         block_lengths = puzzle_line.block_lengths,
         block_colors = puzzle_line.block_colors,
         slice = totuple(current_slice)
@@ -177,18 +180,18 @@ class Puzzle:
     for (ori, idx), puzzle_line in self.lines.items():
       row_data = self.get_slice(ori, idx)
       if not puzzle_line.generated:
-        # For non-generated lines, we use generate_color_possible_from_slice
-        slice = generate_color_possible_from_slice(
-            n = puzzle_line.n,
-            n_colors = puzzle_line._n_colors,
-            block_lengths = puzzle_line.block_lengths,
-            block_colors = puzzle_line.block_colors,
-            slice = totuple(row_data)
-          )
-        
-        # Write this more restricted possibility back to color_possible
-        self.set_slice(ori, idx, slice)
-
+        if self.check_ungenerated:
+          # For non-generated lines, we use generate_color_possible_from_slice
+          slice = generate_color_possible_from_slice(
+              n = puzzle_line.n,
+              n_colors = puzzle_line.n_colors,
+              block_lengths = puzzle_line.block_lengths,
+              block_colors = puzzle_line.block_colors,
+              slice = totuple(row_data)
+            )
+          
+          # Write this more restricted possibility back to color_possible
+          self.set_slice(ori, idx, slice)
         continue
       
       # If the relevant slice of color_possible hasn't changed, skip
@@ -411,6 +414,9 @@ class Puzzle:
       else:
         # Immutable objects and primitives can be copied by reference
         setattr(new_puzzle, key, value)
+
+    new_puzzle.strategy = 'generate'
+    new_puzzle.check_ungenerated = False
     
     return new_puzzle
   
@@ -612,8 +618,8 @@ class Puzzle:
         puzzle_copy.color_possible[row, col, :] = False
         puzzle_copy.color_possible[row, col, assumed_color] = True
         
-        # Run limited iterations to test the assumption (max 5)
-        puzzle_copy.solve(do_plot=False, max_iterations=5)
+        # Run limited iterations to test the assumption (max 3)
+        puzzle_copy.solve(do_plot=False, max_iterations=3)
         
         # If we reach here, no contradiction was found
         # Restore output and mark pixel with red cross
