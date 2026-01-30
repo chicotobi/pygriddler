@@ -249,11 +249,7 @@ class Puzzle:
             print(f"\nStopped after {it} iterations (max_iterations={max_iterations})")
 
     def save_solution(self):
-        """Save the solved puzzle to disk as both .npy and .json files."""
-        # Save as numpy array
-        solution_file = os.path.join("solutions", "python", str(self.id0) + ".npy")
-        np.save(solution_file, self.color_possible)
-
+        """Save the solved puzzle to disk as a .json file."""
         # Save as JSON with the solution grid
         solution = np.argmax(self.color_possible, axis=2)
         solution_json = os.path.join("solutions", "python", str(self.id0) + ".json")
@@ -269,7 +265,7 @@ class Puzzle:
                 indent=2,
             )
 
-        print(f"Solution saved to {solution_file} and {solution_json}")
+        print(f"Solution saved to {solution_json}")
 
     def save_plot(self):
         """Save a PNG plot of the final solution."""
