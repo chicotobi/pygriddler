@@ -193,11 +193,9 @@ class Puzzle:
 
         # Update color_possible from this new line
         slice = self.get_slice(ori0, idx0)
-        new_slice = line0.generate_from_slice(slice)
+        new_slice = line0.update(slice, force_generate=True)
         self.set_slice(ori0, idx0, new_slice)
-
-        msg(ori0, idx0, "generated", line0.count, True)
-
+        
         return True
 
     def solve_iteration(self, it: int, do_plot: bool = False):

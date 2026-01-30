@@ -6,7 +6,7 @@ plt.ion()
 
 # Create and initialize the puzzle
 puzzle = Puzzle(
-    puzzle_id=8, limit_generate=100_000, strategy="generate", check_ungenerated=True
+    puzzle_id=8, limit_generate=10_000, strategy="generate", check_ungenerated=True
 )
 puzzle.initialize()
 

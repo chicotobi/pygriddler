@@ -94,11 +94,12 @@ class PuzzleLine:
     def slice_of_color_possible(self, value: Optional[np.ndarray]):
         self._slice_of_color_possible = value
 
-    def update(self, slice: np.ndarray) -> np.ndarray:
+    def update(self, slice: np.ndarray, force_generate: bool = False) -> np.ndarray:
         """Update this line based on color_possible constraints.
 
         Args:
           slice: Current color_possible slice
+          force_generate: Whether to force generation even if count is high
 
         Returns:
           Updated slice (or unchanged slice if no update needed)
@@ -126,7 +127,7 @@ class PuzzleLine:
             block_colors=self._block_colors,
             slice=totuple(slice)
         )
-        if self._count < self._limit_generate:
+        if self._count < self._limit_generate or force_generate:
             new_slice = self.generate_from_slice(slice)
             msg(
                 self._ori,
