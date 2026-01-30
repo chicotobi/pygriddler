@@ -17,6 +17,8 @@ class PuzzleLine:
   """Tracks the state of a single row/column in the puzzle."""
   
   def __init__(self,
+               ori: str,
+               idx: int,
                n: int,
                n_colors: int,
                block_lengths: tuple,
@@ -26,6 +28,8 @@ class PuzzleLine:
                possible_lines: Optional[np.ndarray] = None, 
                generated: bool = False, 
                count: int = 0):
+    self._ori = ori
+    self._idx = idx
     self._n = n
     self._n_colors = n_colors
     self._block_lengths = block_lengths
@@ -89,12 +93,10 @@ class PuzzleLine:
   def slice_of_color_possible(self, value: Optional[np.ndarray]):
     self._slice_of_color_possible = value
   
-  def update(self, ori: str, idx: int, slice: np.ndarray) -> np.ndarray:
+  def update(self, slice: np.ndarray) -> np.ndarray:
     """Update this line based on color_possible constraints.
     
     Args:
-      ori: Orientation ('horizontal' or 'vertical')
-      idx: Line index
       slice: Current color_possible slice
       
     Returns:
@@ -106,10 +108,10 @@ class PuzzleLine:
       if np.all(self._slice_of_color_possible == slice):
         return slice
       
-      new_slice, new_count = self.update_from_color_possible(ori, idx, slice)
+      new_slice, new_count = self.update_from_color_possible(slice)
       if new_count == 0:
         # This should only happen for contradictions within assumptions
-        raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
+        raise NoSolutionError(f"Line {self._ori} {self._idx} has no possible solutions left!")
       
       return new_slice
     elif self._check_ungenerated:
@@ -120,19 +122,16 @@ class PuzzleLine:
           block_colors=self._block_colors,
           slice=totuple(slice)
         )        
-      msg(ori, idx, "reduced slice sum", np.sum(new_slice), np.sum(slice))
+      msg(self._ori, self._idx, "reduced slice sum", np.sum(new_slice), np.sum(slice))
       return new_slice
     else:
       return slice
   
-  def update_from_color_possible(self, ori: str, line: int, row_data: np.ndarray):
+  def update_from_color_possible(self, row_data: np.ndarray):
     """Update this line's possible_lines based on color_possible constraints.
     
     Args:
-      ori: Orientation ('horizontal' or 'vertical')
-      line: Line index
       row_data: Extracted row data (len_line x n_colors)
-      msg_func: Message function for logging
     """
     global _time_keep
     old_count = self._count
@@ -150,7 +149,7 @@ class PuzzleLine:
     _time_keep += time.perf_counter() - start
     self._count = len(possible_lines0)
     self._possible_lines = possible_lines0
-    msg(ori, line, "reduced", self._count, old_count)
+    msg(self._ori, self._idx, "reduced", self._count, old_count)
     return self.get_slice(), self._count
   
   def get_slice(self):
@@ -229,12 +228,10 @@ class PuzzleLine:
       slice=totuple(slice)
     )
   
-  def initialize(self, ori: str, idx: int, slice: np.ndarray) -> np.ndarray:
+  def initialize(self, slice: np.ndarray) -> np.ndarray:
     """Initialize this line by counting and optionally generating solutions.
     
     Args:
-      ori: Orientation ('horizontal' or 'vertical')
-      idx: Line index
       slice: Current color_possible slice
       
     Returns:
@@ -245,8 +242,8 @@ class PuzzleLine:
     
     if n_pos < self._limit_generate:
       new_slice = self.generate()
-      msg(ori, idx, "generated", n_pos, self._generated)
+      msg(self._ori, self._idx, "generated", n_pos, self._generated)
     else:
-      msg(ori, idx, "counted", n_pos, self._generated)
+      msg(self._ori, self._idx, "counted", n_pos, self._generated)
     
     return new_slice

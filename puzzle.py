@@ -104,6 +104,8 @@ class Puzzle:
     for ori_key in ["vertical", "horizontal"]:
       for idx, data in puzzle_dict["lines"][ori_key].items():
         puzzle.lines[(ori_key,int(idx))] = PuzzleLine(
+            ori = ori_key,
+            idx = int(idx),
             n = puzzle.x if ori_key == "horizontal" else puzzle.y,
             n_colors = puzzle.n_colors,
             block_lengths = tuple(data["block_lengths"]),
@@ -120,7 +122,7 @@ class Puzzle:
     for (ori, idx), puzzle_line in self.lines.items():
 
       slice = self.get_slice(ori, idx)
-      new_slice = puzzle_line.initialize(ori, idx, slice)
+      new_slice = puzzle_line.initialize(slice)
       self.set_slice(ori, idx, new_slice)
   
   def get_slice(self, ori: str, idx: int) -> np.ndarray:
@@ -151,7 +153,7 @@ class Puzzle:
     
     for (ori, idx), puzzle_line in self.lines.items():
       slice = self.get_slice(ori, idx)
-      new_slice = puzzle_line.update(ori, idx, slice)
+      new_slice = puzzle_line.update(slice)
       self.set_slice(ori, idx, new_slice)
     
     return not np.all(old == self.color_possible)
