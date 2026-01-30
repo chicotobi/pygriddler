@@ -1,13 +1,12 @@
 from puzzle import Puzzle
 import matplotlib.pyplot as plt
 import time
-from puzzle_line import _time_unique, _time_keep
 
 plt.ion()
 
 # Create and initialize the puzzle
 puzzle = Puzzle(
-    puzzle_id=8, limit_generate=100_000, strategy="assumption", check_ungenerated=True
+    puzzle_id=8, limit_generate=100_000, strategy="generate", check_ungenerated=True
 )
 puzzle.initialize()
 
@@ -19,6 +18,7 @@ puzzle.solve(do_plot=True)
 total_runtime = time.perf_counter() - script_start
 
 # Get the bottleneck timing from puzzle_line module
+from puzzle_line import _time_unique, _time_keep
 remaining_operations = total_runtime - _time_unique - _time_keep
 
 print("\n--- Runtime Summary ---")

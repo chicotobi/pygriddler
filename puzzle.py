@@ -172,34 +172,6 @@ class Puzzle:
 
         return not np.all(old == self.color_possible)
 
-    def generate_solutions_under_limit(self) -> bool:
-        """Generate solutions for lines under the generation limit.
-
-        This should be called in ALL strategies on every iteration to generate
-        solutions for lines that are below the complexity threshold.
-
-        Returns:
-          True if at least one new line was generated, False otherwise
-        """
-        generated_new_line = False
-
-        for (ori, idx), puzzle_line in self.lines.items():
-            if puzzle_line.generated:
-                continue
-
-            slice = self.get_slice(ori, idx)
-            n_pos = puzzle_line.generate_count_from_slice(slice)
-
-            if n_pos <= self.limit_generate:
-                new_slice = puzzle_line.generate_from_slice(slice)
-                generated_new_line = True
-                msg(ori, idx, "generated", n_pos, puzzle_line.generated)
-
-                # Update color_possible
-                self.set_slice(ori, idx, new_slice)
-
-        return generated_new_line
-
     def force_generate_smallest_line(self) -> bool:
         """Force generate the smallest non-generated line, regardless of limit.
 
@@ -240,11 +212,7 @@ class Puzzle:
         # Refine existing solutions
         updated = self.update()
 
-        # No updates? Try to generate new solutions under the limit
-        if not updated:
-            updated = self.generate_solutions_under_limit()
-
-        # STILL no updates? Use the configured strategy
+        # No updates? Use the configured strategy
         if not updated:
             if self.strategy == "assumption":
                 updated = self.try_assumption(do_plot=do_plot)

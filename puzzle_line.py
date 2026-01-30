@@ -104,6 +104,7 @@ class PuzzleLine:
           Updated slice (or unchanged slice if no update needed)
         """
 
+
         if self._generated:
             # If the relevant slice of color_possible hasn't changed, skip
             if np.all(self._slice_of_color_possible == slice):
@@ -117,7 +118,25 @@ class PuzzleLine:
                 )
 
             return new_slice
-        elif self._check_ungenerated:
+        
+        self._count = generate_count_from_slice(
+            n=self._n,
+            n_colors=self._n_colors,
+            block_lengths=self._block_lengths,
+            block_colors=self._block_colors,
+            slice=totuple(slice)
+        )
+        if self._count < self._limit_generate:
+            new_slice = self.generate_from_slice(slice)
+            msg(
+                self._ori,
+                self._idx,
+                "generated",
+                self._count,
+            )
+            return new_slice
+        
+        if self._check_ungenerated:
             new_slice = generate_color_possible_from_slice(
                 n=self._n,
                 n_colors=self._n_colors,
@@ -133,8 +152,8 @@ class PuzzleLine:
                 np.sum(slice),
             )
             return new_slice
-        else:
-            return slice
+        
+        return slice
 
     def update_from_color_possible(self, row_data: np.ndarray):
         """Update this line's possible_lines based on color_possible constraints.
@@ -183,17 +202,6 @@ class PuzzleLine:
         self.slice_of_color_possible = y
         return y
 
-    def generate_count_from_slice(self, slice: np.ndarray) -> int:
-        """Wrapper for generate_count_from_slice - counts possible configurations given constraints."""
-        self._count = generate_count_from_slice(
-            n=self._n,
-            n_colors=self._n_colors,
-            block_lengths=self._block_lengths,
-            block_colors=self._block_colors,
-            slice=totuple(slice),
-        )
-        return self._count
-
     def generate_from_slice(self, slice: np.ndarray) -> np.ndarray:
         """Wrapper for generate_from_slice - generates possible configurations given constraints.
 
@@ -209,16 +217,6 @@ class PuzzleLine:
         self._generated = True
         return self.get_slice()
 
-    def generate_color_possible_from_slice(self, slice: np.ndarray) -> np.ndarray:
-        """Wrapper for generate_color_possible_from_slice - generates color possibilities from slice."""
-        return generate_color_possible_from_slice(
-            n=self._n,
-            n_colors=self._n_colors,
-            block_lengths=self._block_lengths,
-            block_colors=self._block_colors,
-            slice=totuple(slice),
-        )
-
     def initialize(self, slice: np.ndarray) -> np.ndarray:
         """Initialize this line by counting and optionally generating solutions.
 
@@ -228,8 +226,20 @@ class PuzzleLine:
         Returns:
           Updated color_possible slice
         """
-        n_pos = self.generate_count_from_slice(slice)
-        new_slice = self.generate_color_possible_from_slice(slice)
+        n_pos = generate_count_from_slice(
+            n=self._n,
+            n_colors=self._n_colors,
+            block_lengths=self._block_lengths,
+            block_colors=self._block_colors,
+            slice=totuple(slice)
+        )
+        new_slice = generate_color_possible_from_slice(
+            n=self._n,
+            n_colors=self._n_colors,
+            block_lengths=self._block_lengths,
+            block_colors=self._block_colors,
+            slice=totuple(slice)
+        )
 
         if n_pos < self._limit_generate:
             new_slice = self.generate_from_slice(slice)
