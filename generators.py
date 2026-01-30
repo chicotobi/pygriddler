@@ -4,61 +4,12 @@ from utils import totuple
 
 WHITE = 0
 
-
-@cache
-def generate(n, block_lengths, block_colors, previous_color=-1):
-    if len(block_lengths) == 0:
-        return np.zeros((1, n), dtype=np.uint8)
-    possible_lines = []
-    n_same_colored_neighbours = sum(np.diff(block_colors) == 0)
-    max_zeroes_left_side = n - sum(block_lengths) - n_same_colored_neighbours
-    if block_colors[0] == previous_color:
-        i0 = 1
-    else:
-        i0 = 0
-    for i in range(i0, max_zeroes_left_side + 1):
-        a3 = generate(
-            n=n - i - block_lengths[0],
-            block_lengths=block_lengths[1:],
-            block_colors=block_colors[1:],
-            previous_color=block_colors[0],
-        )
-        nrow, _ = a3.shape
-        a1 = np.zeros((nrow, i), dtype=np.uint8)
-        a2 = np.ones((nrow, block_lengths[0]), dtype=np.uint8) * block_colors[0]
-        a = np.concatenate((a1, a2, a3), axis=1)
-        possible_lines.append(a)
-    return np.concatenate(possible_lines)
-
-
-@cache
-def generate_count(n, block_lengths, block_colors, previous_color=-1):
-    if len(block_lengths) == 0:
-        return 1
-    count = 0
-    n_same_colored_neighbours = sum(np.diff(block_colors) == 0)
-    max_zeroes_left_side = n - sum(block_lengths) - n_same_colored_neighbours
-    if block_colors[0] == previous_color:
-        i0 = 1
-    else:
-        i0 = 0
-    for i in range(i0, max_zeroes_left_side + 1):
-        tmp = generate_count(
-            n=n - i - block_lengths[0],
-            block_lengths=block_lengths[1:],
-            block_colors=block_colors[1:],
-            previous_color=block_colors[0],
-        )
-        count += tmp
-    return count
-
-
 @cache
 def generate_from_slice(
     n, n_colors, block_lengths, block_colors, slice, previous_color=-1
 ):
-    if len(slice) == 0:
-        return generate(n, block_lengths, block_colors, previous_color)
+    if n == 0:
+        return np.zeros((1, 0), dtype=np.uint8)
     slice = np.asarray(slice, dtype=np.bool_)
     if len(block_lengths) == 0:
         if all(slice[:, WHITE]):
@@ -70,11 +21,8 @@ def generate_from_slice(
     max_zeroes_left_side_from_input = n - sum(block_lengths) - n_same_colored_neighbours
 
     # Find the first index where no white is allowed
-    tmp = np.nonzero(not slice[:, WHITE])[0]
-    if len(tmp) > 0:
-        max_zeroes_left_side_from_slice = tmp[0]
-    else:
-        max_zeroes_left_side_from_slice = n
+    non_white = np.where(~slice[:, WHITE])[0]
+    max_zeroes_left_side_from_slice = non_white[0] if len(non_white) > 0 else n
 
     length0 = block_lengths[0]
     color0 = block_colors[0]
@@ -113,8 +61,8 @@ def generate_from_slice(
 def generate_count_from_slice(
     n, n_colors, block_lengths, block_colors, slice, previous_color=-1
 ):
-    if len(slice) == 0:
-        return generate_count(n, block_lengths, block_colors, previous_color)
+    if n == 0:
+        return 1
     slice = np.asarray(slice, dtype=np.bool_)
     if len(block_lengths) == 0:
         if all(slice[:, WHITE]):
@@ -126,11 +74,8 @@ def generate_count_from_slice(
     max_zeroes_left_side_from_input = n - sum(block_lengths) - n_same_colored_neighbours
 
     # Find the first index where no white is allowed
-    tmp = np.nonzero(not slice[:, WHITE])[0]
-    if len(tmp) > 0:
-        max_zeroes_left_side_from_slice = tmp[0]
-    else:
-        max_zeroes_left_side_from_slice = n
+    non_white = np.where(~slice[:, WHITE])[0]
+    max_zeroes_left_side_from_slice = non_white[0] if len(non_white) > 0 else n
 
     length0 = block_lengths[0]
     color0 = block_colors[0]
@@ -176,11 +121,8 @@ def generate_color_possible_from_slice(
     max_zeroes_left_side_from_input = n - sum(block_lengths) - n_same_colored_neighbours
 
     # Find the first index where no white is allowed
-    tmp = np.nonzero(not slice[:, WHITE])[0]
-    if len(tmp) > 0:
-        max_zeroes_left_side_from_slice = tmp[0]
-    else:
-        max_zeroes_left_side_from_slice = n
+    non_white = np.where(~slice[:, WHITE])[0]
+    max_zeroes_left_side_from_slice = non_white[0] if len(non_white) > 0 else n
 
     length0 = block_lengths[0]
     color0 = block_colors[0]
