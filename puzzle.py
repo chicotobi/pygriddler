@@ -107,7 +107,8 @@ class Puzzle:
             n = puzzle.x if ori_key == "horizontal" else puzzle.y,
             n_colors = puzzle.n_colors,
             block_lengths = tuple(data["block_lengths"]),
-            block_colors = tuple(data["block_colors"])
+            block_colors = tuple(data["block_colors"]),
+            check_ungenerated = check_ungenerated
         )
     
     return puzzle
@@ -156,24 +157,7 @@ class Puzzle:
     
     for (ori, idx), puzzle_line in self.lines.items():
       slice = self.get_slice(ori, idx)
-      if not puzzle_line.generated:
-        if self.check_ungenerated:
-          # For non-generated lines, use the line's method to update the slice
-          new_slice = puzzle_line.update_slice_for_ungenerated(ori, idx, slice)
-          
-          # Write this more restricted possibility back to color_possible
-          self.set_slice(ori, idx, new_slice)
-        continue
-      
-      # If the relevant slice of color_possible hasn't changed, skip
-      if np.all(puzzle_line.slice_of_color_possible == slice):
-        continue
-      
-      new_slice, new_count = puzzle_line.update_from_color_possible(ori, idx, slice)
-      if new_count == 0:
-        # This should only happen for contradictions within assumptions
-        raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
-
+      new_slice = puzzle_line.update(ori, idx, slice)
       self.set_slice(ori, idx, new_slice)
     
     return not np.all(old == self.color_possible)

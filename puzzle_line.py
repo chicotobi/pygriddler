@@ -20,6 +20,7 @@ class PuzzleLine:
                n_colors: int,
                block_lengths: tuple,
                block_colors: tuple, 
+               check_ungenerated: bool = False,
                possible_lines: Optional[np.ndarray] = None, 
                generated: bool = False, 
                count: int = 0):
@@ -27,6 +28,7 @@ class PuzzleLine:
     self._n_colors = n_colors
     self._block_lengths = block_lengths
     self._block_colors = block_colors
+    self._check_ungenerated = check_ungenerated
     self._possible_lines = possible_lines
     self._generated = generated
     self._count = count
@@ -48,6 +50,10 @@ class PuzzleLine:
   def block_colors(self) -> tuple:
     return self._block_colors
   
+  @property
+  def check_ungenerated(self) -> bool:
+    return self._check_ungenerated
+
   @property
   def possible_lines(self) -> Optional[np.ndarray]:
     return self._possible_lines
@@ -79,6 +85,37 @@ class PuzzleLine:
   @slice_of_color_possible.setter
   def slice_of_color_possible(self, value: Optional[np.ndarray]):
     self._slice_of_color_possible = value
+  
+  def update(self, ori: str, idx: int, slice: np.ndarray) -> np.ndarray:
+    """Update this line based on color_possible constraints.
+    
+    Args:
+      ori: Orientation ('horizontal' or 'vertical')
+      idx: Line index
+      slice: Current color_possible slice
+      
+    Returns:
+      Updated slice (or unchanged slice if no update needed)
+    """
+    from utils import NoSolutionError
+    
+    if not self._generated:
+      if self._check_ungenerated:
+        # For non-generated lines, use the line's method to update the slice
+        return self.update_slice_for_ungenerated(ori, idx, slice)
+      # No update for ungenerated lines when check_ungenerated is False
+      return slice
+    
+    # If the relevant slice of color_possible hasn't changed, skip
+    if np.all(self._slice_of_color_possible == slice):
+      return slice
+    
+    new_slice, new_count = self.update_from_color_possible(ori, idx, slice)
+    if new_count == 0:
+      # This should only happen for contradictions within assumptions
+      raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
+    
+    return new_slice
   
   def update_from_color_possible(self, ori: str, line: int, row_data: np.ndarray):
     """Update this line's possible_lines based on color_possible constraints.
