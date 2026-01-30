@@ -6,6 +6,7 @@ from utils import msg, totuple
 from generators import generate, generate_count
 from generators import generate_from_slice, generate_count_from_slice
 from generators import generate_color_possible_from_slice
+from utils import NoSolutionError
 
 # Global counter for benchmarking get_color_possible_slice bottleneck
 _time_unique = 0.0
@@ -97,25 +98,30 @@ class PuzzleLine:
     Returns:
       Updated slice (or unchanged slice if no update needed)
     """
-    from utils import NoSolutionError
     
-    if not self._generated:
-      if self._check_ungenerated:
-        # For non-generated lines, use the line's method to update the slice
-        return self.update_slice_for_ungenerated(ori, idx, slice)
-      # No update for ungenerated lines when check_ungenerated is False
+    if self._generated:
+      # If the relevant slice of color_possible hasn't changed, skip
+      if np.all(self._slice_of_color_possible == slice):
+        return slice
+      
+      new_slice, new_count = self.update_from_color_possible(ori, idx, slice)
+      if new_count == 0:
+        # This should only happen for contradictions within assumptions
+        raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
+      
+      return new_slice
+    elif self._check_ungenerated:
+      new_slice = generate_color_possible_from_slice(
+          n=self._n,
+          n_colors=self._n_colors,
+          block_lengths=self._block_lengths,
+          block_colors=self._block_colors,
+          slice=totuple(slice)
+        )        
+      msg(ori, idx, "reduced slice sum", np.sum(new_slice), np.sum(slice))
+      return new_slice
+    else:
       return slice
-    
-    # If the relevant slice of color_possible hasn't changed, skip
-    if np.all(self._slice_of_color_possible == slice):
-      return slice
-    
-    new_slice, new_count = self.update_from_color_possible(ori, idx, slice)
-    if new_count == 0:
-      # This should only happen for contradictions within assumptions
-      raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
-    
-    return new_slice
   
   def update_from_color_possible(self, ori: str, line: int, row_data: np.ndarray):
     """Update this line's possible_lines based on color_possible constraints.
@@ -162,29 +168,7 @@ class PuzzleLine:
 
     self.slice_of_color_possible = y
     return y
-  
-  def update_slice_for_ungenerated(self, ori: str, idx: int, row_data: np.ndarray) -> np.ndarray:
-    """Generate and return updated color_possible slice for ungenerated lines.
     
-    Args:
-      ori: Orientation ('horizontal' or 'vertical')
-      idx: Line index
-      row_data: Current row data (len_line x n_colors)
-      
-    Returns:
-      Updated slice with more restricted possibilities
-    """
-    slice = generate_color_possible_from_slice(
-      n=self._n,
-      n_colors=self._n_colors,
-      block_lengths=self._block_lengths,
-      block_colors=self._block_colors,
-      slice=totuple(row_data)
-    )
-    
-    msg(ori, idx, "reduced slice sum", np.sum(slice), np.sum(row_data))
-    return slice
-  
   def generate_count(self) -> int:
     """Wrapper for generate_count - counts possible line configurations."""
     self._count = generate_count(

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from typing import Dict, Optional, Tuple
 from puzzle_line import PuzzleLine
-from utils import plot, msg, totuple, NoSolutionError
+from utils import plot, msg, NoSolutionError
 from griddler_parser import GriddlerParser
 
 # Debug flag - set to True to enable distance map visualization
@@ -147,7 +147,7 @@ class Puzzle:
     """Check if the puzzle is solved (each cell has exactly one possible color)."""
     return np.all(np.sum(self.color_possible, axis=2) == 1)
   
-  def refine_solutions(self) -> bool:
+  def update(self) -> bool:
     """Refine existing solutions by filtering possible lines based on color_possible.
     
     Returns:
@@ -234,7 +234,7 @@ class Puzzle:
     print("\nIteration", it)
     
     # Refine existing solutions
-    updated = self.refine_solutions()
+    updated = self.update()
     
     # No updates? Try to generate new solutions under the limit
     if not updated:
