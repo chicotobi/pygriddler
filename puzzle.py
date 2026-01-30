@@ -123,7 +123,7 @@ class Puzzle:
       new_slice = puzzle_line.generate_color_possible_from_slice(slice)
 
       if n_pos < self.limit_generate:
-        new_slice = puzzle_line.generate_color_possible_from_slice(new_slice)
+        new_slice = puzzle_line.generate()
         msg(ori, idx, "generated", n_pos, puzzle_line.generated)
       else:
         msg(ori, idx, "counted", n_pos, puzzle_line.generated)
