@@ -8,6 +8,7 @@ from typing import Optional, Literal
 from puzzle_line import PuzzleLine
 from utils import plot, NoSolutionError, NoUpdateError
 from griddler_parser import GriddlerParser
+import time
 
 # Debug flag - set to True to enable distance map visualization
 DEBUG = False
@@ -110,6 +111,7 @@ class Puzzle:
         puzzle.limit_generate = limit_generate
         puzzle.strategy = strategy
         puzzle.check_ungenerated = check_ungenerated
+        puzzle.t_total = 0.0
 
         # Initialize color_possible array as boolean
         puzzle.color_possible = np.ones(
@@ -228,30 +230,63 @@ class Puzzle:
         if do_plot:
             plot(self.desc, it, self.color_possible, self.colors, 0)
 
-    def solve(self, do_plot: bool = False, max_iterations: Optional[int] = None):
+    def solve(self, do_plot: bool = False, max_iterations: Optional[int] = None, benchmark_output: bool = False):
         """Main solving loop - coordinates iteration, refinement, and generation.
 
         Args:
           do_plot: Whether to plot each iteration
           max_iterations: Maximum number of iterations (None for unlimited)
+          benchmark_output: Whether to print benchmark output after solving
         """
         it = 0
         print("Initial puzzle state:")
+        
+        start = time.perf_counter()
         self.initialize()
+        self.t_total += time.perf_counter() - start
+
+        self.benchmark_output(benchmark_output)
+
         if do_plot:
             plot(self.desc, it, self.color_possible, self.colors, 0)
 
         while not self.is_solved():
             it += 1
+            start = time.perf_counter()
             self.solve_iteration(it, do_plot)
+            self.t_total += time.perf_counter() - start
 
             if max_iterations is not None and it >= max_iterations:
                 break
+            self.benchmark_output(benchmark_output)
 
         if self.is_solved():
             print(f"\nPuzzle solved in {it} iterations!")
         else:
             print(f"\nStopped after {it} iterations (max_iterations={max_iterations})")
+
+    def benchmark_output(self, enable: bool):
+        """Print benchmark timing summary from puzzle_line module."""                    
+        if not enable:
+            return
+        # Get benchmark timing from puzzle_line module
+        t_unique = sum(line.t_unique for line in self.lines.values())
+        t_keep = sum(line.t_keep for line in self.lines.values())
+        t_generate_lines = sum(line.t_generate_lines for line in self.lines.values())
+        t_calculate_count = sum(line.t_calculate_count for line in self.lines.values())
+        t_calculate_slice = sum(line.t_calculate_slice for line in self.lines.values())
+        t_total = self.t_total
+
+        t_other = t_total - t_unique - t_keep - t_generate_lines - t_calculate_count - t_calculate_slice
+        fac = 100 / t_total
+
+        print(f"Calculating unique:   {t_unique:6.2f} s = {(t_unique * fac):6.2f} %")
+        print(f"Calculating keep:     {t_keep:6.2f} s = {(t_keep * fac):6.2f} %")
+        print(f"Calculating count:    {t_calculate_count:6.2f} s = {(t_calculate_count * fac):6.2f} % ")
+        print(f"Generating lines:     {t_generate_lines:6.2f} s = {(t_generate_lines * fac):6.2f} % ")
+        print(f"Calculating slice:    {t_calculate_slice:6.2f} s = {(t_calculate_slice * fac):6.2f} % ")
+        print(f"Other operations:     {t_other:6.2f} s = {(t_other * fac):6.2f} % ")
+        print(f"Total runtime:        {t_total:6.2f} s = 100.00 %")      
 
     def save_solution(self):
         """Save the solved puzzle to disk as a .json file."""

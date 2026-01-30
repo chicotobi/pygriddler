@@ -6,14 +6,6 @@ from utils import msg, totuple
 from generators import generate_lines, calculate_count, calculate_slice
 from utils import NoSolutionError
 
-# Global counter for benchmarking get_color_possible_slice bottleneck
-t_unique = 0.0
-t_keep = 0.0
-t_calculate_count = 0.0
-t_generate_lines = 0.0
-t_calculate_slice = 0.0
-
-
 class PuzzleLine:
     """Tracks the state of a single row/column in the puzzle."""
 
@@ -43,6 +35,11 @@ class PuzzleLine:
         self._generated = generated
         self._count = count
         self._slice_of_color_possible = None
+        self.t_keep = 0.0
+        self.t_unique = 0.0
+        self.t_calculate_count = 0.0
+        self.t_generate_lines = 0.0
+        self.t_calculate_slice = 0.0
 
     @property
     def n(self) -> int:
@@ -104,9 +101,6 @@ class PuzzleLine:
         Returns:
           Updated slice (or unchanged slice if no update needed)
         """
-        global t_calculate_count
-        global t_generate_lines
-        global t_calculate_slice
 
         start = time.perf_counter()
         self._count = calculate_count(
@@ -116,7 +110,7 @@ class PuzzleLine:
             block_colors=self._block_colors,
             slice=totuple(slice),
         )
-        t_calculate_count += time.perf_counter() - start
+        self.t_calculate_count += time.perf_counter() - start
 
         if self._count < self._limit_generate:
             start = time.perf_counter()
@@ -127,7 +121,7 @@ class PuzzleLine:
                 block_colors=self._block_colors,
                 slice=totuple(slice),
             )
-            t_generate_lines += time.perf_counter() - start
+            self.t_generate_lines += time.perf_counter() - start
             self._generated = True
             msg(
                 self._ori,
@@ -146,7 +140,7 @@ class PuzzleLine:
             block_colors=self._block_colors,
             slice=totuple(slice),
         )
-        t_calculate_slice += time.perf_counter() - start
+        self.t_calculate_slice += time.perf_counter() - start
         msg(
             self._ori,
             self._idx,
@@ -166,10 +160,7 @@ class PuzzleLine:
 
         Returns:
           Updated slice (or unchanged slice if no update needed)
-        """        
-        global t_calculate_count
-        global t_generate_lines
-        global t_calculate_slice
+        """
 
         if self._generated:
             # If the relevant slice of color_possible hasn't changed, skip
@@ -195,7 +186,7 @@ class PuzzleLine:
             block_colors=self._block_colors,
             slice=totuple(slice),
         )
-        t_calculate_count += time.perf_counter() - start
+        self.t_calculate_count += time.perf_counter() - start
         if self._count < self._limit_generate or force_generate:
             start = time.perf_counter()
             self._possible_lines = generate_lines(
@@ -205,7 +196,7 @@ class PuzzleLine:
                 block_colors=self._block_colors,
                 slice=totuple(slice),
             )
-            t_generate_lines += time.perf_counter() - start
+            self.t_generate_lines += time.perf_counter() - start
             self._generated = True
             msg(
                 self._ori,
@@ -228,7 +219,7 @@ class PuzzleLine:
                 block_colors=self._block_colors,
                 slice=totuple(slice),
             )
-            t_calculate_slice += time.perf_counter() - start
+            self.t_calculate_slice += time.perf_counter() - start
             msg(
                 self._ori,
                 self._idx,
@@ -245,7 +236,6 @@ class PuzzleLine:
         Args:
           slice: Extracted slice (len_line x n_colors)
         """
-        global t_keep
         possible_lines0 = self._possible_lines
         start = time.perf_counter()
         # Vectorized filtering: build single mask for all constraints
@@ -259,13 +249,12 @@ class PuzzleLine:
                     axis=1
                 )
         possible_lines0 = possible_lines0[keep_mask, :]
-        t_keep += time.perf_counter() - start
+        self.t_keep += time.perf_counter() - start
         self._count = len(possible_lines0)
         self._possible_lines = possible_lines0
 
     def update_slice_of_color_possible(self):
         """Reduce the possible lines to the color_possible slice of this line"""
-        global t_unique
         if not self.generated:
             raise RuntimeError(
                 "Line must be generated before getting color possible slice."
@@ -280,4 +269,4 @@ class PuzzleLine:
             allowed_colors = pd.unique(self._possible_lines[:, idx])
             for color in allowed_colors:
                 self.slice_of_color_possible[idx, color] = True
-        t_unique += time.perf_counter() - start
+        self.t_unique += time.perf_counter() - start
