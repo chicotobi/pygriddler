@@ -214,23 +214,17 @@ class Puzzle:
         print("No line was below the generate limit", self.limit_generate)
 
         # Find minimum count among non-generated
-        ori0, idx0 = None, None
-        count0 = 1e10
-        for (ori, idx), puzzle_line in self.lines.items():
-            if not puzzle_line.generated and puzzle_line.count < count0:
-                ori0, idx0, count0 = ori, idx, puzzle_line.count
-
-        if ori0 is None:
+        ungenerated = {k: v for k, v in self.lines.items() if not v.generated}
+        if not ungenerated:
             return False
+        (ori0, idx0), line0 = min(ungenerated.items(), key=lambda x: x[1].count)
 
-        line0 = self.lines[(ori0, idx0)]
-
+        # Update color_possible from this new line
         slice = self.get_slice(ori0, idx0)
         new_slice = line0.generate_from_slice(slice)
-        # Update color_possible
         self.set_slice(ori0, idx0, new_slice)
 
-        msg(ori0, idx0, "generated", count0, True)
+        msg(ori0, idx0, "generated", line0.count, True)
 
         return True
 

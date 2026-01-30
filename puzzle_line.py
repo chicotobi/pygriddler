@@ -3,7 +3,6 @@ import pandas as pd
 from typing import Optional
 import time
 from utils import msg, totuple
-from generators import generate, generate_count
 from generators import generate_from_slice, generate_count_from_slice
 from generators import generate_color_possible_from_slice
 from utils import NoSolutionError
@@ -184,28 +183,6 @@ class PuzzleLine:
         self.slice_of_color_possible = y
         return y
 
-    def generate_count(self) -> int:
-        """Wrapper for generate_count - counts possible line configurations."""
-        self._count = generate_count(
-            n=self._n,
-            block_lengths=self._block_lengths,
-            block_colors=self._block_colors,
-        )
-        return self._count
-
-    def generate(self) -> np.ndarray:
-        """Wrapper for generate - generates all possible line configurations.
-
-        Sets possible_lines and generated flag internally, returns color_possible slice.
-        """
-        self._possible_lines = generate(
-            n=self._n,
-            block_lengths=self._block_lengths,
-            block_colors=self._block_colors,
-        )
-        self._generated = True
-        return self.get_slice()
-
     def generate_count_from_slice(self, slice: np.ndarray) -> int:
         """Wrapper for generate_count_from_slice - counts possible configurations given constraints."""
         self._count = generate_count_from_slice(
@@ -255,7 +232,7 @@ class PuzzleLine:
         new_slice = self.generate_color_possible_from_slice(slice)
 
         if n_pos < self._limit_generate:
-            new_slice = self.generate()
+            new_slice = self.generate_from_slice(slice)
             msg(self._ori, self._idx, "generated", n_pos, self._generated)
         else:
             msg(self._ori, self._idx, "counted", n_pos, self._generated)
