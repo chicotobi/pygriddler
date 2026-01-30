@@ -20,7 +20,8 @@ class PuzzleLine:
                n: int,
                n_colors: int,
                block_lengths: tuple,
-               block_colors: tuple, 
+               block_colors: tuple,
+               limit_generate: int = 5_000_000,
                check_ungenerated: bool = False,
                possible_lines: Optional[np.ndarray] = None, 
                generated: bool = False, 
@@ -29,6 +30,7 @@ class PuzzleLine:
     self._n_colors = n_colors
     self._block_lengths = block_lengths
     self._block_colors = block_colors
+    self._limit_generate = limit_generate
     self._check_ungenerated = check_ungenerated
     self._possible_lines = possible_lines
     self._generated = generated
@@ -226,3 +228,25 @@ class PuzzleLine:
       block_colors=self._block_colors,
       slice=totuple(slice)
     )
+  
+  def initialize(self, ori: str, idx: int, slice: np.ndarray) -> np.ndarray:
+    """Initialize this line by counting and optionally generating solutions.
+    
+    Args:
+      ori: Orientation ('horizontal' or 'vertical')
+      idx: Line index
+      slice: Current color_possible slice
+      
+    Returns:
+      Updated color_possible slice
+    """
+    n_pos = self.generate_count_from_slice(slice)
+    new_slice = self.generate_color_possible_from_slice(slice)
+    
+    if n_pos < self._limit_generate:
+      new_slice = self.generate()
+      msg(ori, idx, "generated", n_pos, self._generated)
+    else:
+      msg(ori, idx, "counted", n_pos, self._generated)
+    
+    return new_slice
