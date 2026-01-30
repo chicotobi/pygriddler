@@ -111,14 +111,14 @@ class PuzzleLine:
             if np.all(self._slice_of_color_possible == slice):
                 return slice
 
-            new_slice, new_count = self.update_from_color_possible(slice)
+            self._slice_of_color_possible, new_count = self.filter_possible_lines(slice)
             if new_count == 0:
                 # This should only happen for contradictions within assumptions
                 raise NoSolutionError(
                     f"Line {self._ori} {self._idx} has no possible solutions left!"
                 )
 
-            return new_slice
+            return self._slice_of_color_possible
         
         self._count = generate_count_from_slice(
             n=self._n,
@@ -127,18 +127,25 @@ class PuzzleLine:
             block_colors=self._block_colors,
             slice=totuple(slice)
         )
-        if self._count < self._limit_generate or force_generate:
-            new_slice = self.generate_from_slice(slice)
+        if self._count < self._limit_generate or force_generate:                
+            self._possible_lines = generate_from_slice(
+                n=self._n,
+                n_colors=self._n_colors,
+                block_lengths=self._block_lengths,
+                block_colors=self._block_colors,
+                slice=totuple(slice),
+            )
+            self._generated = True
             msg(
                 self._ori,
                 self._idx,
                 "generated",
                 self._count,
             )
-            return new_slice
+            return self.get_slice()
         
-        if self._check_ungenerated:
-            new_slice = generate_color_possible_from_slice(
+        if not self._generated and self._check_ungenerated:
+            self._slice_of_color_possible = generate_color_possible_from_slice(
                 n=self._n,
                 n_colors=self._n_colors,
                 block_lengths=self._block_lengths,
@@ -149,18 +156,18 @@ class PuzzleLine:
                 self._ori,
                 self._idx,
                 "reduced slice sum",
-                np.sum(new_slice),
+                np.sum(self._slice_of_color_possible),
                 np.sum(slice),
             )
-            return new_slice
+            return self._slice_of_color_possible
         
         return slice
 
-    def update_from_color_possible(self, row_data: np.ndarray):
+    def filter_possible_lines(self, slice: np.ndarray):
         """Update this line's possible_lines based on color_possible constraints.
 
         Args:
-          row_data: Extracted row data (len_line x n_colors)
+          slice: Extracted slice (len_line x n_colors)
         """
         global _time_keep
         old_count = self._count
@@ -169,7 +176,7 @@ class PuzzleLine:
         # Vectorized filtering: build single mask for all constraints
         keep_mask = np.ones(len(possible_lines0), dtype=bool)
         for color in range(self._n_colors):
-            extracted_row = row_data[:, color]
+            extracted_row = slice[:, color]
             invalid_positions = np.where(~extracted_row)[0]
             if len(invalid_positions) > 0:
                 # Lines that have this color at any invalid position should be removed
@@ -202,50 +209,3 @@ class PuzzleLine:
 
         self.slice_of_color_possible = y
         return y
-
-    def generate_from_slice(self, slice: np.ndarray) -> np.ndarray:
-        """Wrapper for generate_from_slice - generates possible configurations given constraints.
-
-        Sets possible_lines and generated flag internally, returns color_possible slice.
-        """
-        self._possible_lines = generate_from_slice(
-            n=self._n,
-            n_colors=self._n_colors,
-            block_lengths=self._block_lengths,
-            block_colors=self._block_colors,
-            slice=totuple(slice),
-        )
-        self._generated = True
-        return self.get_slice()
-
-    def initialize(self, slice: np.ndarray) -> np.ndarray:
-        """Initialize this line by counting and optionally generating solutions.
-
-        Args:
-          slice: Current color_possible slice
-
-        Returns:
-          Updated color_possible slice
-        """
-        n_pos = generate_count_from_slice(
-            n=self._n,
-            n_colors=self._n_colors,
-            block_lengths=self._block_lengths,
-            block_colors=self._block_colors,
-            slice=totuple(slice)
-        )
-        new_slice = generate_color_possible_from_slice(
-            n=self._n,
-            n_colors=self._n_colors,
-            block_lengths=self._block_lengths,
-            block_colors=self._block_colors,
-            slice=totuple(slice)
-        )
-
-        if n_pos < self._limit_generate:
-            new_slice = self.generate_from_slice(slice)
-            msg(self._ori, self._idx, "generated", n_pos, self._generated)
-        else:
-            msg(self._ori, self._idx, "counted", n_pos, self._generated)
-
-        return new_slice

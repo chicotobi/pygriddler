@@ -8,7 +8,6 @@ plt.ion()
 puzzle = Puzzle(
     puzzle_id=8, limit_generate=10_000, strategy="generate", check_ungenerated=True
 )
-puzzle.initialize()
 
 # Start full runtime timer
 script_start = time.perf_counter()

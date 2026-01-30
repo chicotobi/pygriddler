@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from typing import Optional
 from puzzle_line import PuzzleLine
-from utils import plot, msg, NoSolutionError
+from utils import plot, NoSolutionError
 from griddler_parser import GriddlerParser
 
 # Debug flag - set to True to enable distance map visualization
@@ -131,14 +131,6 @@ class Puzzle:
 
         return puzzle
 
-    def initialize(self):
-        """Initialize puzzle lines by counting possible solutions and generating initial constraints."""
-
-        for (ori, idx), puzzle_line in self.lines.items():
-            slice = self.get_slice(ori, idx)
-            new_slice = puzzle_line.initialize(slice)
-            self.set_slice(ori, idx, new_slice)
-
     def get_slice(self, ori: str, idx: int) -> np.ndarray:
         """Extract a specific row or column from color_possible based on orientation."""
         if ori == "vertical":
@@ -195,7 +187,7 @@ class Puzzle:
         slice = self.get_slice(ori0, idx0)
         new_slice = line0.update(slice, force_generate=True)
         self.set_slice(ori0, idx0, new_slice)
-        
+
         return True
 
     def solve_iteration(self, it: int, do_plot: bool = False):
