@@ -117,16 +117,16 @@ class Puzzle:
     
     for (ori, idx), puzzle_line in self.lines.items():
 
-      n_pos = puzzle_line.generate_count()
-
-      current_slice = self.get_slice(ori, idx)
-      slice = puzzle_line.generate_color_possible_from_slice(current_slice)
-      self.set_slice(ori, idx, slice)
+      slice = self.get_slice(ori, idx)
+      n_pos = puzzle_line.generate_count_from_slice(slice)
+      new_slice = puzzle_line.generate_color_possible_from_slice(slice)
 
       if n_pos < self.limit_generate:
-        new_slice = puzzle_line.generate()
-        self.set_slice(ori, idx, new_slice)
-      msg(ori, idx, "generated", n_pos, puzzle_line.generated)
+        new_slice = puzzle_line.generate_color_possible_from_slice(new_slice)
+        msg(ori, idx, "generated", n_pos, puzzle_line.generated)
+      else:
+        msg(ori, idx, "counted", n_pos, puzzle_line.generated)
+      self.set_slice(ori, idx, new_slice)
   
   def get_slice(self, ori: str, idx: int) -> np.ndarray:
     """Extract a specific row or column from color_possible based on orientation."""
