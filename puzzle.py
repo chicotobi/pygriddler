@@ -535,7 +535,7 @@ class Puzzle:
             try:
                 puzzle_copy = self.deep_copy()
 
-                # Force the copy to use "generate" strategy to avoid recursive assumptions                
+                # Force the copy to use "generate" strategy to avoid recursive assumptions
                 puzzle_copy.strategy = None
                 puzzle_copy.check_ungenerated = False
 
@@ -573,7 +573,7 @@ class Puzzle:
                 self.last_assumption_pixel = (row, col)
 
                 return True
-            except NoUpdateError:                
+            except NoUpdateError:
                 # If we reach here, no contradiction was found
                 # Restore output and mark pixel with red cross
                 sys.stdout = old_stdout
