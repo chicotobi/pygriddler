@@ -149,6 +149,14 @@ class Puzzle:
         """Check if the puzzle is solved (each cell has exactly one possible color)."""
         return np.all(np.sum(self.color_possible, axis=2) == 1)
 
+    def initialize(self):
+        """Initialize puzzle lines by counting possible solutions and generating initial constraints."""
+
+        for (ori, idx), puzzle_line in self.lines.items():
+            slice = self.get_slice(ori, idx)
+            new_slice = puzzle_line.initialize(slice)
+            self.set_slice(ori, idx, new_slice)
+
     def update(self) -> bool:
         """Refine existing solutions by filtering possible lines based on color_possible.
 

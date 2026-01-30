@@ -94,6 +94,33 @@ class PuzzleLine:
     def slice_of_color_possible(self, value: Optional[np.ndarray]):
         self._slice_of_color_possible = value
 
+    def initialize(self, slice: np.ndarray) -> np.ndarray:
+        """Initialize this line by counting possible solutions and generating initial constraints.
+
+        Args:
+          slice: Current color_possible slice
+        Returns:
+          Updated slice (or unchanged slice if no update needed)
+        """
+        
+        self._count = generate_count_from_slice(
+            n=self._n,
+            n_colors=self._n_colors,
+            block_lengths=self._block_lengths,
+            block_colors=self._block_colors,
+            slice=totuple(slice)
+        )
+
+        self.slice_of_color_possible = generate_color_possible_from_slice(
+            n=self._n,
+            n_colors=self._n_colors,
+            block_lengths=self._block_lengths,
+            block_colors=self._block_colors,
+            slice=totuple(slice),
+        )
+        
+        return self.slice_of_color_possible
+
     def update(self, slice: np.ndarray, force_generate: bool = False) -> np.ndarray:
         """Update this line based on color_possible constraints.
 
@@ -105,18 +132,21 @@ class PuzzleLine:
           Updated slice (or unchanged slice if no update needed)
         """
 
-
         if self._generated:
             # If the relevant slice of color_possible hasn't changed, skip
             if np.all(self._slice_of_color_possible == slice):
                 return slice
 
-            self._slice_of_color_possible, new_count = self.filter_possible_lines(slice)
-            if new_count == 0:
+            old_count = self._count
+            self.filter_possible_lines(slice)
+            
+            if self._count == 0:
                 # This should only happen for contradictions within assumptions
                 raise NoSolutionError(
                     f"Line {self._ori} {self._idx} has no possible solutions left!"
                 )
+            self.update_slice_of_color_possible()
+            msg(self._ori, self._idx, "reduced", self._count, old_count)
 
             return self._slice_of_color_possible
         
@@ -142,9 +172,13 @@ class PuzzleLine:
                 "generated",
                 self._count,
             )
-            return self.get_slice()
+            self.update_slice_of_color_possible()
+            return self.slice_of_color_possible
         
-        if not self._generated and self._check_ungenerated:
+        if self._check_ungenerated:
+            # If the relevant slice of color_possible hasn't changed, skip
+            if np.all(self._slice_of_color_possible == slice):
+                return slice
             self._slice_of_color_possible = generate_color_possible_from_slice(
                 n=self._n,
                 n_colors=self._n_colors,
@@ -159,9 +193,8 @@ class PuzzleLine:
                 np.sum(self._slice_of_color_possible),
                 np.sum(slice),
             )
-            return self._slice_of_color_possible
-        
-        return slice
+
+        return self._slice_of_color_possible
 
     def filter_possible_lines(self, slice: np.ndarray):
         """Update this line's possible_lines based on color_possible constraints.
@@ -170,7 +203,6 @@ class PuzzleLine:
           slice: Extracted slice (len_line x n_colors)
         """
         global _time_keep
-        old_count = self._count
         possible_lines0 = self._possible_lines
         start = time.perf_counter()
         # Vectorized filtering: build single mask for all constraints
@@ -187,10 +219,8 @@ class PuzzleLine:
         _time_keep += time.perf_counter() - start
         self._count = len(possible_lines0)
         self._possible_lines = possible_lines0
-        msg(self._ori, self._idx, "reduced", self._count, old_count)
-        return self.get_slice(), self._count
 
-    def get_slice(self):
+    def update_slice_of_color_possible(self):
         """Reduce the possible lines to the color_possible slice of this line"""
         global _time_unique
         if not self.generated:
@@ -200,12 +230,9 @@ class PuzzleLine:
 
         # Possibly the computational bottleneck
         start = time.perf_counter()
-        y = np.zeros((self.n, self._n_colors), dtype=np.bool_)
+        self.slice_of_color_possible = np.zeros((self.n, self._n_colors), dtype=np.bool_)
         for idx in range(self.n):
             allowed_colors = pd.unique(self._possible_lines[:, idx])
             for color in allowed_colors:
-                y[idx, color] = True
+                self.slice_of_color_possible[idx, color] = True
         _time_unique += time.perf_counter() - start
-
-        self.slice_of_color_possible = y
-        return y
