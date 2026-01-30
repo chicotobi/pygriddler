@@ -10,19 +10,23 @@ puzzle = Puzzle(
 )
 
 # Solve the puzzle and time the execution
-script_start = time.perf_counter()
-puzzle.solve(do_plot=True)
-total_runtime = time.perf_counter() - script_start
+start = time.perf_counter()
+puzzle.solve(do_plot=False)
+t_total = time.perf_counter() - start
 
 # Get benchmark timing from puzzle_line module
-from puzzle_line import _time_unique, _time_keep
-remaining_operations = total_runtime - _time_unique - _time_keep
+from puzzle_line import t_keep, t_unique, t_generate_lines, t_calculate_count, t_calculate_slice
+t_other = t_total - t_unique - t_keep - t_generate_lines - t_calculate_count - t_calculate_slice
+fac = 100 / t_total
 
 print("\n--- Runtime Summary ---")
-print(f"Calculating unique:   {_time_unique:6.2f} seconds = {(_time_unique / total_runtime * 100):6.2f} %")
-print(f"Calculating keep:     {_time_keep:6.2f} seconds = {(_time_keep / total_runtime * 100):6.2f} %")
-print(f"Other operations:     {remaining_operations:6.2f} seconds = {(remaining_operations / total_runtime * 100):6.2f} % ")
-print(f"Total runtime:        {total_runtime:6.2f} seconds = 100.00 %")
+print(f"Calculating unique:   {t_unique:6.2f} s = {(t_unique * fac):6.2f} %")
+print(f"Calculating keep:     {t_keep:6.2f} s = {(t_keep * fac):6.2f} %")
+print(f"Calculating count:    {t_calculate_count:6.2f} s = {(t_calculate_count * fac):6.2f} % ")
+print(f"Generating lines:     {t_generate_lines:6.2f} s = {(t_generate_lines * fac):6.2f} % ")
+print(f"Calculating slice:    {t_calculate_slice:6.2f} s = {(t_calculate_slice * fac):6.2f} % ")
+print(f"Other operations:     {t_other:6.2f} s = {(t_other * fac):6.2f} % ")
+print(f"Total runtime:        {t_total:6.2f} s = 100.00 %")
 
 # Save the solution
 puzzle.save_solution()

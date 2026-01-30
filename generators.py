@@ -5,7 +5,7 @@ from utils import totuple
 WHITE = 0
 
 @cache
-def generate_from_slice(
+def generate_lines(
     n, n_colors, block_lengths, block_colors, slice, previous_color=-1
 ):
     if n == 0:
@@ -37,7 +37,7 @@ def generate_from_slice(
     for i in range(i0, max_zeroes_left_side + 1):
         # We checked that the white blocks are allowed, now check, if the colored block is allowed:
         if all(slice[i : (i + length0), color0]):
-            a3 = generate_from_slice(
+            a3 = generate_lines(
                 n=n - i - length0,
                 n_colors=n_colors,
                 block_lengths=block_lengths[1:],
@@ -58,7 +58,7 @@ def generate_from_slice(
 
 
 @cache
-def generate_count_from_slice(
+def calculate_count(
     n, n_colors, block_lengths, block_colors, slice, previous_color=-1
 ):
     if n == 0:
@@ -90,7 +90,7 @@ def generate_count_from_slice(
     for i in range(i0, max_zeroes_left_side + 1):
         # We checked that the white blocks are allowed, now check, if the colored block is allowed:
         if all(slice[i : (i + length0), color0]):
-            tmp = generate_count_from_slice(
+            tmp = calculate_count(
                 n=n - i - length0,
                 n_colors=n_colors,
                 block_lengths=block_lengths[1:],
@@ -103,7 +103,7 @@ def generate_count_from_slice(
 
 
 @cache
-def generate_color_possible_from_slice(
+def calculate_slice(
     n, n_colors, block_lengths, block_colors, slice, previous_color=-1
 ):
     slice = np.asarray(slice, dtype=np.bool_)
@@ -137,7 +137,7 @@ def generate_color_possible_from_slice(
     for i in range(i0, max_zeroes_left_side + 1):
         # We checked that the white blocks are allowed, now check, if the colored block is allowed:
         if all(slice[i : (i + length0), color0]):
-            a2 = generate_color_possible_from_slice(
+            a2 = calculate_slice(
                 n=n - i - length0,
                 n_colors=n_colors,
                 block_lengths=block_lengths[1:],
