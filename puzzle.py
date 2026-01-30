@@ -4,9 +4,9 @@ import json
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from typing import Optional
+from typing import Optional, Literal
 from puzzle_line import PuzzleLine
-from utils import plot, NoSolutionError
+from utils import plot, NoSolutionError, NoUpdateError
 from griddler_parser import GriddlerParser
 
 # Debug flag - set to True to enable distance map visualization
@@ -20,7 +20,7 @@ class Puzzle:
         self,
         puzzle_id: int,
         limit_generate: int = 5_000_000,
-        strategy: str = "generate",
+        strategy: Literal[None, "force_generate", "guess"] = "force_generate",
         check_ungenerated: bool = True,
     ):
         """Initialize puzzle from puzzle ID.
@@ -29,9 +29,9 @@ class Puzzle:
           puzzle_id: Puzzle ID from griddlers.net or example number (1-9).
                      Will download/parse puzzle as needed.
           limit_generate: Maximum number of possible lines to generate for a line
-          strategy: Solving strategy when stuck - "generate" or "assumption"
-                    - "generate": Generate more solutions for complex lines (default)
-                    - "assumption": Try random pixel assumptions to eliminate possibilities
+          strategy: Solving strategy when stuck - None, "force_generate" or "guess"
+                    - "force_generate": Generate more solutions for complex lines (default)
+                    - "guess": Try random pixel assumptions to eliminate possibilities
           check_ungenerated: Whether to check ungenerated lines during solving
         """
         # Load puzzle from ID and get raw JSON data
@@ -40,6 +40,11 @@ class Puzzle:
 
         with open(json_path, "r") as f:
             puzzle_data = json.load(f)
+
+        if strategy not in (None, "force_generate", "guess"):
+            raise ValueError(
+                f"Invalid strategy '{strategy}': must be None, 'force_generate', or 'guess'"
+            )
 
         # Use from_dict to initialize (reuse common logic)
         puzzle = Puzzle.from_dict(
@@ -54,7 +59,7 @@ class Puzzle:
         cls,
         puzzle_dict: dict,
         limit_generate: int = 5_000_000,
-        strategy: str = "generate",
+        strategy: Literal[None, "force_generate", "guess"] = "force_generate",
         check_ungenerated: bool = True,
     ) -> "Puzzle":
         """Create a Puzzle instance from a custom dictionary structure.
@@ -86,7 +91,7 @@ class Puzzle:
         Args:
           puzzle_dict: Dictionary with puzzle structure (see above)
           limit_generate: Maximum number of possible lines to generate for a line
-          strategy: Solving strategy - "generate" or "assumption"
+          strategy: Solving strategy - "force_generate" or "guess"
           check_ungenerated: Whether to check ungenerated lines during solving
 
         Returns:
@@ -172,12 +177,11 @@ class Puzzle:
 
         return not np.all(old == self.color_possible)
 
-    def force_generate_smallest_line(self) -> bool:
+    def strategy_force_generate(self) -> bool:
         """Force generate the smallest non-generated line, regardless of limit.
 
         This is used when stuck and need to make progress by generating
-        even complex lines. Only used in "generate" strategy.
-
+        even complex lines. Only used in "force_generate" strategy.
         Returns:
           True if a line was generated, False if all lines already generated
         """
@@ -212,15 +216,14 @@ class Puzzle:
 
         # No updates? Use the configured strategy
         if not updated:
-            if self.strategy == "assumption":
-                updated = self.try_assumption(do_plot=do_plot)
-                self.generate_solutions_under_limit()
-            else:
-                updated = self.force_generate_smallest_line()
+            if self.strategy == "guess":
+                updated = self.strategy_guess(do_plot=do_plot)
+            elif self.strategy == "force_generate":
+                updated = self.strategy_force_generate()
 
         # STILL no updates? That should not happen, it means the algorithm is stuck
         if not updated:
-            raise Exception("WARNING! Solver is stuck with no possible updates!")
+            raise NoUpdateError
 
         if do_plot:
             plot(self.desc, it, self.color_possible, self.colors, 0)
@@ -314,10 +317,6 @@ class Puzzle:
             else:
                 # Immutable objects and primitives can be copied by reference
                 setattr(new_puzzle, key, value)
-
-        new_puzzle.strategy = "generate"
-        new_puzzle.check_ungenerated = False
-
         return new_puzzle
 
     def _calculate_distance_from_solved(self):
@@ -489,11 +488,11 @@ class Puzzle:
             for _, _, row, col, color in pixel_color_combinations
         ]
 
-    def try_assumption(self, do_plot=False) -> bool:
+    def strategy_guess(self, do_plot=False) -> bool:
         """Try solving with systematic assumptions about unsolved pixels.
 
         Uses a breadth-first heuristic: makes a deep copy of the puzzle, sets an
-        unsolved pixel to a specific color, and runs TWO iterations.
+        unsolved pixel to a specific color, and runs some iterations.
         If a contradiction is reached, the assumption was wrong and that color is
         eliminated from the original puzzle. Tests all pixel-color combinations
         systematically.
@@ -535,8 +534,9 @@ class Puzzle:
             try:
                 puzzle_copy = self.deep_copy()
 
-                # Force the copy to use "generate" strategy to avoid recursive assumptions
-                puzzle_copy.strategy = "generate"
+                # Force the copy to use "generate" strategy to avoid recursive assumptions                
+                puzzle_copy.strategy = None
+                puzzle_copy.check_ungenerated = False
 
                 # Set the assumed color in the copy
                 puzzle_copy.color_possible[row, col, :] = False
@@ -572,6 +572,17 @@ class Puzzle:
                 self.last_assumption_pixel = (row, col)
 
                 return True
+            except NoUpdateError:                
+                # If we reach here, no contradiction was found
+                # Restore output and mark pixel with red cross
+                sys.stdout = old_stdout
+
+                # Add red cross for unsuccessful attempt (note: row/col vs x/y in imshow)
+                if do_plot:
+                    ax.plot(col, row, "rx", markersize=4, markeredgewidth=1, alpha=0.7)
+                    fig.canvas.draw()
+                    fig.canvas.flush_events()
+                    plt.pause(0.001)
 
         print()  # New line after progress bar
         return False

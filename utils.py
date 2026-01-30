@@ -82,3 +82,13 @@ class NoSolutionError(Exception):
     """
 
     pass
+
+
+class NoUpdateError(Exception):
+    """Raised when a puzzle line or configuration has no valid solution.
+
+    This typically indicates either:
+    1. An inconclusive puzzle constraint
+    """
+
+    pass
