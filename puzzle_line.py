@@ -111,12 +111,37 @@ class PuzzleLine:
             slice=totuple(slice)
         )
 
+        if self._count < self._limit_generate:                
+            self._possible_lines = generate_from_slice(
+                n=self._n,
+                n_colors=self._n_colors,
+                block_lengths=self._block_lengths,
+                block_colors=self._block_colors,
+                slice=totuple(slice),
+            )
+            self._generated = True
+            msg(
+                self._ori,
+                self._idx,
+                "generated",
+                self._count,
+            )
+            self.update_slice_of_color_possible()
+            return self.slice_of_color_possible
+        
         self.slice_of_color_possible = generate_color_possible_from_slice(
             n=self._n,
             n_colors=self._n_colors,
             block_lengths=self._block_lengths,
             block_colors=self._block_colors,
             slice=totuple(slice),
+        )
+        msg(
+            self._ori,
+            self._idx,
+            "reduced slice sum",
+            np.sum(self._slice_of_color_possible),
+            np.sum(slice),
         )
         
         return self.slice_of_color_possible
@@ -142,9 +167,7 @@ class PuzzleLine:
             
             if self._count == 0:
                 # This should only happen for contradictions within assumptions
-                raise NoSolutionError(
-                    f"Line {self._ori} {self._idx} has no possible solutions left!"
-                )
+                raise NoSolutionError
             self.update_slice_of_color_possible()
             msg(self._ori, self._idx, "reduced", self._count, old_count)
 

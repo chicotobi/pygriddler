@@ -236,6 +236,11 @@ class Puzzle:
           max_iterations: Maximum number of iterations (None for unlimited)
         """
         it = 0
+        print("Initial puzzle state:")
+        self.initialize()
+        if do_plot:
+            plot(self.desc, it, self.color_possible, self.colors, 0)
+
         while not self.is_solved():
             it += 1
             self.solve_iteration(it, do_plot)
