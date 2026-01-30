@@ -29,15 +29,15 @@ simple_puzzle = {
             2: {"block_colors": [1, 1], "block_lengths": [1, 2]},
             3: {"block_colors": [1, 1], "block_lengths": [1, 2]},
             4: {"block_colors": [1, 1], "block_lengths": [1, 1]},
-        }
-    }
+        },
+    },
 }
 
 # Create puzzle from dictionary using the class method
-puzzle = Puzzle.from_dict(simple_puzzle, limit_generate=1, strategy='assumption')
+puzzle = Puzzle.from_dict(simple_puzzle, limit_generate=1, strategy="assumption")
 puzzle.initialize()
 
 puzzle.solve(do_plot=True)
 
 plt.ioff()  # Turn off interactive mode
-plt.show()  # Show the final plot and wait 
+plt.show()  # Show the final plot and wait
