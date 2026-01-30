@@ -1,8 +1,7 @@
 from puzzle import Puzzle
 import matplotlib.pyplot as plt
-import sys
-import os.path
 import time
+from puzzle_line import _time_unique, _time_keep
 
 plt.ion()
 
@@ -18,8 +17,6 @@ puzzle.solve(do_plot=True)
 total_runtime = time.perf_counter() - script_start
 
 # Get the bottleneck timing from puzzle_line module
-from puzzle_line import _time_unique, _time_keep
-
 remaining_operations = total_runtime - _time_unique - _time_keep
 
 print("\n--- Runtime Summary ---")

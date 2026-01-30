@@ -4,7 +4,7 @@ import json
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from typing import Dict, Optional, Tuple
+from typing import Optional
 from puzzle_line import PuzzleLine
 from utils import plot, msg, NoSolutionError
 from griddler_parser import GriddlerParser
@@ -390,7 +390,7 @@ class Puzzle:
                    vmin=0, vmax=np.max(distance_map))
     
     # Add colorbar
-    cbar = plt.colorbar(im, ax=ax, label='Distance to nearest solved pixel')
+    plt.colorbar(im, ax=ax, label='Distance to nearest solved pixel')
     
     # Annotate each cell with its distance value
     for i in range(self.y):
@@ -545,7 +545,7 @@ class Puzzle:
           fig.canvas.flush_events()
           plt.pause(0.001)
         
-      except (NoSolutionError) as e:
+      except (NoSolutionError):
         # Restore output first
         sys.stdout = old_stdout
         
