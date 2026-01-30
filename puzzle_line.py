@@ -3,6 +3,8 @@ import pandas as pd
 from typing import Optional
 import time
 from utils import msg, totuple
+from generators import generate, generate_count
+from generators import generate_from_slice, generate_count_from_slice
 from generators import generate_color_possible_from_slice
 
 # Global counter for benchmarking get_color_possible_slice bottleneck
@@ -104,9 +106,9 @@ class PuzzleLine:
     self._count = len(possible_lines0)
     self._possible_lines = possible_lines0
     msg(ori, line, "reduced", self._count, old_count)
-    return self._count
+    return self.get_slice(), self._count
   
-  def get_color_possible_slice(self):
+  def get_slice(self):
     """Reduce the possible lines to the color_possible slice of this line"""
     global _time_unique
     if not self.generated:
@@ -145,3 +147,61 @@ class PuzzleLine:
     
     msg(ori, idx, "reduced slice sum", np.sum(slice), np.sum(row_data))
     return slice
+  
+  def generate_count(self) -> int:
+    """Wrapper for generate_count - counts possible line configurations."""
+    self._count = generate_count(
+      n=self._n,
+      block_lengths=self._block_lengths,
+      block_colors=self._block_colors
+    )
+    return self._count
+  
+  def generate(self) -> np.ndarray:
+    """Wrapper for generate - generates all possible line configurations.
+    
+    Sets possible_lines and generated flag internally, returns color_possible slice.
+    """
+    self._possible_lines = generate(
+      n=self._n,
+      block_lengths=self._block_lengths,
+      block_colors=self._block_colors
+    )
+    self._generated = True
+    return self.get_slice()
+  
+  def generate_count_from_slice(self, slice: np.ndarray) -> int:
+    """Wrapper for generate_count_from_slice - counts possible configurations given constraints."""
+    self._count = generate_count_from_slice(
+      n=self._n,
+      n_colors=self._n_colors,
+      block_lengths=self._block_lengths,
+      block_colors=self._block_colors,
+      slice=totuple(slice)
+    )
+    return self._count
+  
+  def generate_from_slice(self, slice: np.ndarray) -> np.ndarray:
+    """Wrapper for generate_from_slice - generates possible configurations given constraints.
+    
+    Sets possible_lines and generated flag internally, returns color_possible slice.
+    """
+    self._possible_lines = generate_from_slice(
+      n=self._n,
+      n_colors=self._n_colors,
+      block_lengths=self._block_lengths,
+      block_colors=self._block_colors,
+      slice=totuple(slice)
+    )
+    self._generated = True
+    return self.get_slice()
+  
+  def generate_color_possible_from_slice(self, slice: np.ndarray) -> np.ndarray:
+    """Wrapper for generate_color_possible_from_slice - generates color possibilities from slice."""
+    return generate_color_possible_from_slice(
+      n=self._n,
+      n_colors=self._n_colors,
+      block_lengths=self._block_lengths,
+      block_colors=self._block_colors,
+      slice=totuple(slice)
+    )

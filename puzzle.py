@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from typing import Dict, Optional, Tuple
 from puzzle_line import PuzzleLine
-from generators import generate, generate_count
-from generators import generate_from_slice, generate_count_from_slice
-from generators import generate_color_possible_from_slice
 from utils import plot, msg, totuple, NoSolutionError
 from griddler_parser import GriddlerParser
 
@@ -120,33 +117,16 @@ class Puzzle:
     
     for (ori, idx), puzzle_line in self.lines.items():
 
-      n_pos = generate_count(
-        n = puzzle_line.n,
-        block_lengths = puzzle_line.block_lengths,
-        block_colors = puzzle_line.block_colors
-        )
-      puzzle_line.count = n_pos
+      n_pos = puzzle_line.generate_count()
 
       current_slice = self.get_slice(ori, idx)
-      slice = generate_color_possible_from_slice(
-        n = puzzle_line.n,
-        n_colors = puzzle_line.n_colors,
-        block_lengths = puzzle_line.block_lengths,
-        block_colors = puzzle_line.block_colors,
-        slice = totuple(current_slice)
-        )
+      slice = puzzle_line.generate_color_possible_from_slice(current_slice)
       self.set_slice(ori, idx, slice)
 
       if n_pos < self.limit_generate:
-        puzzle_line.possible_lines = generate(
-          n = puzzle_line.n,
-          block_lengths = puzzle_line.block_lengths,
-          block_colors = puzzle_line.block_colors
-        )
-        puzzle_line.generated = True
+        new_slice = puzzle_line.generate()
+        self.set_slice(ori, idx, new_slice)
       msg(ori, idx, "generated", n_pos, puzzle_line.generated)
-    
-      puzzle_line.slice_of_color_possible = self.get_slice(ori, idx) * -1
   
   def get_slice(self, ori: str, idx: int) -> np.ndarray:
     """Extract a specific row or column from color_possible based on orientation."""
@@ -166,11 +146,6 @@ class Puzzle:
     """Check if the puzzle is solved (each cell has exactly one possible color)."""
     return np.all(np.sum(self.color_possible, axis=2) == 1)
   
-  def apply_line_constraints(self, ori: str, idx: int, line_status: PuzzleLine):
-    """Apply line constraints to color_possible based on allowed colors."""
-    slice = line_status.get_color_possible_slice()
-    self.set_slice(ori, idx, slice)
-  
   def refine_solutions(self) -> bool:
     """Refine existing solutions by filtering possible lines based on color_possible.
     
@@ -180,29 +155,26 @@ class Puzzle:
     old = self.color_possible.copy()
     
     for (ori, idx), puzzle_line in self.lines.items():
-      row_data = self.get_slice(ori, idx)
+      slice = self.get_slice(ori, idx)
       if not puzzle_line.generated:
         if self.check_ungenerated:
           # For non-generated lines, use the line's method to update the slice
-          slice = puzzle_line.update_slice_for_ungenerated(ori, idx, row_data)
+          new_slice = puzzle_line.update_slice_for_ungenerated(ori, idx, slice)
           
           # Write this more restricted possibility back to color_possible
-          self.set_slice(ori, idx, slice)
+          self.set_slice(ori, idx, new_slice)
         continue
       
       # If the relevant slice of color_possible hasn't changed, skip
-      if np.all(puzzle_line.slice_of_color_possible == row_data):
+      if np.all(puzzle_line.slice_of_color_possible == slice):
         continue
       
-      new_count = puzzle_line.update_from_color_possible(ori, idx, row_data)
+      new_slice, new_count = puzzle_line.update_from_color_possible(ori, idx, slice)
       if new_count == 0:
         # This should only happen for contradictions within assumptions
         raise NoSolutionError(f"Line {ori} {idx} has no possible solutions left!")
 
-      slice = puzzle_line.get_color_possible_slice()
-      self.set_slice(ori, idx, slice)
-      
-      puzzle_line.slice_of_color_possible = row_data.copy()
+      self.set_slice(ori, idx, new_slice)
     
     return not np.all(old == self.color_possible)
   
@@ -221,34 +193,16 @@ class Puzzle:
       if puzzle_line.generated:
         continue
       
-      n = puzzle_line.n
-      block_colors = puzzle_line.block_colors
-      block_lengths = puzzle_line.block_lengths
-      info = self.get_slice(ori, idx)
-      n_pos = generate_count_from_slice(
-        n = n,
-        n_colors = puzzle_line._n_colors,
-        block_lengths = block_lengths,
-        block_colors = block_colors,
-        slice = totuple(info)
-      )
+      slice = self.get_slice(ori, idx)
+      n_pos = puzzle_line.generate_count_from_slice(slice)
       
-      puzzle_line.count = n_pos
       if n_pos <= self.limit_generate:
-        puzzle_line.possible_lines = generate_from_slice(
-          n = n,
-          n_colors = puzzle_line._n_colors,
-          block_lengths = block_lengths,
-          block_colors = block_colors,
-          slice = totuple(info)
-        )
-        puzzle_line.generated = True
+        new_slice = puzzle_line.generate_from_slice(slice)
         generated_new_line = True
         msg(ori, idx, "generated", n_pos, puzzle_line.generated)
         
         # Update color_possible
-        slice = puzzle_line.get_color_possible_slice()
-        self.set_slice(ori, idx, slice)
+        self.set_slice(ori, idx, new_slice)
     
     return generated_new_line
   
@@ -277,19 +231,10 @@ class Puzzle:
 
     line0 = self.lines[(ori0, idx0)]
     
-    n = line0.n
     slice = self.get_slice(ori0, idx0)
-    line0.possible_lines = generate_from_slice(
-      n = line0.n,
-      n_colors = line0._n_colors,
-      block_lengths = line0.block_lengths,
-      block_colors = line0.block_colors,
-      slice = totuple(slice)
-    )
-    line0.generated = True    
+    new_slice = line0.generate_from_slice(slice)    
     # Update color_possible
-    slice = line0.get_color_possible_slice()
-    self.set_slice(ori0, idx0, slice)
+    self.set_slice(ori0, idx0, new_slice)
     
     msg(ori0, idx0, "generated", count0, True)
     
