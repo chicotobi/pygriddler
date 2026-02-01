@@ -114,13 +114,16 @@ class PuzzleLine:
 
         if self._count < self._limit_generate:
             start = time.perf_counter()
-            self._possible_lines = generate_lines(
+            success, result = generate_lines(
                 n=self._n,
                 n_colors=self._n_colors,
                 block_lengths=self._block_lengths,
                 block_colors=self._block_colors,
                 slice=totuple(slice),
             )
+            if not success:
+                raise NoSolutionError
+            self._possible_lines = result
             self.t_generate_lines += time.perf_counter() - start
             self._generated = True
             msg(
@@ -192,13 +195,16 @@ class PuzzleLine:
         self.t_calculate_count += time.perf_counter() - start
         if self._count < self._limit_generate or force_generate:
             start = time.perf_counter()
-            self._possible_lines = generate_lines(
+            success, result = generate_lines(
                 n=self._n,
                 n_colors=self._n_colors,
                 block_lengths=self._block_lengths,
                 block_colors=self._block_colors,
                 slice=totuple(slice),
             )
+            if not success:
+                raise NoSolutionError
+            self._possible_lines = result
             self.t_generate_lines += time.perf_counter() - start
             self._generated = True
             msg(
