@@ -133,13 +133,16 @@ class PuzzleLine:
             return self.slice_of_color_possible
 
         start = time.perf_counter()
-        self.slice_of_color_possible = calculate_slice(
+        success, result = calculate_slice(
             n=self._n,
             n_colors=self._n_colors,
             block_lengths=self._block_lengths,
             block_colors=self._block_colors,
             slice=totuple(slice),
         )
+        if not success:
+            raise NoSolutionError
+        self.slice_of_color_possible = result
         self.t_calculate_slice += time.perf_counter() - start
         msg(
             self._ori,
@@ -212,13 +215,16 @@ class PuzzleLine:
             if np.all(self._slice_of_color_possible == slice):
                 return slice
             start = time.perf_counter()
-            self._slice_of_color_possible = calculate_slice(
+            success, result = calculate_slice(
                 n=self._n,
                 n_colors=self._n_colors,
                 block_lengths=self._block_lengths,
                 block_colors=self._block_colors,
                 slice=totuple(slice),
             )
+            if not success:
+                raise NoSolutionError
+            self._slice_of_color_possible = result
             self.t_calculate_slice += time.perf_counter() - start
             msg(
                 self._ori,
