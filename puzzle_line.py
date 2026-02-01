@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
-from typing import Optional
 import time
-from utils import msg, totuple
+from typing import Optional
+from utils import msg, totuple, NoSolutionError
 from generators import calculate_lines, calculate_count, calculate_slice
-from utils import NoSolutionError
 
 class PuzzleLine:
     """Tracks the state of a single row/column in the puzzle."""
@@ -121,12 +120,7 @@ class PuzzleLine:
             )
             self.t_generate_lines += time.perf_counter() - start
             self._generated = True
-            msg(
-                self._ori,
-                self._idx,
-                "generated",
-                self._count,
-            )
+            msg(self._ori, self._idx, "generated", self._count)
             self.update_slice()
             return self.slice
 
@@ -139,13 +133,7 @@ class PuzzleLine:
             slice=totuple(slice),
         )
         self.t_calculate_slice += time.perf_counter() - start
-        msg(
-            self._ori,
-            self._idx,
-            "reduced slice sum",
-            np.sum(self._slice),
-            np.sum(slice),
-        )
+        msg(self._ori, self._idx, "reduced slice sum", np.sum(self._slice), np.sum(slice))
 
         return self.slice
 
@@ -185,6 +173,7 @@ class PuzzleLine:
             slice=totuple(slice),
         )
         self.t_calculate_count += time.perf_counter() - start
+        msg(self._ori, self._idx, "counted", self._count)
         if self._count < self._limit_generate or force_generate:
             start = time.perf_counter()
             self._lines = calculate_lines(
@@ -196,12 +185,7 @@ class PuzzleLine:
             )
             self.t_generate_lines += time.perf_counter() - start
             self._generated = True
-            msg(
-                self._ori,
-                self._idx,
-                "generated",
-                self._count,
-            )
+            msg(self._ori, self._idx, "generated", self._count)
             self.update_slice()
             return self.slice
 
@@ -218,13 +202,7 @@ class PuzzleLine:
                 slice=totuple(slice),
             )
             self.t_calculate_slice += time.perf_counter() - start
-            msg(
-                self._ori,
-                self._idx,
-                "reduced slice sum",
-                np.sum(self._slice),
-                np.sum(slice),
-            )
+            msg(self._ori, self._idx, "reduced slice sum", np.sum(self._slice), np.sum(slice))
 
         return self._slice
 
@@ -236,13 +214,11 @@ class PuzzleLine:
         """
         lines0 = self._lines
         start = time.perf_counter()
-        # Vectorized filtering: build single mask for all constraints
         keep_mask = np.ones(len(lines0), dtype=bool)
         for color in range(self._n_colors):
             extracted_row = slice[:, color]
             invalid_positions = np.where(~extracted_row)[0]
             if len(invalid_positions) > 0:
-                # Lines that have this color at any invalid position should be removed
                 keep_mask &= ~(lines0[:, invalid_positions] == color).any(
                     axis=1
                 )
@@ -258,7 +234,6 @@ class PuzzleLine:
                 "Line must be generated before getting color possible slice."
             )
 
-        # Possibly the computational bottleneck
         start = time.perf_counter()
         self.slice = np.zeros(
             (self.n, self._n_colors), dtype=np.bool_

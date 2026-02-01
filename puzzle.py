@@ -1,17 +1,10 @@
 import numpy as np
-import os.path
-import json
-import copy
+import os.path, json, time, copy
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from typing import Optional, Literal
 from puzzle_line import PuzzleLine
 from utils import plot, NoSolutionError, NoUpdateError
 from griddler_parser import GriddlerParser
-import time
-
-# Debug flag - set to True to enable distance map visualization
-DEBUG = False
 
 
 class Puzzle:
@@ -179,57 +172,6 @@ class Puzzle:
 
         return not np.all(old == self.color_possible)
 
-    def strategy_force_generate(self) -> bool:
-        """Force generate the smallest non-generated line, regardless of limit.
-
-        This is used when stuck and need to make progress by generating
-        even complex lines. Only used in "force_generate" strategy.
-        Returns:
-          True if a line was generated, False if all lines already generated
-        """
-
-        print("\nNo update to color_possible: Generate new solutions")
-        print("No line was below the generate limit", self.limit_generate)
-
-        # Find minimum count among non-generated
-        ungenerated = {k: v for k, v in self.lines.items() if not v.generated}
-        if not ungenerated:
-            return False
-        (ori0, idx0), line0 = min(ungenerated.items(), key=lambda x: x[1].count)
-
-        # Update color_possible from this new line
-        slice = self.get_slice(ori0, idx0)
-        new_slice = line0.update(slice, force_generate=True)
-        self.set_slice(ori0, idx0, new_slice)
-
-        return True
-
-    def solve_iteration(self, it: int, do_plot: bool = False):
-        """Perform one iteration of the solving algorithm.
-
-        Args:
-          it: Iteration number
-          do_plot: Whether to plot the current state
-        """
-        print("\nIteration", it)
-
-        # Refine existing solutions
-        updated = self.update()
-
-        # No updates? Use the configured strategy
-        if not updated:
-            if self.strategy == "guess":
-                updated = self.strategy_guess(do_plot=do_plot)
-            elif self.strategy == "force_generate":
-                updated = self.strategy_force_generate()
-
-        # STILL no updates? That should not happen, it means the algorithm is stuck
-        if not updated:
-            raise NoUpdateError
-
-        if do_plot:
-            plot(self.desc, it, self.color_possible, self.colors, 0)
-
     def solve(self, do_plot: bool = False, max_iterations: Optional[int] = None, benchmark_output: bool = False):
         """Main solving loop - coordinates iteration, refinement, and generation.
 
@@ -264,6 +206,57 @@ class Puzzle:
             print(f"\nPuzzle solved in {it} iterations!")
         else:
             print(f"\nStopped after {it} iterations (max_iterations={max_iterations})")
+
+    def solve_iteration(self, it: int, do_plot: bool = False):
+        """Perform one iteration of the solving algorithm.
+
+        Args:
+          it: Iteration number
+          do_plot: Whether to plot the current state
+        """
+        print("\nIteration", it)
+
+        # Refine existing solutions
+        updated = self.update()
+
+        # No updates? Use the configured strategy
+        if not updated:
+            if self.strategy == "guess":
+                updated = self.strategy_guess(do_plot=do_plot)
+            elif self.strategy == "force_generate":
+                updated = self.strategy_force_generate()
+
+        # STILL no updates? That should not happen, it means the algorithm is stuck
+        if not updated:
+            raise NoUpdateError
+
+        if do_plot:
+            plot(self.desc, it, self.color_possible, self.colors, 0)
+
+    def strategy_force_generate(self) -> bool:
+        """Force generate the smallest non-generated line, regardless of limit.
+
+        This is used when stuck and need to make progress by generating
+        even complex lines. Only used in "force_generate" strategy.
+        Returns:
+          True if a line was generated, False if all lines already generated
+        """
+
+        print("\nNo update to color_possible: Generate new solutions")
+        print("No line was below the generate limit", self.limit_generate)
+
+        # Find minimum count among non-generated
+        ungenerated = {k: v for k, v in self.lines.items() if not v.generated}
+        if not ungenerated:
+            return False
+        (ori0, idx0), line0 = min(ungenerated.items(), key=lambda x: x[1].count)
+
+        # Update color_possible from this new line
+        slice = self.get_slice(ori0, idx0)
+        new_slice = line0.update(slice, force_generate=True)
+        self.set_slice(ori0, idx0, new_slice)
+
+        return True
 
     def benchmark_output(self, enable: bool):
         """Print benchmark timing summary from puzzle_line module."""                    
@@ -388,79 +381,7 @@ class Puzzle:
             )
             distance_map = np.minimum(distance_map, chebyshev_dist)
 
-        # Debug plot - show distance map the first time it's calculated
-        if DEBUG:
-            self._plot_distance_map(distance_map, solved_coords)
-
         return distance_map
-
-    def _plot_distance_map(self, distance_map, solved_coords):
-        """Debug visualization: plot distance map with heatmap and annotations."""
-
-        fig, ax = plt.subplots(figsize=(max(8, self.x * 0.6), max(6, self.y * 0.6)))
-
-        # Create heatmap with a nice color gradient
-        im = ax.imshow(
-            distance_map,
-            cmap="viridis_r",
-            interpolation="nearest",
-            vmin=0,
-            vmax=np.max(distance_map),
-        )
-
-        # Add colorbar
-        plt.colorbar(im, ax=ax, label="Distance to nearest solved pixel")
-
-        # Annotate each cell with its distance value
-        for i in range(self.y):
-            for j in range(self.x):
-                dist = distance_map[i, j]
-                if np.isfinite(dist):
-                    text_color = "white" if dist > np.max(distance_map) / 2 else "black"
-                    ax.text(
-                        j,
-                        i,
-                        f"{int(dist)}",
-                        ha="center",
-                        va="center",
-                        color=text_color,
-                        fontsize=8,
-                        weight="bold",
-                    )
-
-        # Mark solved pixels with red X
-        for row, col in solved_coords:
-            ax.plot(col, row, "rx", markersize=12, markeredgewidth=2)
-
-        # Configure grid and labels
-        ax.set_xticks(np.arange(self.x))
-        ax.set_yticks(np.arange(self.y))
-        ax.set_xticklabels(np.arange(self.x))
-        ax.set_yticklabels(np.arange(self.y))
-        ax.grid(which="minor", color="gray", linestyle="-", linewidth=0.5, alpha=0.3)
-        ax.set_xticks(np.arange(-0.5, self.x, 1), minor=True)
-        ax.set_yticks(np.arange(-0.5, self.y, 1), minor=True)
-
-        # Add legend
-        solved_patch = mpatches.Patch(
-            color="red", label=f"Solved pixels ({len(solved_coords)})"
-        )
-        ax.legend(
-            handles=[solved_patch], loc="upper right", bbox_to_anchor=(1.0, -0.05)
-        )
-
-        plt.title(
-            f"Distance Map: Chebyshev Distance to Nearest Solved Pixel\n{self.desc}",
-            fontsize=12,
-            weight="bold",
-        )
-        plt.tight_layout()
-        plt.show(block=True)
-
-        print(
-            "\n[DEBUG] Distance map visualization complete. Press any key to continue..."
-        )
-        input()
 
     def get_sorted_unsolved_pixels(self) -> list:
         """Get unsolved pixel-color combinations sorted by distance from solved regions.
