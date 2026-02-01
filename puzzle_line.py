@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Optional
 import time
 from utils import msg, totuple
-from generators import generate_lines, calculate_count, calculate_slice
+from generators import calculate_lines, calculate_count, calculate_slice
 from utils import NoSolutionError
 
 class PuzzleLine:
@@ -117,7 +117,7 @@ class PuzzleLine:
 
         if self._count < self._limit_generate:
             start = time.perf_counter()
-            success, result = generate_lines(
+            success, result = calculate_lines(
                 n=self._n,
                 n_colors=self._n_colors,
                 block_lengths=self._block_lengths,
@@ -201,7 +201,7 @@ class PuzzleLine:
         self.t_calculate_count += time.perf_counter() - start
         if self._count < self._limit_generate or force_generate:
             start = time.perf_counter()
-            success, result = generate_lines(
+            success, result = calculate_lines(
                 n=self._n,
                 n_colors=self._n_colors,
                 block_lengths=self._block_lengths,

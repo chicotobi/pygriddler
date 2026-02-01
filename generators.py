@@ -107,7 +107,7 @@ def _solve_line_recursive(
         return False, None
 
 
-def generate_lines(n, n_colors, block_lengths, block_colors, slice, previous_color=-1):
+def calculate_lines(n, n_colors, block_lengths, block_colors, slice, previous_color=-1):
     return _solve_line_recursive(
         n, n_colors, block_lengths, block_colors, totuple(slice), "lines", previous_color
     )
