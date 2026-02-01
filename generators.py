@@ -1,6 +1,6 @@
 from functools import cache
 import numpy as np
-from utils import totuple
+from utils import totuple, NoSolutionError
 
 WHITE = 0
 
@@ -106,20 +106,28 @@ def _solve_line_recursive(
     else:
         return False, None
 
-
 def calculate_lines(n, n_colors, block_lengths, block_colors, slice, previous_color=-1):
-    return _solve_line_recursive(
+    success, result = _solve_line_recursive(
         n, n_colors, block_lengths, block_colors, totuple(slice), "lines", previous_color
     )
+    if not success:
+        raise NoSolutionError
+    return result
 
 
 def calculate_count(n, n_colors, block_lengths, block_colors, slice, previous_color=-1):
-    return _solve_line_recursive(
+    success, result = _solve_line_recursive(
         n, n_colors, block_lengths, block_colors, totuple(slice), "count", previous_color
     )
+    if not success:
+        raise NoSolutionError
+    return result
 
 
 def calculate_slice(n, n_colors, block_lengths, block_colors, slice, previous_color=-1):
-    return _solve_line_recursive(
+    success, result = _solve_line_recursive(
         n, n_colors, block_lengths, block_colors, totuple(slice), "slice", previous_color
     )
+    if not success:
+        raise NoSolutionError
+    return result
