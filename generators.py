@@ -114,6 +114,8 @@ def calculate_slice(
         return np.zeros((0, n_colors), dtype=np.bool_)
 
     if len(block_lengths) == 0:
+        if ~np.all(slice[:, WHITE]):
+            return "dummy"
         result[:, WHITE] = slice[:, WHITE]
         return result
 
@@ -134,6 +136,7 @@ def calculate_slice(
         i0 = 1
     else:
         i0 = 0
+    at_least_one_succesful_placement = False
     for i in range(i0, max_zeroes_left_side + 1):
         # We checked that the white blocks are allowed, now check, if the colored block is allowed:
         if all(slice[i : (i + length0), color0]):
@@ -143,16 +146,23 @@ def calculate_slice(
                 block_lengths=block_lengths[1:],
                 block_colors=block_colors[1:],
                 slice=totuple(slice[i + length0 :, :]),
-                previous_color=color0,
+                previous_color=color0
             )
+
+            if type(a2) == str and a2 == "dummy":
+                continue
 
             # Build result for this starting position
             a1 = np.zeros((i + length0, n_colors), dtype=np.bool_)
             a1[:i, WHITE] = True  # Mark whites as possible
             a1[i : (i + length0), color0] = True  # Mark current color as possible
             a = np.concatenate((a1, a2), axis=0)
+            at_least_one_succesful_placement = True
 
             # OR with previous results
             result = np.logical_or(result, a)
+
+    if not at_least_one_succesful_placement:
+        return "dummy"
 
     return result
