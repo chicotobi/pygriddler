@@ -1,0 +1,2463 @@
+{
+  "id0": 203109,
+  "desc": "lass= 90 x 90 x 6\n203109",
+  "lines": {
+    "vertical": {
+      "0": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          1,
+          6,
+          10,
+          41
+        ]
+      },
+      "1": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          4
+        ],
+        "block_lengths": [
+          1,
+          6,
+          13,
+          19,
+          4,
+          15
+        ]
+      },
+      "2": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          4
+        ],
+        "block_lengths": [
+          2,
+          6,
+          13,
+          13,
+          10,
+          14
+        ]
+      },
+      "3": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          4,
+          3
+        ],
+        "block_lengths": [
+          1,
+          7,
+          12,
+          14,
+          16,
+          6,
+          1
+        ]
+      },
+      "4": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3
+        ],
+        "block_lengths": [
+          1,
+          7,
+          12,
+          14,
+          23
+        ]
+      },
+      "5": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3
+        ],
+        "block_lengths": [
+          1,
+          7,
+          14,
+          14,
+          7,
+          3,
+          11
+        ]
+      },
+      "6": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3
+        ],
+        "block_lengths": [
+          2,
+          7,
+          12,
+          16,
+          7,
+          4,
+          9
+        ]
+      },
+      "7": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3
+        ],
+        "block_lengths": [
+          1,
+          7,
+          13,
+          16,
+          8,
+          9,
+          2
+        ]
+      },
+      "8": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3
+        ],
+        "block_lengths": [
+          2,
+          6,
+          13,
+          20,
+          6,
+          8,
+          1
+        ]
+      },
+      "9": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          6,
+          13,
+          21,
+          6,
+          8
+        ]
+      },
+      "10": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          7,
+          13,
+          25,
+          4,
+          5
+        ]
+      },
+      "11": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          6,
+          13,
+          28,
+          4,
+          2
+        ]
+      },
+      "12": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          6,
+          15,
+          14,
+          2,
+          14,
+          1,
+          1
+        ]
+      },
+      "13": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4
+        ],
+        "block_lengths": [
+          2,
+          5,
+          15,
+          13,
+          4,
+          15
+        ]
+      },
+      "14": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4
+        ],
+        "block_lengths": [
+          1,
+          5,
+          15,
+          9,
+          17,
+          6
+        ]
+      },
+      "15": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4
+        ],
+        "block_lengths": [
+          2,
+          5,
+          14,
+          7,
+          15,
+          10
+        ]
+      },
+      "16": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4
+        ],
+        "block_lengths": [
+          1,
+          5,
+          13,
+          7,
+          14,
+          12
+        ]
+      },
+      "17": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4
+        ],
+        "block_lengths": [
+          2,
+          4,
+          12,
+          11,
+          10,
+          13
+        ]
+      },
+      "18": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3
+        ],
+        "block_lengths": [
+          1,
+          5,
+          12,
+          11,
+          5,
+          13,
+          4
+        ]
+      },
+      "19": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          4,
+          13,
+          24,
+          7,
+          1
+        ]
+      },
+      "20": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          4,
+          13,
+          21,
+          9,
+          2
+        ]
+      },
+      "21": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          5,
+          14,
+          15,
+          9,
+          6
+        ]
+      },
+      "22": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          5,
+          14,
+          9,
+          9,
+          11
+        ]
+      },
+      "23": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3
+        ],
+        "block_lengths": [
+          2,
+          4,
+          15,
+          5,
+          9,
+          6,
+          7
+        ]
+      },
+      "24": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          4
+        ],
+        "block_lengths": [
+          2,
+          3,
+          14,
+          6,
+          18,
+          4
+        ]
+      },
+      "25": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          3,
+          4,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          3,
+          16,
+          4,
+          3,
+          3,
+          6,
+          6,
+          3
+        ]
+      },
+      "26": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          3,
+          16,
+          19,
+          6
+        ]
+      },
+      "27": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          1,
+          5,
+          15,
+          8,
+          16
+        ]
+      },
+      "28": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          5,
+          13,
+          8,
+          16
+        ]
+      },
+      "29": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          6,
+          11,
+          6,
+          18
+        ]
+      },
+      "30": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          4,
+          12,
+          3,
+          19
+        ]
+      },
+      "31": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          6,
+          10,
+          3,
+          18
+        ]
+      },
+      "32": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          6,
+          9,
+          2,
+          18
+        ]
+      },
+      "33": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          5,
+          10,
+          2,
+          17
+        ]
+      },
+      "34": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          6,
+          8,
+          2,
+          17
+        ]
+      },
+      "35": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          8,
+          6,
+          2,
+          16
+        ]
+      },
+      "36": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          7,
+          5,
+          7,
+          11
+        ]
+      },
+      "37": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          6,
+          5,
+          7,
+          10
+        ]
+      },
+      "38": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          5,
+          6,
+          7,
+          9
+        ]
+      },
+      "39": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          5,
+          6,
+          6,
+          8
+        ]
+      },
+      "40": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          5,
+          5,
+          6,
+          8
+        ]
+      },
+      "41": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          3,
+          6,
+          5,
+          8
+        ]
+      },
+      "42": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          2,
+          7,
+          5,
+          6
+        ]
+      },
+      "43": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          2,
+          7,
+          6,
+          5
+        ]
+      },
+      "44": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          3,
+          5,
+          6,
+          5
+        ]
+      },
+      "45": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          3,
+          4,
+          8,
+          3
+        ]
+      },
+      "46": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          3,
+          5,
+          6,
+          2
+        ]
+      },
+      "47": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          3,
+          2,
+          5,
+          7,
+          1
+        ]
+      },
+      "48": {
+        "block_colors": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "block_lengths": [
+          2,
+          2,
+          4,
+          7,
+          1
+        ]
+      },
+      "49": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          4,
+          4,
+          7
+        ]
+      },
+      "50": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          4,
+          4,
+          6
+        ]
+      },
+      "51": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          4,
+          4,
+          5
+        ]
+      },
+      "52": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          3,
+          4,
+          5
+        ]
+      },
+      "53": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          3,
+          5,
+          3
+        ]
+      },
+      "54": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          4,
+          3,
+          3
+        ]
+      },
+      "55": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          3,
+          3,
+          2
+        ]
+      },
+      "56": {
+        "block_colors": [
+          2,
+          3,
+          4
+        ],
+        "block_lengths": [
+          3,
+          3,
+          1
+        ]
+      },
+      "57": {
+        "block_colors": [
+          2,
+          3
+        ],
+        "block_lengths": [
+          2,
+          4
+        ]
+      },
+      "58": {
+        "block_colors": [
+          2,
+          3,
+          2
+        ],
+        "block_lengths": [
+          2,
+          2,
+          1
+        ]
+      },
+      "59": {
+        "block_colors": [
+          2,
+          3,
+          2
+        ],
+        "block_lengths": [
+          1,
+          1,
+          2
+        ]
+      },
+      "60": {
+        "block_colors": [
+          2
+        ],
+        "block_lengths": [
+          3
+        ]
+      },
+      "61": {
+        "block_colors": [
+          2
+        ],
+        "block_lengths": [
+          2
+        ]
+      },
+      "62": {
+        "block_colors": [
+          2
+        ],
+        "block_lengths": [
+          1
+        ]
+      },
+      "63": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "64": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "65": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "66": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "67": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "68": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "69": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "70": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "71": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "72": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "73": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "74": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "75": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "76": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "77": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "78": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "79": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "80": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "81": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "82": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "83": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "84": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "85": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "86": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "87": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "88": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "89": {
+        "block_colors": [],
+        "block_lengths": []
+      }
+    },
+    "horizontal": {
+      "0": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "1": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "2": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "3": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "4": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "5": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "6": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "7": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "8": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "9": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "10": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "11": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "12": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "13": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "14": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "15": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "16": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "17": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "18": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "19": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "20": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "21": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "22": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "23": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "24": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "25": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "26": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "27": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "28": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "29": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "30": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "31": {
+        "block_colors": [],
+        "block_lengths": []
+      },
+      "32": {
+        "block_colors": [
+          1
+        ],
+        "block_lengths": [
+          3
+        ]
+      },
+      "33": {
+        "block_colors": [
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          5
+        ]
+      },
+      "34": {
+        "block_colors": [
+          2,
+          1
+        ],
+        "block_lengths": [
+          6,
+          3
+        ]
+      },
+      "35": {
+        "block_colors": [
+          2,
+          1
+        ],
+        "block_lengths": [
+          8,
+          3
+        ]
+      },
+      "36": {
+        "block_colors": [
+          2,
+          1
+        ],
+        "block_lengths": [
+          11,
+          3
+        ]
+      },
+      "37": {
+        "block_colors": [
+          2,
+          1
+        ],
+        "block_lengths": [
+          13,
+          3
+        ]
+      },
+      "38": {
+        "block_colors": [
+          2,
+          1
+        ],
+        "block_lengths": [
+          15,
+          3
+        ]
+      },
+      "39": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          15,
+          2
+        ]
+      },
+      "40": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          3,
+          16,
+          3
+        ]
+      },
+      "41": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          6,
+          16,
+          1
+        ]
+      },
+      "42": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          10,
+          13,
+          1
+        ]
+      },
+      "43": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          15,
+          8,
+          2
+        ]
+      },
+      "44": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          18,
+          6,
+          3
+        ]
+      },
+      "45": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          21,
+          4,
+          3
+        ]
+      },
+      "46": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          22,
+          6,
+          1
+        ]
+      },
+      "47": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          23,
+          5,
+          2
+        ]
+      },
+      "48": {
+        "block_colors": [
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          25,
+          4,
+          1
+        ]
+      },
+      "49": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          1,
+          26,
+          3,
+          1
+        ]
+      },
+      "50": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          1,
+          26,
+          3,
+          1
+        ]
+      },
+      "51": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          1,
+          27,
+          2,
+          2
+        ]
+      },
+      "52": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          26,
+          3,
+          2
+        ]
+      },
+      "53": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          5,
+          24,
+          3,
+          1
+        ]
+      },
+      "54": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          5,
+          1,
+          1,
+          22,
+          3,
+          2
+        ]
+      },
+      "55": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          10,
+          20,
+          3,
+          2
+        ]
+      },
+      "56": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          12,
+          5,
+          1,
+          13,
+          3,
+          2
+        ]
+      },
+      "57": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          12,
+          4,
+          3,
+          12,
+          4,
+          2
+        ]
+      },
+      "58": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          21,
+          10,
+          5,
+          1
+        ]
+      },
+      "59": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          21,
+          11,
+          4,
+          2
+        ]
+      },
+      "60": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          22,
+          10,
+          5,
+          1
+        ]
+      },
+      "61": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          23,
+          11,
+          3,
+          2
+        ]
+      },
+      "62": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          23,
+          1,
+          1,
+          9,
+          4,
+          2
+        ]
+      },
+      "63": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          25,
+          10,
+          4,
+          1
+        ]
+      },
+      "64": {
+        "block_colors": [
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          16,
+          1,
+          8,
+          10,
+          4,
+          2
+        ]
+      },
+      "65": {
+        "block_colors": [
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          15,
+          2,
+          10,
+          8,
+          5,
+          2
+        ]
+      },
+      "66": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          1,
+          12,
+          2,
+          13,
+          6,
+          5,
+          1
+        ]
+      },
+      "67": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          3,
+          9,
+          4,
+          12,
+          7,
+          4,
+          2
+        ]
+      },
+      "68": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          3,
+          9,
+          5,
+          4,
+          2,
+          6,
+          8,
+          3,
+          2
+        ]
+      },
+      "69": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          4,
+          8,
+          5,
+          4,
+          3,
+          6,
+          7,
+          3,
+          3
+        ]
+      },
+      "70": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          2,
+          5,
+          7,
+          5,
+          3,
+          4,
+          7,
+          7,
+          4,
+          2
+        ]
+      },
+      "71": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          1,
+          7,
+          5,
+          6,
+          3,
+          4,
+          4,
+          1,
+          4,
+          7,
+          3,
+          2
+        ]
+      },
+      "72": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          1,
+          7,
+          4,
+          7,
+          3,
+          3,
+          4,
+          4,
+          4,
+          7,
+          2,
+          2
+        ]
+      },
+      "73": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          1,
+          7,
+          4,
+          6,
+          4,
+          3,
+          4,
+          6,
+          3,
+          6,
+          2,
+          2
+        ]
+      },
+      "74": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "block_lengths": [
+          1,
+          7,
+          5,
+          5,
+          4,
+          3,
+          2,
+          9,
+          3,
+          6,
+          2,
+          2
+        ]
+      },
+      "75": {
+        "block_colors": [
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1,
+          2
+        ],
+        "block_lengths": [
+          2,
+          7,
+          5,
+          4,
+          3,
+          5,
+          1,
+          9,
+          3,
+          7,
+          2,
+          1,
+          1
+        ]
+      },
+      "76": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          2,
+          1,
+          4,
+          4,
+          4,
+          3,
+          5,
+          1,
+          9,
+          5,
+          5,
+          5
+        ]
+      },
+      "77": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          2,
+          2,
+          3,
+          4,
+          3,
+          4,
+          2,
+          1,
+          2,
+          1,
+          9,
+          6,
+          6,
+          4
+        ]
+      },
+      "78": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          2,
+          2,
+          3,
+          4,
+          2,
+          5,
+          2,
+          1,
+          2,
+          1,
+          9,
+          6,
+          7,
+          4
+        ]
+      },
+      "79": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          3,
+          2,
+          2,
+          4,
+          2,
+          4,
+          2,
+          2,
+          2,
+          1,
+          10,
+          9,
+          4,
+          4
+        ]
+      },
+      "80": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          3,
+          2,
+          2,
+          4,
+          1,
+          5,
+          2,
+          2,
+          2,
+          1,
+          11,
+          8,
+          5,
+          4
+        ]
+      },
+      "81": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          4,
+          2,
+          2,
+          3,
+          1,
+          5,
+          2,
+          2,
+          1,
+          2,
+          12,
+          7,
+          7,
+          2
+        ]
+      },
+      "82": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          4,
+          3,
+          1,
+          3,
+          1,
+          4,
+          3,
+          2,
+          1,
+          2,
+          15,
+          7,
+          5,
+          2
+        ]
+      },
+      "83": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          4,
+          3,
+          3,
+          1,
+          3,
+          1,
+          4,
+          3,
+          1,
+          2,
+          2,
+          15,
+          8,
+          4,
+          3
+        ]
+      },
+      "84": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          4,
+          3,
+          3,
+          2,
+          7,
+          2,
+          2,
+          2,
+          1,
+          17,
+          8,
+          4,
+          3
+        ]
+      },
+      "85": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          4,
+          3,
+          4,
+          1,
+          7,
+          2,
+          2,
+          2,
+          1,
+          19,
+          8,
+          3,
+          3
+        ]
+      },
+      "86": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          4,
+          3,
+          4,
+          1,
+          6,
+          3,
+          2,
+          1,
+          2,
+          19,
+          8,
+          5,
+          2
+        ]
+      },
+      "87": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          4,
+          3,
+          4,
+          1,
+          6,
+          3,
+          2,
+          1,
+          1,
+          21,
+          9,
+          5,
+          1
+        ]
+      },
+      "88": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          3,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          4,
+          4,
+          4,
+          1,
+          5,
+          2,
+          3,
+          1,
+          1,
+          22,
+          9,
+          3,
+          3
+        ]
+      },
+      "89": {
+        "block_colors": [
+          4,
+          3,
+          2,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2
+        ],
+        "block_lengths": [
+          3,
+          6,
+          4,
+          5,
+          1,
+          4,
+          1,
+          1,
+          24,
+          8,
+          1,
+          5
+        ]
+      }
+    }
+  },
+  "colors": [
+    "eeebf2",
+    "000000",
+    "515151",
+    "717171",
+    "919191",
+    "aeafaf"
+  ],
+  "n_colors": 6,
+  "x": 90,
+  "y": 90
+}
